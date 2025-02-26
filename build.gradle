@@ -22,7 +22,7 @@ repositories {
 dependencies {
     compileOnly("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
     annotationProcessor("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
-    implementation 'org.spongepowered:configurate-yaml:4.1.1'
+    implementation 'org.spongepowered:configurate-yaml:4.2.0'
 }
 
 def targetJavaVersion = 17

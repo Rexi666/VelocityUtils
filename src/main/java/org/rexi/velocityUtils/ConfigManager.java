@@ -52,16 +52,16 @@ public class ConfigManager {
                 config.setAlertPrefix(node.node("alert", "prefix").getString("&7[&b&lSERVER&7]"));
 
                 // Cargar los mensajes si no existen
-                if (node.node("messages", "no_permission").getString(null) == null) {
+                if (node.node("messages", "no_permission").empty()) {
                     node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
                 }
-                if (node.node("messages", "alert_usage").getString(null) == null) {
+                if (node.node("messages", "alert_usage").empty()) {
                     node.node("messages", "alert_usage").set("&cUsage: /alert <message>");
                 }
-                if (node.node("messages", "configuration_reloaded").getString(null) == null) {
+                if (node.node("messages", "configuration_reloaded").empty()) {
                     node.node("messages", "configuration_reloaded").set("&aConfiguration reloaded successfully!");
                 }
-                if (node.node("messages", "velocityutils_usage").getString(null) == null) {
+                if (node.node("messages", "velocityutils_usage").empty()) {
                     node.node("messages", "velocityutils_usage").set("&cUsage: /velocityutils reload");
                 }
 
@@ -76,6 +76,7 @@ public class ConfigManager {
             e.printStackTrace();
         }
     }
+
 
     public void saveConfig() {
         try {
