@@ -1,4 +1,4 @@
-# ClimateEvents by Rexi666
+# VelocityUtils by Rexi666
 
 ### Commands:
 - /velocityutils reload | /vu reload: Reload the config
