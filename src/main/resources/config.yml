@@ -1,0 +1,7 @@
+alert:
+  prefix: "&7[&b&lSERVER&7]" #Prefix for the alert command
+messages:
+  no_permission: "&cYou don't have permission to use this command"
+  alert_usage: "&cUsage: /alert <message>"
+  configuration_reloaded: "&aConfiguration reloaded successfully!"
+  velocityutils_usage: "&cUsage: /velocityutils reload"
