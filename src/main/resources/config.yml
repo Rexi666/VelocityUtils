@@ -1,5 +1,8 @@
 alert:
   prefix: "&7[&b&lSERVER&7]" #Prefix for the alert command
+motd:
+  line1: "&aWelcome to this Velocity Server!"
+  line2: "<bold><gradient:yellow:green>Enjoy your stay</gradient></bold>"
 messages:
   no_permission: "&cYou don't have permission to use this command"
   alert_usage: "&cUsage: /alert <message>"

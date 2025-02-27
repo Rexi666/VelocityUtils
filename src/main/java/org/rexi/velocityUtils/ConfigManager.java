@@ -1,5 +1,8 @@
 package org.rexi.velocityUtils;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.yaml.NodeStyle;
@@ -52,6 +55,13 @@ public class ConfigManager {
                 config.setAlertPrefix(node.node("alert", "prefix").getString("&7[&b&lSERVER&7]"));
 
                 // Cargar los mensajes si no existen
+                if (node.node("motd", "line1").empty()) {
+                    node.node("motd", "line1").set("&aWelcome to this Velocity Server!");
+                }
+                if (node.node("motd", "line2").empty()) {
+                    node.node("motd", "line2").set("<bold><gradient:yellow:green>Enjoy your stay</gradient></bold>");
+                }
+
                 if (node.node("messages", "no_permission").empty()) {
                     node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
                 }
@@ -86,6 +96,9 @@ public class ConfigManager {
             node.node("alert", "prefix").set(config.getAlertPrefix());
 
             // Agregar mensajes predeterminados
+            node.node("motd", "line1").set("&aWelcome to this Velocity Server!");
+            node.node("motd", "line2").set("<bold><gradient:yellow:green>Enjoy your stay</gradient></bold>");
+
             node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
             node.node("messages", "alert_usage").set("&cUsage: /alert <message>");
             node.node("messages", "configuration_reloaded").set("&aConfiguration reloaded successfully!");
@@ -119,6 +132,47 @@ public class ConfigManager {
         } catch (IOException e) {
             e.printStackTrace();
             return "&cError loading message: " + key;
+        }
+    }
+
+    public Component getMotd() {
+        try {
+            ConfigurationNode node = loader.load();
+            String line1 = node.node("motd", "line1").getString("&aWelcome to this Velocity Server!");
+            String line2 = node.node("motd", "line2").getString("<bold><gradient:yellow:green>Enjoy your stay</gradient></bold>");
+
+            // Serializadores
+            LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacyAmpersand();
+            MiniMessage miniMessage = MiniMessage.miniMessage();
+
+            // Convertir
+            Component component1 = line1.contains("<") ? miniMessage.deserialize(line1) : legacySerializer.deserialize(line1);
+            Component component2 = line2.contains("<") ? miniMessage.deserialize(line2) : legacySerializer.deserialize(line2);
+
+            return Component.text()
+                    .append(component1)
+                    .append(Component.newline())
+                    .append(component2)
+                    .build();
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            String line1 = "&aWelcome to this Velocity Server!";
+            String line2 = "<bold><gradient:yellow:green>Enjoy your stay</gradient></bold>";
+
+            // Serializadores
+            LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacyAmpersand();
+            MiniMessage miniMessage = MiniMessage.miniMessage();
+
+            // Convertir
+            Component component1 = line1.contains("<") ? miniMessage.deserialize(line1) : legacySerializer.deserialize(line1);
+            Component component2 = line2.contains("<") ? miniMessage.deserialize(line2) : legacySerializer.deserialize(line2);
+
+            return Component.text()
+                    .append(component1)
+                    .append(Component.newline())
+                    .append(component2)
+                    .build();
         }
     }
 }
