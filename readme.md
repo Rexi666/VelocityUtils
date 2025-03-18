@@ -1,5 +1,5 @@
 # VelocityUtils by Rexi666
-#### Dependencies
+### Dependencies
 - Java JDK 17
 
 ### Features

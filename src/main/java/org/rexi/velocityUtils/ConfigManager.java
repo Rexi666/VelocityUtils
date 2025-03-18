@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class ConfigManager {
 
@@ -62,6 +63,19 @@ public class ConfigManager {
                     node.node("motd", "line2").set("<bold><gradient:yellow:green>Enjoy your stay</gradient></bold>");
                 }
 
+                if (node.node("maintenance", "active").empty()) {
+                    node.node("maintenance", "active").set(false);
+                }
+                if (node.node("maintenance", "motd", "line1").empty()) {
+                    node.node("maintenance", "motd", "line1").set("&cServer under maintenance!");
+                }
+                if (node.node("maintenance", "motd", "line2").empty()) {
+                    node.node("maintenance", "motd", "line2").set("<bold><gradient:red:yellow>Try again later</gradient></bold>");
+                }
+                if (node.node("maintenance", "allowed").empty()) {
+                    node.node("maintenance", "allowed").setList(String.class, List.of("Rexigamer666"));
+                }
+
                 if (node.node("messages", "no_permission").empty()) {
                     node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
                 }
@@ -73,6 +87,9 @@ public class ConfigManager {
                 }
                 if (node.node("messages", "velocityutils_usage").empty()) {
                     node.node("messages", "velocityutils_usage").set("&cUsage: /velocityutils reload");
+                }
+                if (node.node("messages", "maintenance_not_on_list").empty()) {
+                    node.node("messages", "maintenance_not_on_list").set("&cThe server is under maintenance!");
                 }
 
                 // Guardar en caso de que se hayan agregado valores predeterminados
@@ -99,10 +116,16 @@ public class ConfigManager {
             node.node("motd", "line1").set("&aWelcome to this Velocity Server!");
             node.node("motd", "line2").set("<bold><gradient:yellow:green>Enjoy your stay</gradient></bold>");
 
+            node.node("maintenance", "active").set(false);
+            node.node("maintenance", "motd", "line1").set("&cServer under maintenance!");
+            node.node("maintenance", "motd", "line2").set("<bold><gradient:red:yellow>Try again later</gradient></bold>");
+            node.node("maintenance", "allowed").setList(String.class, List.of("Rexigamer666"));
+
             node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
             node.node("messages", "alert_usage").set("&cUsage: /alert <message>");
             node.node("messages", "configuration_reloaded").set("&aConfiguration reloaded successfully!");
             node.node("messages", "velocityutils_usage").set("&cUsage: /velocityutils reload");
+            node.node("messages", "maintenance_not_on_list").set("&cThe server is under maintenance!");
 
             loader.save(node);
         } catch (SerializationException e) {
@@ -159,6 +182,67 @@ public class ConfigManager {
 
             String line1 = "&aWelcome to this Velocity Server!";
             String line2 = "<bold><gradient:yellow:green>Enjoy your stay</gradient></bold>";
+
+            // Serializadores
+            LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacyAmpersand();
+            MiniMessage miniMessage = MiniMessage.miniMessage();
+
+            // Convertir
+            Component component1 = line1.contains("<") ? miniMessage.deserialize(line1) : legacySerializer.deserialize(line1);
+            Component component2 = line2.contains("<") ? miniMessage.deserialize(line2) : legacySerializer.deserialize(line2);
+
+            return Component.text()
+                    .append(component1)
+                    .append(Component.newline())
+                    .append(component2)
+                    .build();
+        }
+    }
+
+    public boolean isMaintenanceMode() {
+        try {
+            ConfigurationNode node = loader.load();
+            return node.node("maintenance", "active").getBoolean(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false; // Si hay un error, devolver `false` por defecto.
+        }
+    }
+
+    public List<String> getAllowedPlayers() {
+        try {
+            ConfigurationNode node = loader.load();
+            return node.node("maintenance", "allowed").getList(String.class, List.of());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return List.of(); // Si hay un error, devolver una lista vacía.
+        }
+    }
+
+    public Component getMaintenanceMotd() {
+        try {
+            ConfigurationNode node = loader.load();
+            String line1 = node.node("maintenance", "motd", "line1").getString("&cServer under maintenance!");
+            String line2 = node.node("maintenance", "motd", "line2").getString("<bold><gradient:red:yellow>Try again later</gradient></bold>");
+
+            // Serializadores
+            LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacyAmpersand();
+            MiniMessage miniMessage = MiniMessage.miniMessage();
+
+            // Convertir
+            Component component1 = line1.contains("<") ? miniMessage.deserialize(line1) : legacySerializer.deserialize(line1);
+            Component component2 = line2.contains("<") ? miniMessage.deserialize(line2) : legacySerializer.deserialize(line2);
+
+            return Component.text()
+                    .append(component1)
+                    .append(Component.newline())
+                    .append(component2)
+                    .build();
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            String line1 = "&cServer under maintenance!";
+            String line2 = "<bold><gradient:red:yellow>Try again later</gradient></bold>";
 
             // Serializadores
             LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacyAmpersand();

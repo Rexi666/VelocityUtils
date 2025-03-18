@@ -1,7 +1,18 @@
 alert:
   prefix: "&7[&b&lSERVER&7]" #Prefix for the alert command
+motd:
+  line1: "&aWelcome to this Velocity Server!"
+  line2: "<bold><gradient:yellow:green>Enjoy your stay</gradient></bold>"
+maintenance:
+  active: false
+  motd:
+    line1: "&cServer under maintenance!"
+    line2: "<bold><gradient:red:yellow>Try again later</gradient></bold>"
+  allowed:
+    - "Rexigamer666"
 messages:
   no_permission: "&cYou don't have permission to use this command"
   alert_usage: "&cUsage: /alert <message>"
   configuration_reloaded: "&aConfiguration reloaded successfully!"
   velocityutils_usage: "&cUsage: /velocityutils reload"
+  maintenance_not_on_list: "&cThe server is under maintenance!"
