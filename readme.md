@@ -9,7 +9,11 @@
 ### Commands:
 - `/velocityutils reload` | `/vu reload`: Reload the config
 - `/alert <message>`: Send a broadcast message to all the server
+- `/maintenance`
+  - `<on/off>`: Activate/Deactivate the maintenance mode
+  - `<add/remove> <nick>`: Add/Remove someone of the maintenance list exception
 
 ### Permissions:
 - `velocityutils.admin` access to /velocityutils reload and /vu reload
 - `velocityutils.alert` access to /alert
+- `velocityutils.maintenance` access to /maintenance

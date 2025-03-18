@@ -12,6 +12,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.commands.AlertCommand;
+import org.rexi.velocityUtils.commands.MaintenanceCommand;
 import org.rexi.velocityUtils.commands.VelocityUtilsCommand;
 import org.slf4j.Logger;
 
@@ -39,6 +40,7 @@ public class VelocityUtils {
         server.getCommandManager().register("alert", new AlertCommand(server));
         server.getCommandManager().register("velocityutils", new VelocityUtilsCommand(configManager, server));
         server.getCommandManager().register("vu", new VelocityUtilsCommand(configManager, server));
+        server.getCommandManager().register("maintenance", new MaintenanceCommand(configManager, server));
 
         System.out.println(Component.text("The plugin has been activated").color(NamedTextColor.GREEN));
         System.out.println(Component.text("Thank you for using Rexi666 plugins").color(NamedTextColor.BLUE));

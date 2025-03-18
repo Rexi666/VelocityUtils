@@ -91,6 +91,27 @@ public class ConfigManager {
                 if (node.node("messages", "maintenance_not_on_list").empty()) {
                     node.node("messages", "maintenance_not_on_list").set("&cThe server is under maintenance!");
                 }
+                if (node.node("messages", "maintenance_usage").empty()) {
+                    node.node("messages", "maintenance_usage").set("&cUsage: /maintenance <on|off> | /maintenance <add|remove> <nick>");
+                }
+                if (node.node("messages", "maintenance_activated").empty()) {
+                    node.node("messages", "maintenance_activated").set("&aMaintenance mode activated.");
+                }
+                if (node.node("messages", "maintenance_deactivated").empty()) {
+                    node.node("messages", "maintenance_deactivated").set("&cMaintenance mode deactivated.");
+                }
+                if (node.node("messages", "maintenance_already_on_list").empty()) {
+                    node.node("messages", "maintenance_already_on_list").set("&cThe player is already in the maintenance list.");
+                }
+                if (node.node("messages", "maintenance_player_added").empty()) {
+                    node.node("messages", "maintenance_player_added").set("&aPlayer {player} added to the maintenance list.");
+                }
+                if (node.node("messages", "maintenance_player_not_on_list").empty()) {
+                    node.node("messages", "maintenance_player_not_on_list").set("&cThe player is not in the maintenance list.");
+                }
+                if (node.node("messages", "maintenance_player_removed").empty()) {
+                    node.node("messages", "maintenance_player_removed").set("&cPlayer {player} removed from the maintenance list.");
+                }
 
                 // Guardar en caso de que se hayan agregado valores predeterminados
                 loader.save(node);
@@ -126,6 +147,13 @@ public class ConfigManager {
             node.node("messages", "configuration_reloaded").set("&aConfiguration reloaded successfully!");
             node.node("messages", "velocityutils_usage").set("&cUsage: /velocityutils reload");
             node.node("messages", "maintenance_not_on_list").set("&cThe server is under maintenance!");
+            node.node("messages", "maintenance_usage").set("&cUsage: /maintenance <on|off> | /maintenance <add|remove> <nick>");
+            node.node("messages", "maintenance_activated").set("&aMaintenance mode activated.");
+            node.node("messages", "maintenance_deactivated").set("&cMaintenance mode deactivated.");
+            node.node("messages", "maintenance_already_on_list").set("&cThe player is already in the maintenance list.");
+            node.node("messages", "maintenance_player_added").set("&aPlayer {player} added to the maintenance list.");
+            node.node("messages", "maintenance_player_not_on_list").set("&cThe player is not in the maintenance list.");
+            node.node("messages", "maintenance_player_removed").set("&cPlayer {player} removed from the maintenance list.");
 
             loader.save(node);
         } catch (SerializationException e) {
@@ -257,6 +285,26 @@ public class ConfigManager {
                     .append(Component.newline())
                     .append(component2)
                     .build();
+        }
+    }
+
+    public void setMaintenanceMode(boolean active) {
+        try {
+            ConfigurationNode node = loader.load();
+            node.node("maintenance", "active").set(active);
+            loader.save(node);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setAllowedPlayers(List<String> players) {
+        try {
+            ConfigurationNode node = loader.load();
+            node.node("maintenance", "allowed").setList(String.class, players);
+            loader.save(node);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
