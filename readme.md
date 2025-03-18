@@ -5,6 +5,7 @@
 ### Features
 - **Broadcast alerts**. Use the command /alert to send a message to all the network. You can change the prefix of the message on the config
 - **MOTD**. You can change the MOTD of your network in the config. If you make a change with your server online, you can use the command `/vu reload` to reload it
+- **Maintenance** You can set your server on maintenance mode, so only the ones who are on the config can access the server
 
 ### Commands:
 - `/velocityutils reload` | `/vu reload`: Reload the config
