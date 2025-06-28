@@ -18,3 +18,7 @@
 - `velocityutils.admin` access to /velocityutils reload and /vu reload
 - `velocityutils.alert` access to /alert
 - `velocityutils.maintenance` access to /maintenance
+
+### TO DO:
+- Staff Chat
+- Command find and goto
