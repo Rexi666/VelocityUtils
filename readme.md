@@ -22,3 +22,4 @@
 ### TO DO:
 - Staff Chat
 - Command find and goto
+- Report command
