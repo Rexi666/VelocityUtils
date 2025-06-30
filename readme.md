@@ -23,3 +23,4 @@
 - Staff Chat
 - Command find and goto
 - Report command
+- Lobby command
