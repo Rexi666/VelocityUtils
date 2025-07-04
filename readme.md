@@ -20,7 +20,7 @@
 - `velocityutils.maintenance` access to /maintenance
 
 ### TO DO:
-- Staff Chat
+- Staff Chat & /stafflist
 - Command find and goto
 - Report command
 - Lobby command
