@@ -76,8 +76,50 @@ public class ConfigManager {
                     node.node("maintenance", "allowed").setList(String.class, List.of("Rexigamer666"));
                 }
 
+                if (node.node("report", "teleport_on_click").empty()) {
+                    node.node("report", "teleport_on_click").set(true);
+                }
+                if (node.node("report", "message").empty()) {
+                    node.node("report", "message").setList(String.class, List.of(
+                            "&f-----------------------------",
+                            "&eNew Report from {player}!",
+                            "&fReported: &c{reported}",
+                            "&fReason: &b{reason}",
+                            "&eClick to teleport",
+                            "&f-----------------------------"));
+                }
+                if (node.node("report", "discord_hook", "enabled").empty()) {
+                    node.node("report", "discord_hook", "enabled").set(false);
+                }
+                if (node.node("report", "discord_hook", "url").empty()) {
+                    node.node("report", "discord_hook", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");
+                }
+                if (node.node("report", "discord_hook", "avatar").empty()) {
+                    node.node("report", "discord_hook", "avatar").set("https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968");
+                }
+                if (node.node("report", "discord_hook", "username").empty()) {
+                    node.node("report", "discord_hook", "username").set("VelocityUtils");
+                }
+                if (node.node("report", "discord_hook", "color_rgb").empty()) {
+                    node.node("report", "discord_hook", "color_rgb").set("240,43,20");
+                }
+                if (node.node("report", "discord_hook", "title").empty()) {
+                    node.node("report", "discord_hook", "title").set("\uD83D\uDCE2User Report\uD83D\uDCE2");
+                }
+                if (node.node("report", "discord_hook", "message").empty()) {
+                    node.node("report", "discord_hook", "message").set(String.class, """
+      📢 **New Report from {reporter}**
+      👤 **Reported:** {reported}
+      📄 **Reason:** {reason}
+      🌍 **Server:** {server}
+      """);
+                }
+
                 if (node.node("messages", "no_permission").empty()) {
                     node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
+                }
+                if (node.node("messages", "no_console").empty()) {
+                    node.node("messages", "no_console").set("&cOnly players can use this command");
                 }
                 if (node.node("messages", "alert_usage").empty()) {
                     node.node("messages", "alert_usage").set("&cUsage: /alert <message>");
@@ -112,6 +154,51 @@ public class ConfigManager {
                 if (node.node("messages", "maintenance_player_removed").empty()) {
                     node.node("messages", "maintenance_player_removed").set("&cPlayer {player} removed from the maintenance list.");
                 }
+                if (node.node("messages", "report_usage").empty()) {
+                    node.node("messages", "report_usage").set("&cUsage: /report <nick> <reason>");
+                }
+                if (node.node("messages", "report_player_not_found").empty()) {
+                    node.node("messages", "report_player_not_found").set("&cPlayer {player} not found");
+                }
+                if (node.node("messages", "report_sent").empty()) {
+                    node.node("messages", "report_sent").set("&aYour report for the player {target} was sent");
+                }
+                if (node.node("messages", "report_hover").empty()) {
+                    node.node("messages", "report_hover").set("&bClick to teleport");
+                }
+                if (node.node("messages", "report_cooldown").empty()) {
+                    node.node("messages", "report_cooldown").set("&cYou have {time} before using /report again");
+                }
+                if (node.node("messages", "report_webhook_error").empty()) {
+                    node.node("messages", "report_webhook_error").set("&cError trying to send discord report webhook");
+                }
+                if (node.node("messages", "goto_usage").empty()) {
+                    node.node("messages", "goto_usage").set("&cUsage: /goto <player>");
+                }
+                if (node.node("messages", "goto_player_not_found").empty()) {
+                    node.node("messages", "goto_player_not_found").set("&cPlayer {player} not found");
+                }
+                if (node.node("messages", "goto_server_not_found").empty()) {
+                    node.node("messages", "goto_server_not_found").set("&cServer could not be found");
+                }
+                if (node.node("messages", "goto_same_server").empty()) {
+                    node.node("messages", "goto_same_server").set("&cYou are currently on the same server as {player}");
+                }
+                if (node.node("messages", "goto_connecting").empty()) {
+                    node.node("messages", "goto_connecting").set("&aConnecting with {player} server");
+                }
+                if (node.node("messages", "find_usage").empty()) {
+                    node.node("messages", "find_usage").set("&cUsage: /find <player>");
+                }
+                if (node.node("messages", "find_player_not_found").empty()) {
+                    node.node("messages", "find_player_not_found").set("&cPlayer {player} not found");
+                }
+                if (node.node("messages", "find_unknown").empty()) {
+                    node.node("messages", "find_unknown").set("Unknown");
+                }
+                if (node.node("messages", "find_where").empty()) {
+                    node.node("messages", "find_where").set("&b{player} &eis on &b{server}");
+                }
 
                 // Guardar en caso de que se hayan agregado valores predeterminados
                 loader.save(node);
@@ -142,7 +229,29 @@ public class ConfigManager {
             node.node("maintenance", "motd", "line2").set("<bold><gradient:red:yellow>Try again later</gradient></bold>");
             node.node("maintenance", "allowed").setList(String.class, List.of("Rexigamer666"));
 
+            node.node("report", "teleport_on_click").set(true);
+            node.node("report", "message").setList(String.class, List.of(
+                    "&f-----------------------------",
+                    "&eNew Report from {player}!",
+                    "&fReported: &c{reported}",
+                    "&fReason: &b{reason}",
+                    "&eClick to teleport",
+                    "&f-----------------------------"));
+            node.node("report", "discord_hook", "enabled").set(false);
+            node.node("report", "discord_hook", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");
+            node.node("report", "discord_hook", "avatar").set("https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968");
+            node.node("report", "discord_hook", "username").set("VelocityUtils");
+            node.node("report", "discord_hook", "color_rgb").set("240,43,20");
+            node.node("report", "discord_hook", "title").set("\uD83D\uDCE2User Report\uD83D\uDCE2");
+            node.node("report", "discord_hook", "message").set(String.class, """
+      📢 **New Report from {reporter}**
+      👤 **Reported:** {reported}
+      📄 **Reason:** {reason}
+      🌍 **Server:** {server}
+      """);
+
             node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
+            node.node("messages", "no_console").set("&cOnly players can use this command");
             node.node("messages", "alert_usage").set("&cUsage: /alert <message>");
             node.node("messages", "configuration_reloaded").set("&aConfiguration reloaded successfully!");
             node.node("messages", "velocityutils_usage").set("&cUsage: /velocityutils reload");
@@ -154,6 +263,21 @@ public class ConfigManager {
             node.node("messages", "maintenance_player_added").set("&aPlayer {player} added to the maintenance list.");
             node.node("messages", "maintenance_player_not_on_list").set("&cThe player is not in the maintenance list.");
             node.node("messages", "maintenance_player_removed").set("&cPlayer {player} removed from the maintenance list.");
+            node.node("messages", "report_usage").set("&cUsage: /report <nick> <reason>");
+            node.node("messages", "report_player_not_found").set("&cPlayer {player} not found");
+            node.node("messages", "report_sent").set("&aYour report for the player {target} was sent");
+            node.node("messages", "report_hover").set("&bClick to teleport");
+            node.node("messages", "report_cooldown").set("&cYou have {time} before using /report again");
+            node.node("messages", "report_webhook_error").set("&cError trying to send discord report webhook");
+            node.node("messages", "goto_usage").set("&cUsage: /goto <player>");
+            node.node("messages", "goto_player_not_found").set("&cPlayer {player} not found");
+            node.node("messages", "goto_server_not_found").set("&cServer could not be found");
+            node.node("messages", "goto_same_server").set("&cYou are currently on the same server as {player}");
+            node.node("messages", "goto_connecting").set("&aConnecting with {player} server");
+            node.node("messages", "find_usage").set("&cUsage: /find <player>");
+            node.node("messages", "find_player_not_found").set("&cPlayer {player} not found");
+            node.node("messages", "find_unknown").set("Unknown");
+            node.node("messages", "find_where").set("&b{player} &eis on &b{server}");
 
             loader.save(node);
         } catch (SerializationException e) {
@@ -183,6 +307,44 @@ public class ConfigManager {
         } catch (IOException e) {
             e.printStackTrace();
             return "&cError loading message: " + key;
+        }
+    }
+
+    public String getString(String key) {
+        try {
+            ConfigurationNode node = loader.load();
+            String[] parts = key.split("\\.");
+            for (String part : parts) {
+                node = node.node(part);
+            }
+            String result = node.getString();
+            return (result != null && !result.isBlank()) ? result : null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public boolean getBoolean(String key) {
+        try {
+            ConfigurationNode node = loader.load();
+            for (String part : key.split("\\.")) {
+                node = node.node(part);
+            }
+            return node.getBoolean(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<String> getStringList(String... path) {
+        try {
+            ConfigurationNode node = loader.load();
+            return node.node((Object[]) path).getList(String.class, List.of());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return List.of(); // Devuelve lista vacía si hay error
         }
     }
 

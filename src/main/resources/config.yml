@@ -10,8 +10,30 @@ maintenance:
     line2: "<bold><gradient:red:yellow>Try again later</gradient></bold>"
   allowed:
     - "Rexigamer666"
+report:
+  teleport_on_click: true
+  message:
+    - "&f-----------------------------"
+    - "&eNew Report from {player}!"
+    - "&fReported: &c{reported}"
+    - "&fReason: &b{reason}"
+    - "&eClick to teleport"
+    - "&f-----------------------------"
+  discord_hook:
+    enabled: false
+    url: "https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy"
+    avatar: 'https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968'
+    username: 'VelocityUtils'
+    color_rgb: "240,43,20"
+    title: '📢User Report📢'
+    message: |
+      **📢 New Report from {reporter}**
+      **👤 Reported:** {reported}
+      **📄 Reason:** {reason}
+      **🌍 Server:** {server}
 messages:
   no_permission: "&cYou don't have permission to use this command"
+  no_console: "&cOnly players can use this command"
   alert_usage: "&cUsage: /alert <message>"
   configuration_reloaded: "&aConfiguration reloaded successfully!"
   velocityutils_usage: "&cUsage: /velocityutils reload"
@@ -23,3 +45,18 @@ messages:
   maintenance_player_added: "&aPlayer {player} added to the maintenance list."
   maintenance_player_not_on_list: "&cThe player is not in the maintenance list."
   maintenance_player_removed: "&cPlayer {player} removed from the maintenance list."
+  report_usage: "&cUsage: /report <nick> <reason>"
+  report_player_not_found: "&cPlayer {player} not found"
+  report_sent: "&aYour report for the player {target} was sent"
+  report_hover: "&bClick to teleport"
+  report_cooldown: "&cYou have {time}s before using /report again"
+  report_webhook_error: "&cError trying to send discord report webhook"
+  goto_usage: "&cUsage: /goto <player>"
+  goto_player_not_found: "&cPlayer {player} not found"
+  goto_server_not_found: "&cServer could not be found"
+  goto_same_server: "&cYou are currently on the same server as {player}"
+  goto_connecting: "&aConnecting with {player} server"
+  find_usage: "&cUsage: /find <player>"
+  find_player_not_found: "&cPlayer {player} not found"
+  find_unknown: "Unknown"
+  find_where: "&b{player} &eis on &b{server}"

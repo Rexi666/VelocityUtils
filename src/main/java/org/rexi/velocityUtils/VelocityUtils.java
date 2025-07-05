@@ -11,9 +11,7 @@ import com.velocitypowered.api.proxy.server.ServerPing;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.rexi.velocityUtils.commands.AlertCommand;
-import org.rexi.velocityUtils.commands.MaintenanceCommand;
-import org.rexi.velocityUtils.commands.VelocityUtilsCommand;
+import org.rexi.velocityUtils.commands.*;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -23,6 +21,7 @@ public class VelocityUtils {
 
     private final ProxyServer server;
     private final ConfigManager configManager;
+    private DiscordWebhook reportWebhook;
 
     @Inject
     public VelocityUtils(ProxyServer server) {
@@ -37,10 +36,24 @@ public class VelocityUtils {
     public void onProxyInitialization(ProxyInitializeEvent event) {
         configManager.loadConfig();
 
+        if (configManager.getBoolean("report.discord_hook.enabled")) {
+            String reportWebhookUrl = configManager.getString("report.discord_hook.url");
+            if (reportWebhookUrl != null && reportWebhookUrl.startsWith("http")) {
+                this.reportWebhook = new DiscordWebhook(reportWebhookUrl, configManager);
+                reportWebhook.setAvatarUrl(configManager.getString("report.discord_hook.avatar"));
+                reportWebhook.setUsername(configManager.getString("report.discord_hook.username"));
+                reportWebhook.setTitle(configManager.getString("report.discord_hook.title"));
+                reportWebhook.setColorRGB(configManager.getString("report.discord_hook.color_rgb"));
+            }
+        }
+
         server.getCommandManager().register("alert", new AlertCommand(server));
         server.getCommandManager().register("velocityutils", new VelocityUtilsCommand(configManager, server));
         server.getCommandManager().register("vu", new VelocityUtilsCommand(configManager, server));
         server.getCommandManager().register("maintenance", new MaintenanceCommand(configManager, server));
+        server.getCommandManager().register("report", new ReportCommand(configManager, server, reportWebhook));
+        server.getCommandManager().register("goto", new GotoCommand(configManager, server));
+        server.getCommandManager().register("find", new FindCommand(configManager, server));
 
         System.out.println(Component.text("The plugin has been activated").color(NamedTextColor.GREEN));
         System.out.println(Component.text("Thank you for using Rexi666 plugins").color(NamedTextColor.BLUE));
