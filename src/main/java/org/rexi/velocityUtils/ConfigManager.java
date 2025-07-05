@@ -167,7 +167,7 @@ public class ConfigManager {
                     node.node("messages", "report_hover").set("&bClick to teleport");
                 }
                 if (node.node("messages", "report_cooldown").empty()) {
-                    node.node("messages", "report_cooldown").set("&cYou have {time} before using /report again");
+                    node.node("messages", "report_cooldown").set("&cYou have {time}s before using /report again");
                 }
                 if (node.node("messages", "report_webhook_error").empty()) {
                     node.node("messages", "report_webhook_error").set("&cError trying to send discord report webhook");
@@ -267,7 +267,7 @@ public class ConfigManager {
             node.node("messages", "report_player_not_found").set("&cPlayer {player} not found");
             node.node("messages", "report_sent").set("&aYour report for the player {target} was sent");
             node.node("messages", "report_hover").set("&bClick to teleport");
-            node.node("messages", "report_cooldown").set("&cYou have {time} before using /report again");
+            node.node("messages", "report_cooldown").set("&cYou have {time}s before using /report again");
             node.node("messages", "report_webhook_error").set("&cError trying to send discord report webhook");
             node.node("messages", "goto_usage").set("&cUsage: /goto <player>");
             node.node("messages", "goto_player_not_found").set("&cPlayer {player} not found");
