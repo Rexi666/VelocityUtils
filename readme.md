@@ -3,9 +3,10 @@
 - Java JDK 17
 
 ### Features
-- **Broadcast alerts**. Use the command /alert to send a message to all the network. You can change the prefix of the message on the config
-- **MOTD**. You can change the MOTD of your network in the config. If you make a change with your server online, you can use the command `/vu reload` to reload it
-- **Maintenance** You can set your server on maintenance mode, so only the ones who are on the config can access the server
+- **Broadcast alerts**. Use the command /alert to send a message to all the network. You can change the prefix of the message on the config.
+- **MOTD**. You can change the MOTD of your network in the config. If you make a change with your server online, you can use the command `/vu reload` to reload it.
+- **Maintenance** You can set your server on maintenance mode, so only the ones who are on the config can access the server.
+- **Report** User can report players for any reason. Staff can see the reports and tp to the server where the reported is. Also, you can setup an alert on discord.
 
 ### Commands:
 #### Staff commands
