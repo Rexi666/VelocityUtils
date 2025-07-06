@@ -1,4 +1,11 @@
 # VelocityUtils by Rexi666
+
+**VelocityUtils** is a plugin for Velocity proxy servers that adds essential utilities for both players and server administrators.  
+Its main features include: global alerts, maintenance mode, player reporting system, server location and teleportation commands, and much more.  
+Lightweight, configurable, and easy to use — it's perfect for any network looking to improve server management effortlessly.
+
+---
+
 ### Dependencies
 - Java JDK 17
 
