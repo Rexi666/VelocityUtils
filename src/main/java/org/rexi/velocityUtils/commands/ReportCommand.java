@@ -91,7 +91,7 @@ public class ReportCommand implements SimpleCommand {
         }
 
         /* ──────────── 5. Preparar líneas del mensaje ──────────── */
-        List<String> rawLines = configManager.getStringList("report.message"); // ← nuevo helper
+        List<String> rawLines = configManager.getStringList("report.message");
         if (rawLines == null || rawLines.isEmpty()) {
             // Fallback por si el usuario borra la sección
             rawLines = List.of(

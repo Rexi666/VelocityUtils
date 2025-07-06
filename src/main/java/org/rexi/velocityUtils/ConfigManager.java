@@ -338,13 +338,16 @@ public class ConfigManager {
         }
     }
 
-    public List<String> getStringList(String... path) {
+    public List<String> getStringList(String key) {
         try {
             ConfigurationNode node = loader.load();
-            return node.node((Object[]) path).getList(String.class, List.of());
+            for (String part : key.split("\\.")) {
+                node = node.node(part);
+            }
+            return node.getList(String.class, List.of());
         } catch (IOException e) {
             e.printStackTrace();
-            return List.of(); // Devuelve lista vacía si hay error
+            return List.of();
         }
     }
 
