@@ -13,6 +13,8 @@ import org.rexi.velocityUtils.DiscordWebhook;
 
 import java.util.*;
 
+import static org.rexi.velocityUtils.DiscordWebhook.getUuidFromName;
+
 public class ReportCommand implements SimpleCommand {
 
     private final ConfigManager configManager;
@@ -104,6 +106,11 @@ public class ReportCommand implements SimpleCommand {
             );
         }
 
+        String uuid = getUuidFromName(target.getUsername());
+        String avatar = (uuid != null)
+                ? "https://minotar.net/helm/" + uuid + "/64.png"
+                : "https://i.pinimg.com/564x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg";
+
         if (reportWebhook != null && configManager.getBoolean("report.discord_hook.enabled")) {
             String raw = configManager.getString("report.discord_hook.message");
             String msg = raw
@@ -111,7 +118,7 @@ public class ReportCommand implements SimpleCommand {
                     .replace("{reporter}", reporterName)
                     .replace("{reason}", reason)
                     .replace("{server}", serverName);
-            reportWebhook.sendReport(msg);
+            reportWebhook.send(msg, avatar);
         }
 
         /* ──────────── 6. Enviar a moderadores ──────────── */

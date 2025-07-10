@@ -13,7 +13,7 @@ public class AlertCommand implements SimpleCommand {
     private final ProxyServer server;
     private final ConfigManager configManager;
 
-    public AlertCommand(ProxyServer server) {
+    public AlertCommand(ConfigManager configManager, ProxyServer server) {
         this.server = server;
         this.configManager = new ConfigManager();
     }

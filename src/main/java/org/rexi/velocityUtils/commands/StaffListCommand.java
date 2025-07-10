@@ -62,7 +62,7 @@ public class StaffListCommand implements SimpleCommand {
 
             String serverName = player.getCurrentServer()
                     .map(s -> s.getServerInfo().getName())
-                    .orElse(configManager.getMessage("stafflist_unknown"));
+                    .orElse(configManager.getMessage("server_unknown"));
 
 
             String stafflist_staff = configManager.getMessage("stafflist_staff");

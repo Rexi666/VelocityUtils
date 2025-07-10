@@ -27,10 +27,22 @@ report:
     color_rgb: "240,43,20"
     title: '📢User Report📢'
     message: |
-      **📢 New Report from {reporter}**
-      **👤 Reported:** {reported}
-      **📄 Reason:** {reason}
-      **🌍 Server:** {server}
+      📢 **New Report from {reporter}**
+      👤 **Reported:** {reported}
+      📄 **Reason:** {reason}
+      🌍 **Server:** {server}
+staffchat:
+  discord_hook:
+    enabled: false
+    url: "https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy"
+    avatar: 'https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968'
+    username: 'VelocityUtils'
+    color_rgb: "20,200,240"
+    title: '🗨️Staff Chat🗨️'
+    message: |
+      🗨️ **Staff Chat from {player}**
+      🌍 **Server:** {server}
+      💬 **Message:** {message}
 messages:
   no_permission: "&cYou don't have permission to use this command"
   no_console: "&cOnly players can use this command"
@@ -58,9 +70,11 @@ messages:
   goto_connecting: "&aConnecting with {player} server"
   find_usage: "&cUsage: /find <player>"
   find_player_not_found: "&cPlayer {player} not found"
-  find_unknown: "Unknown"
   find_where: "&b{player} &eis on &b{server}"
+  server_unknown: "Unknown"
   stafflist_no_staff: "&cThere are no staff online"
   stafflist_header: "&b&lStaff List"
-  stafflist_unknown: "Unknown"
   stafflist_staff: "{prefix} &f{player} &7- &b{server}"
+  staffchat_disabled: "&eStaff chat &cdisabled"
+  staffchat_enabled: "&eStaff chat &aenabled"
+  staffchat_format: "&8[&bStaffChat&8] &7{server} - &b{player}&7: &f{message}"

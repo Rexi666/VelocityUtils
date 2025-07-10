@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class DiscordWebhook {
 
@@ -47,7 +48,7 @@ public class DiscordWebhook {
         } catch (Exception ignored) {}
     }
 
-    public void sendReport(String content) {
+    public void send(String content, String thumbnailUrl) {
         try {
             URL url = new URL(webhookUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -65,7 +66,10 @@ public class DiscordWebhook {
               "embeds": [{
                 "title": "%s",
                 "description": "%s",
-                "color": %d
+                "color": %d,
+                "thumbnail": {
+                  "url": "%s"
+                }
               }]
             }
             """.formatted(
@@ -73,7 +77,8 @@ public class DiscordWebhook {
                     escape(avatarUrl),
                     escape(title),
                     escape(content),
-                    color
+                    color,
+                    escape(thumbnailUrl)
             );
 
             try (OutputStream os = connection.getOutputStream()) {
@@ -81,10 +86,10 @@ public class DiscordWebhook {
                 os.write(input);
             }
 
-            connection.getResponseCode(); // opcional: fuerza la ejecución
+            connection.getResponseCode(); // fuerza la ejecución
         } catch (Exception e) {
-            String report_webhook_error = configManager.getMessage("report_webhook_error");
-            System.err.println(LegacyComponentSerializer.legacyAmpersand().deserialize(report_webhook_error));
+            String errorMessage = configManager.getMessage("report_webhook_error");
+            System.err.println(LegacyComponentSerializer.legacyAmpersand().deserialize(errorMessage));
             e.printStackTrace();
         }
     }
@@ -97,4 +102,42 @@ public class DiscordWebhook {
                 .replace("\r", "")
                 .replace("\t", "\\t");
     }
+
+    public static String getUuidFromName(String name) {
+        try {
+            URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + name);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+
+            int responseCode = connection.getResponseCode();
+            System.out.println("Código HTTP Mojang: " + responseCode);
+            if (responseCode != 200) {
+                return null;
+            }
+
+            try (Scanner scanner = new Scanner(connection.getInputStream())) {
+                String responseBody = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+
+                int idKeyIndex = responseBody.indexOf("\"id\"");
+                if (idKeyIndex == -1) return null;
+
+                int colonIndex = responseBody.indexOf(":", idKeyIndex);
+                if (colonIndex == -1) return null;
+
+                int quoteStart = responseBody.indexOf("\"", colonIndex);
+                if (quoteStart == -1) return null;
+
+                int quoteEnd = responseBody.indexOf("\"", quoteStart + 1);
+                if (quoteEnd == -1) return null;
+
+                return responseBody.substring(quoteStart + 1, quoteEnd);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

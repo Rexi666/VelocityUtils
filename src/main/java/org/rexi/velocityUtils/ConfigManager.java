@@ -115,6 +115,32 @@ public class ConfigManager {
       """);
                 }
 
+                if (node.node("staffchat", "discord_hook", "enabled").empty()) {
+                    node.node("staffchat", "discord_hook", "enabled").set(false);
+                }
+                if (node.node("staffchat", "discord_hook", "url").empty()) {
+                    node.node("staffchat", "discord_hook", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");
+                }
+                if (node.node("staffchat", "discord_hook", "avatar").empty()) {
+                    node.node("staffchat", "discord_hook", "avatar").set("https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968");
+                }
+                if (node.node("staffchat", "discord_hook", "username").empty()) {
+                    node.node("staffchat", "discord_hook", "username").set("VelocityUtils");
+                }
+                if (node.node("staffchat", "discord_hook", "color_rgb").empty()) {
+                    node.node("staffchat", "discord_hook", "color_rgb").set("20,200,240");
+                }
+                if (node.node("staffchat", "discord_hook", "title").empty()) {
+                    node.node("staffchat", "discord_hook", "title").set("\uD83D\uDDE8\uFE0FStaff Chat\uD83D\uDDE8\uFE0F");
+                }
+                if (node.node("staffchat", "discord_hook", "message").empty()) {
+                    node.node("staffchat", "discord_hook", "message").set(String.class, """
+      🗨️ **Staff Chat from {player}**
+      🌍 **Server:** {server}
+      💬 **Message:** {message}
+      """);
+                }
+
                 if (node.node("messages", "no_permission").empty()) {
                     node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
                 }
@@ -193,8 +219,8 @@ public class ConfigManager {
                 if (node.node("messages", "find_player_not_found").empty()) {
                     node.node("messages", "find_player_not_found").set("&cPlayer {player} not found");
                 }
-                if (node.node("messages", "find_unknown").empty()) {
-                    node.node("messages", "find_unknown").set("Unknown");
+                if (node.node("messages", "server_unknown").empty()) {
+                    node.node("messages", "server_unknown").set("Unknown");
                 }
                 if (node.node("messages", "find_where").empty()) {
                     node.node("messages", "find_where").set("&b{player} &eis on &b{server}");
@@ -205,11 +231,17 @@ public class ConfigManager {
                 if (node.node("messages", "stafflist_header").empty()) {
                     node.node("messages", "stafflist_header").set("&b&lStaff List");
                 }
-                if (node.node("messages", "stafflist_unknown").empty()) {
-                    node.node("messages", "stafflist_unknown").set("Unknown");
-                }
                 if (node.node("messages", "stafflist_staff").empty()) {
                     node.node("messages", "stafflist_staff").set("{prefix} &f{player} &7- &b{server}");
+                }
+                if (node.node("messages", "staffchat_disabled").empty()) {
+                    node.node("messages", "staffchat_disabled").set("&eStaff chat &cdisabled");
+                }
+                if (node.node("messages", "staffchat_enabled").empty()) {
+                    node.node("messages", "staffchat_enabled").set("&eStaff chat &aenabled");
+                }
+                if (node.node("messages", "staffchat_format").empty()) {
+                    node.node("messages", "staffchat_format").set("&8[&bStaffChat&8] &7{server} - &b{player}&7: &f{message}");
                 }
 
                 // Guardar en caso de que se hayan agregado valores predeterminados
@@ -262,6 +294,18 @@ public class ConfigManager {
       🌍 **Server:** {server}
       """);
 
+            node.node("staffchat", "discord_hook", "enabled").set(false);
+            node.node("staffchat", "discord_hook", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");
+            node.node("staffchat", "discord_hook", "avatar").set("https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968");
+            node.node("staffchat", "discord_hook", "username").set("VelocityUtils");
+            node.node("staffchat", "discord_hook", "color_rgb").set("20,200,240");
+            node.node("staffchat", "discord_hook", "title").set("\uD83D\uDDE8\uFE0FStaff Chat\uD83D\uDDE8\uFE0F");
+            node.node("staffchat", "discord_hook", "message").set(String.class, """
+      🗨️ **Staff Chat from {player}**
+      🌍 **Server:** {server}
+      💬 **Message:** {message}
+      """);
+
             node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
             node.node("messages", "no_console").set("&cOnly players can use this command");
             node.node("messages", "alert_usage").set("&cUsage: /alert <message>");
@@ -288,12 +332,14 @@ public class ConfigManager {
             node.node("messages", "goto_connecting").set("&aConnecting with {player} server");
             node.node("messages", "find_usage").set("&cUsage: /find <player>");
             node.node("messages", "find_player_not_found").set("&cPlayer {player} not found");
-            node.node("messages", "find_unknown").set("Unknown");
+            node.node("messages", "server_unknown").set("Unknown");
             node.node("messages", "find_where").set("&b{player} &eis on &b{server}");
             node.node("messages", "stafflist_no_staff").set("&cThere are no staff online");
             node.node("messages", "stafflist_header").set("&b&lStaff List");
-            node.node("messages", "stafflist_unknown").set("Unknown");
             node.node("messages", "stafflist_staff").set("{prefix} &f{player} &7- &b{server}");
+            node.node("messages", "staffchat_disabled").set("&eStaff chat &cdisabled");
+            node.node("messages", "staffchat_enabled").set("&eStaff chat &aenabled");
+            node.node("messages", "staffchat_format").set("&8[&bStaffChat&8] &7{server} - &b{player}&7: &f{message}");
 
             loader.save(node);
         } catch (SerializationException e) {

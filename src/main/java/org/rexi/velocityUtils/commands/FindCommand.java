@@ -51,7 +51,7 @@ public class FindCommand implements SimpleCommand {
         Player player = target.get();
         String serverName = player.getCurrentServer()
                 .map(s -> s.getServerInfo().getName())
-                .orElse(configManager.getMessage("find_unknown"));
+                .orElse(configManager.getMessage("server_unknown"));
 
         String find_where = configManager.getMessage("find_where");
         find_where = find_where.replace("{player}", player.getUsername());
