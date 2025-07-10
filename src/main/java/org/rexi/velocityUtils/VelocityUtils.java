@@ -13,7 +13,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.commands.*;
-import org.rexi.velocityUtils.listeners.StaffChatListener;
+import org.rexi.velocityUtils.listeners.ChatListener;
 import org.slf4j.Logger;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -32,6 +32,7 @@ public class VelocityUtils {
     private final ConfigManager configManager;
     private DiscordWebhook reportWebhook;
     private DiscordWebhook staffchatWebhook;
+    private DiscordWebhook adminchatWebhook;
     private LuckPerms luckPerms = null;
 
     @Inject
@@ -75,8 +76,18 @@ public class VelocityUtils {
                 staffchatWebhook.setColorRGB(configManager.getString("staffchat.discord_hook.color_rgb"));
             }
         }
+        if (configManager.getBoolean("adminchat.discord_hook.enabled")) {
+            String adminchatWebhookUrl = configManager.getString("adminchat.discord_hook.url");
+            if (adminchatWebhookUrl != null && adminchatWebhookUrl.startsWith("http")) {
+                this.adminchatWebhook = new DiscordWebhook(adminchatWebhookUrl, configManager);
+                adminchatWebhook.setAvatarUrl(configManager.getString("adminchat.discord_hook.avatar"));
+                adminchatWebhook.setUsername(configManager.getString("adminchat.discord_hook.username"));
+                adminchatWebhook.setTitle(configManager.getString("adminchat.discord_hook.title"));
+                adminchatWebhook.setColorRGB(configManager.getString("adminchat.discord_hook.color_rgb"));
+            }
+        }
 
-        server.getEventManager().register(this, new StaffChatListener(configManager, server, staffchatWebhook));
+        server.getEventManager().register(this, new ChatListener(configManager, server, staffchatWebhook, adminchatWebhook));
 
         server.getCommandManager().register("alert", new AlertCommand(configManager,server));
         server.getCommandManager().register("velocityutils", new VelocityUtilsCommand(configManager, server));
@@ -92,6 +103,8 @@ public class VelocityUtils {
         }
         server.getCommandManager().register("staffchat", new StaffChatCommand(configManager, server, staffchatWebhook));
         server.getCommandManager().register("sc", new StaffChatCommand(configManager, server, staffchatWebhook));
+        server.getCommandManager().register("adminchat", new AdminChatCommand(configManager, server, adminchatWebhook));
+        server.getCommandManager().register("ac", new AdminChatCommand(configManager, server, adminchatWebhook));
 
         System.out.println(Component.text("The plugin has been activated").color(NamedTextColor.GREEN));
         System.out.println(Component.text("Thank you for using Rexi666 plugins").color(NamedTextColor.BLUE));

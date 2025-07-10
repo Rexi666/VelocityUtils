@@ -15,23 +15,22 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.rexi.velocityUtils.DiscordWebhook.getUuidFromName;
-import static org.rexi.velocityUtils.commands.AdminChatCommand.adminChatToggled;
+import static org.rexi.velocityUtils.commands.StaffChatCommand.staffChatToggled;
 
-public class StaffChatCommand implements SimpleCommand {
-
+public class AdminChatCommand implements SimpleCommand{
     private final ProxyServer server;
     private final ConfigManager configManager;
-    private final DiscordWebhook staffchatWebhook;
-    public static final Set<UUID> staffChatToggled = new HashSet<>();
+    private final DiscordWebhook adminchatWebhook;
+    public static final Set<UUID> adminChatToggled = new HashSet<>();
 
-    public StaffChatCommand(ConfigManager configManager, ProxyServer server, DiscordWebhook staffchatWebhook) {
+    public AdminChatCommand(ConfigManager configManager, ProxyServer server, DiscordWebhook adminchatWebhook) {
         this.server = server;
         this.configManager = new ConfigManager();
-        this.staffchatWebhook = staffchatWebhook;
+        this.adminchatWebhook = adminchatWebhook;
     }
 
     @Override
-    public void execute(Invocation invocation) {
+    public void execute(SimpleCommand.Invocation invocation) {
         CommandSource source = invocation.source();
         configManager.loadConfig();
 
@@ -40,7 +39,7 @@ public class StaffChatCommand implements SimpleCommand {
             return;
         }
 
-        if (!player.hasPermission("velocityutils.staffchat")) {
+        if (!player.hasPermission("velocityutils.adminchat")) {
             String no_permission = configManager.getMessage("no_permission");
             player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(no_permission));
             return;
@@ -48,7 +47,7 @@ public class StaffChatCommand implements SimpleCommand {
 
         String[] args = invocation.arguments();
 
-        // Si se pasa un mensaje como argumento, se envía directamente al staffchat
+        // Si se pasa un mensaje como argumento, se envía directamente al adminchat
         if (args.length > 0) {
             String message = String.join(" ", args);
 
@@ -56,16 +55,16 @@ public class StaffChatCommand implements SimpleCommand {
                     .map(s -> s.getServerInfo().getName())
                     .orElse(configManager.getMessage("server_unknown"));
 
-            String format = configManager.getMessage("staffchat_format")
+            String format = configManager.getMessage("adminchat_format")
                     .replace("{player}", player.getUsername())
                     .replace("{message}", message)
                     .replace("{server}", serverName);
 
-            Component staffMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(format);
+            Component adminMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(format);
 
             server.getAllPlayers().forEach(target -> {
-                if (target.hasPermission("velocityutils.staffchat")) {
-                    target.sendMessage(staffMessage);
+                if (target.hasPermission("velocityutils.adminchat")) {
+                    target.sendMessage(adminMessage);
                 }
             });
 
@@ -74,37 +73,37 @@ public class StaffChatCommand implements SimpleCommand {
                     ? "https://minotar.net/helm/" + uuid + "/64.png"
                     : "https://i.pinimg.com/564x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg";
 
-            if (staffchatWebhook != null && configManager.getBoolean("staffchat.discord_hook.enabled")) {
-                String raw = configManager.getString("staffchat.discord_hook.message");
+            if (adminchatWebhook != null && configManager.getBoolean("adminchat.discord_hook.enabled")) {
+                String raw = configManager.getString("adminchat.discord_hook.message");
                 String msg = raw
                         .replace("{player}", player.getUsername())
                         .replace("{message}", message)
                         .replace("{server}", serverName);
-                staffchatWebhook.send(msg, avatar);
+                adminchatWebhook.send(msg, avatar);
             }
 
             return;
         }
 
-        // Si no hay argumentos, alternar el modo staffchat
+        // Si no hay argumentos, alternar el modo adminchat
         UUID uuid = player.getUniqueId();
-        if (staffChatToggled.contains(uuid)) {
-            staffChatToggled.remove(uuid);
-            String staffchat_disabled = configManager.getMessage("staffchat_disabled");
-            player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(staffchat_disabled));
+        if (adminChatToggled.contains(uuid)) {
+            adminChatToggled.remove(uuid);
+            String adminchat_disabled = configManager.getMessage("adminchat_disabled");
+            player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(adminchat_disabled));
         } else {
-            staffChatToggled.add(uuid);
-            adminChatToggled.remove(uuid); // Asegurarse de que no esté en adminchat si se activa staffchat
-            String staffchat_enabled = configManager.getMessage("staffchat_enabled");
-            player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(staffchat_enabled));
+            adminChatToggled.add(uuid);
+            staffChatToggled.remove(uuid); // Asegurarse de que el jugador no esté en staffchat si se activa adminchat
+            String adminchat_enabled = configManager.getMessage("adminchat_enabled");
+            player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(adminchat_enabled));
         }
     }
 
-    public static boolean isInStaffChat(UUID uuid) {
-        return staffChatToggled.contains(uuid);
+    public static boolean isInAdminChat(UUID uuid) {
+        return adminChatToggled.contains(uuid);
     }
 
-    public static void removeFromStaffChat(UUID uuid) {
-        staffChatToggled.remove(uuid);
+    public static void removeFromAdminChat(UUID uuid) {
+        adminChatToggled.remove(uuid);
     }
 }

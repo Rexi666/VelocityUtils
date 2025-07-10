@@ -141,6 +141,32 @@ public class ConfigManager {
       """);
                 }
 
+                if (node.node("adminchat", "discord_hook", "enabled").empty()) {
+                    node.node("adminchat", "discord_hook", "enabled").set(false);
+                }
+                if (node.node("adminchat", "discord_hook", "url").empty()) {
+                    node.node("adminchat", "discord_hook", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");
+                }
+                if (node.node("adminchat", "discord_hook", "avatar").empty()) {
+                    node.node("adminchat", "discord_hook", "avatar").set("https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968");
+                }
+                if (node.node("adminchat", "discord_hook", "username").empty()) {
+                    node.node("adminchat", "discord_hook", "username").set("VelocityUtils");
+                }
+                if (node.node("adminchat", "discord_hook", "color_rgb").empty()) {
+                    node.node("adminchat", "discord_hook", "color_rgb").set("196,3,184");
+                }
+                if (node.node("adminchat", "discord_hook", "title").empty()) {
+                    node.node("adminchat", "discord_hook", "title").set("\uD83D\uDDE8\uFE0FAdmin Chat\uD83D\uDDE8\uFE0F");
+                }
+                if (node.node("adminchat", "discord_hook", "message").empty()) {
+                    node.node("adminchat", "discord_hook", "message").set(String.class, """
+      🗨️ **Admin Chat from {player}**
+      🌍 **Server:** {server}
+      💬 **Message:** {message}
+      """);
+                }
+
                 if (node.node("messages", "no_permission").empty()) {
                     node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
                 }
@@ -244,6 +270,16 @@ public class ConfigManager {
                     node.node("messages", "staffchat_format").set("&8[&bStaffChat&8] &7{server} - &b{player}&7: &f{message}");
                 }
 
+                if (node.node("messages", "adminchat_disabled").empty()) {
+                    node.node("messages", "adminchat_disabled").set("&eAdmin chat &cdisabled");
+                }
+                if (node.node("messages", "adminchat_enabled").empty()) {
+                    node.node("messages", "adminchat_enabled").set("&eAdmin chat &aenabled");
+                }
+                if (node.node("messages", "adminchat_format").empty()) {
+                    node.node("messages", "adminchat_format").set("&8[&dAdminChat&8] &7{server} - &b{player}&7: &f{message}");
+                }
+
                 // Guardar en caso de que se hayan agregado valores predeterminados
                 loader.save(node);
             }
@@ -306,6 +342,18 @@ public class ConfigManager {
       💬 **Message:** {message}
       """);
 
+            node.node("adminchat", "discord_hook", "enabled").set(false);
+            node.node("adminchat", "discord_hook", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");
+            node.node("adminchat", "discord_hook", "avatar").set("https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968");
+            node.node("adminchat", "discord_hook", "username").set("VelocityUtils");
+            node.node("adminchat", "discord_hook", "color_rgb").set("196,3,184");
+            node.node("adminchat", "discord_hook", "title").set("\uD83D\uDDE8\uFE0FAdmin Chat\uD83D\uDDE8\uFE0F");
+            node.node("adminchat", "discord_hook", "message").set(String.class, """
+      🗨️ **Admin Chat from {player}**
+      🌍 **Server:** {server}
+      💬 **Message:** {message}
+      """);
+
             node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
             node.node("messages", "no_console").set("&cOnly players can use this command");
             node.node("messages", "alert_usage").set("&cUsage: /alert <message>");
@@ -340,6 +388,9 @@ public class ConfigManager {
             node.node("messages", "staffchat_disabled").set("&eStaff chat &cdisabled");
             node.node("messages", "staffchat_enabled").set("&eStaff chat &aenabled");
             node.node("messages", "staffchat_format").set("&8[&bStaffChat&8] &7{server} - &b{player}&7: &f{message}");
+            node.node("messages", "adminchat_disabled").set("&eAdmin chat &cdisabled");
+            node.node("messages", "adminchat_enabled").set("&eAdmin chat &aenabled");
+            node.node("messages", "adminchat_format").set("&8[&dAdminChat&8] &7{server} - &b{player}&7: &f{message}");
 
             loader.save(node);
         } catch (SerializationException e) {

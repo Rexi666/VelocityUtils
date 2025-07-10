@@ -43,6 +43,18 @@ staffchat:
       🗨️ **Staff Chat from {player}**
       🌍 **Server:** {server}
       💬 **Message:** {message}
+adminchat:
+  discord_hook:
+    enabled: false
+    url: "https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy"
+    avatar: 'https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968'
+    username: 'VelocityUtils'
+    color_rgb: "196,3,184"
+    title: '🗨️Admin Chat🗨️'
+    message: |
+      🗨️ **Admin Chat from {player}**
+      🌍 **Server:** {server}
+      💬 **Message:** {message}
 messages:
   no_permission: "&cYou don't have permission to use this command"
   no_console: "&cOnly players can use this command"
@@ -78,3 +90,6 @@ messages:
   staffchat_disabled: "&eStaff chat &cdisabled"
   staffchat_enabled: "&eStaff chat &aenabled"
   staffchat_format: "&8[&bStaffChat&8] &7{server} - &b{player}&7: &f{message}"
+  adminchat_disabled: "&eAdmin chat &cdisabled"
+  adminchat_enabled: "&eAdmin chat &aenabled"
+  adminchat_format: "&8[&dAdminChat&8] &7{server} - &b{player}&7: &f{message}"

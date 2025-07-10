@@ -112,7 +112,6 @@ public class DiscordWebhook {
             connection.setReadTimeout(5000);
 
             int responseCode = connection.getResponseCode();
-            System.out.println("Código HTTP Mojang: " + responseCode);
             if (responseCode != 200) {
                 return null;
             }
