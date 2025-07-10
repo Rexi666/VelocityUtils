@@ -5,6 +5,7 @@ import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
+import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.ServerPing;
@@ -13,15 +14,23 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.commands.*;
 import org.slf4j.Logger;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
 
 import java.util.List;
 
-@Plugin(id = "velocityutils", name = "VelocityUtils", version = BuildConstants.VERSION, authors = {"Rexi666"})
+@Plugin(
+        id = "velocityutils",
+        name = "VelocityUtils",
+        version = BuildConstants.VERSION,
+        authors = {"Rexi666"},
+        dependencies = {@Dependency(id = "luckperms", optional = true)})
 public class VelocityUtils {
 
     private final ProxyServer server;
     private final ConfigManager configManager;
     private DiscordWebhook reportWebhook;
+    private LuckPerms luckPerms = null;
 
     @Inject
     public VelocityUtils(ProxyServer server) {
@@ -29,12 +38,20 @@ public class VelocityUtils {
         this.configManager = new ConfigManager();
     }
 
-    @Inject
-    private Logger logger;
+    @Inject private Logger logger;
+
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
         configManager.loadConfig();
+
+        try {
+            this.luckPerms = LuckPermsProvider.get();
+            logger.info("[VelocityUtils] LuckPerms detected.");
+        } catch (IllegalStateException e) {
+            this.luckPerms = null;
+            logger.warn("[VelocityUtils] LuckPerms not detected.");
+        }
 
         if (configManager.getBoolean("report.discord_hook.enabled")) {
             String reportWebhookUrl = configManager.getString("report.discord_hook.url");
@@ -54,6 +71,11 @@ public class VelocityUtils {
         server.getCommandManager().register("report", new ReportCommand(configManager, server, reportWebhook));
         server.getCommandManager().register("goto", new GotoCommand(configManager, server));
         server.getCommandManager().register("find", new FindCommand(configManager, server));
+        if (this.luckPerms != null) {
+            server.getCommandManager().register("stafflist", new StaffListCommand(configManager, server, luckPerms));
+        } else {
+            server.getCommandManager().register("stafflist", new StaffListCommand(configManager, server, null));
+        }
 
         System.out.println(Component.text("The plugin has been activated").color(NamedTextColor.GREEN));
         System.out.println(Component.text("Thank you for using Rexi666 plugins").color(NamedTextColor.BLUE));

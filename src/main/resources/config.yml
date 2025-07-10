@@ -60,3 +60,7 @@ messages:
   find_player_not_found: "&cPlayer {player} not found"
   find_unknown: "Unknown"
   find_where: "&b{player} &eis on &b{server}"
+  stafflist_no_staff: "&cThere are no staff online"
+  stafflist_header: "&b&lStaff List"
+  stafflist_unknown: "Unknown"
+  stafflist_staff: "{prefix} &f{player} &7- &b{server}"

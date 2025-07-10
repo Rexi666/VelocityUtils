@@ -199,6 +199,18 @@ public class ConfigManager {
                 if (node.node("messages", "find_where").empty()) {
                     node.node("messages", "find_where").set("&b{player} &eis on &b{server}");
                 }
+                if (node.node("messages", "stafflist_no_staff").empty()) {
+                    node.node("messages", "stafflist_no_staff").set("&cThere are no staff online");
+                }
+                if (node.node("messages", "stafflist_header").empty()) {
+                    node.node("messages", "stafflist_header").set("&b&lStaff List");
+                }
+                if (node.node("messages", "stafflist_unknown").empty()) {
+                    node.node("messages", "stafflist_unknown").set("Unknown");
+                }
+                if (node.node("messages", "stafflist_staff").empty()) {
+                    node.node("messages", "stafflist_staff").set("{prefix} &f{player} &7- &b{server}");
+                }
 
                 // Guardar en caso de que se hayan agregado valores predeterminados
                 loader.save(node);
@@ -278,6 +290,10 @@ public class ConfigManager {
             node.node("messages", "find_player_not_found").set("&cPlayer {player} not found");
             node.node("messages", "find_unknown").set("Unknown");
             node.node("messages", "find_where").set("&b{player} &eis on &b{server}");
+            node.node("messages", "stafflist_no_staff").set("&cThere are no staff online");
+            node.node("messages", "stafflist_header").set("&b&lStaff List");
+            node.node("messages", "stafflist_unknown").set("Unknown");
+            node.node("messages", "stafflist_staff").set("{prefix} &f{player} &7- &b{server}");
 
             loader.save(node);
         } catch (SerializationException e) {

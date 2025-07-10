@@ -8,14 +8,16 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 
 ### Dependencies
 - Java JDK 17
+- Luckperms (Optional for the stafflist)  
 
 ### Features
 - **Broadcast alerts** - Use the command /alert to send a message to all the network. You can change the prefix of the message on the config.
 - **MOTD** - You can change the MOTD of your network in the config. If you make a change with your server online, you can use the command `/vu reload` to reload it.
 - **Maintenance** - You can set your server on maintenance mode, so only the ones who are on the config can access the server.
-- **Report** - User can report players for any reason. Staff can see the reports and tp to the server where the reported is (staff need goto permission for this). Also, you can setup an alert on discord.
+- **Report** - User can report players for any reason. Staff can see the reports and tp to the server where the reported is (staff need goto permission for this). Also, you can set up an alert on discord.
 - **Find** - You can see in which server a player is.
 - **GoTo** - You can teleport to the server where a player is.
+- **StaffList** - You can see the staff list of your network.
 
 ### Commands:
 #### Staff commands
@@ -26,6 +28,7 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
   - `<add/remove> <nick>` - Add/Remove someone of the maintenance list exception
 - `/find <player>` - Tells you where a player is
 - `/goto <player>` - Sends you to the server where the player is
+- `/stafflist` - Shows the staff list of your network
 #### User commands
 - `/report <user> <reason>` - Report a user to the staff team
 
@@ -37,9 +40,12 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 - `velocityutils.find` - access to /find
 - `velocityutils.goto` - access to /goto
 - `velocityutils.report.see` - access to see reports
+- `velocityutils.stafflist.use` - access to /stafflist
+- `velocityutils.stafflist.staff` - permission to be listed in the staff list
 #### User permissions
 - `velocityutils.report.use` - access to /report
 
 ### TO DO:
-- Staff Chat & /stafflist
+- Staff Chat
 - Lobby command
+- Moderation Time
