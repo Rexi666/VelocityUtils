@@ -56,6 +56,6 @@ public class FindCommand implements SimpleCommand {
         String find_where = configManager.getMessage("find_where");
         find_where = find_where.replace("{player}", player.getUsername());
         find_where = find_where.replace("{server}", serverName);
-        player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(find_where));
+        source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(find_where));
     }
 }
