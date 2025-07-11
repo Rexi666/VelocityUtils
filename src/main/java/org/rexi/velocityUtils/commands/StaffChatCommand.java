@@ -9,24 +9,24 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
 import org.rexi.velocityUtils.DiscordWebhook;
+import org.rexi.velocityUtils.VelocityUtils;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 import static org.rexi.velocityUtils.DiscordWebhook.getUuidFromName;
-import static org.rexi.velocityUtils.commands.AdminChatCommand.adminChatToggled;
 
 public class StaffChatCommand implements SimpleCommand {
 
     private final ProxyServer server;
     private final ConfigManager configManager;
     private final DiscordWebhook staffchatWebhook;
-    public static final Set<UUID> staffChatToggled = new HashSet<>();
+    private final VelocityUtils plugin;
 
-    public StaffChatCommand(ConfigManager configManager, ProxyServer server, DiscordWebhook staffchatWebhook) {
+    public StaffChatCommand(VelocityUtils plugin, ConfigManager configManager, ProxyServer server, DiscordWebhook staffchatWebhook) {
+        this.plugin = plugin;
         this.server = server;
-        this.configManager = new ConfigManager();
+        this.configManager = configManager;
         this.staffchatWebhook = staffchatWebhook;
     }
 
@@ -47,8 +47,10 @@ public class StaffChatCommand implements SimpleCommand {
         }
 
         String[] args = invocation.arguments();
+        UUID uuid = player.getUniqueId();
+        Set<UUID> toggled = plugin.getStaffChatToggled();
 
-        // Si se pasa un mensaje como argumento, se envía directamente al staffchat
+        // Si se pasa un mensaje como argumento, se envía directamente
         if (args.length > 0) {
             String message = String.join(" ", args);
 
@@ -69,9 +71,9 @@ public class StaffChatCommand implements SimpleCommand {
                 }
             });
 
-            String uuid = getUuidFromName(player.getUsername());
-            String avatar = (uuid != null)
-                    ? "https://minotar.net/helm/" + uuid + "/64.png"
+            String uuidStr = getUuidFromName(player.getUsername());
+            String avatar = (uuidStr != null)
+                    ? "https://minotar.net/helm/" + uuidStr + "/64.png"
                     : "https://i.pinimg.com/564x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg";
 
             if (staffchatWebhook != null && configManager.getBoolean("staffchat.discord_hook.enabled")) {
@@ -86,25 +88,15 @@ public class StaffChatCommand implements SimpleCommand {
             return;
         }
 
-        // Si no hay argumentos, alternar el modo staffchat
-        UUID uuid = player.getUniqueId();
-        if (staffChatToggled.contains(uuid)) {
-            staffChatToggled.remove(uuid);
+        // Alternar el modo toggle staffchat
+        if (toggled.contains(uuid)) {
+            toggled.remove(uuid);
             String staffchat_disabled = configManager.getMessage("staffchat_disabled");
             player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(staffchat_disabled));
         } else {
-            staffChatToggled.add(uuid);
-            adminChatToggled.remove(uuid); // Asegurarse de que no esté en adminchat si se activa staffchat
+            toggled.add(uuid);
             String staffchat_enabled = configManager.getMessage("staffchat_enabled");
             player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(staffchat_enabled));
         }
-    }
-
-    public static boolean isInStaffChat(UUID uuid) {
-        return staffChatToggled.contains(uuid);
-    }
-
-    public static void removeFromStaffChat(UUID uuid) {
-        staffChatToggled.remove(uuid);
     }
 }

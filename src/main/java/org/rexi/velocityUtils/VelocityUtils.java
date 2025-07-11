@@ -8,17 +8,24 @@ import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
+import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.ServerPing;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.commands.*;
 import org.rexi.velocityUtils.listeners.ChatListener;
+import org.rexi.velocityUtils.listeners.PluginMessageListenerAdminChat;
+import org.rexi.velocityUtils.listeners.PluginMessageListenerStaffChat;
 import org.slf4j.Logger;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Plugin(
         id = "velocityutils",
@@ -35,6 +42,11 @@ public class VelocityUtils {
     private DiscordWebhook adminchatWebhook;
     private LuckPerms luckPerms = null;
 
+    private final ChannelIdentifier STAFFCHAT_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "staffchat");
+    private final ChannelIdentifier ADMINCHAT_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "adminchat");
+    public final Set<UUID> staffChatToggled = ConcurrentHashMap.newKeySet();
+    public final Set<UUID> adminChatToggled = ConcurrentHashMap.newKeySet();
+
     @Inject
     public VelocityUtils(ProxyServer server) {
         this.server = server;
@@ -46,6 +58,9 @@ public class VelocityUtils {
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
+        server.getChannelRegistrar().register(STAFFCHAT_CHANNEL);
+        server.getChannelRegistrar().register(ADMINCHAT_CHANNEL);
+
         configManager.loadConfig();
 
         try {
@@ -87,7 +102,9 @@ public class VelocityUtils {
             }
         }
 
-        server.getEventManager().register(this, new ChatListener(configManager, server, staffchatWebhook, adminchatWebhook));
+        server.getEventManager().register(this, new ChatListener(this, configManager, server, staffchatWebhook, adminchatWebhook));
+        server.getEventManager().register(this, new PluginMessageListenerStaffChat(this, server, configManager, staffchatWebhook));
+        server.getEventManager().register(this, new PluginMessageListenerAdminChat(this, server, configManager, adminchatWebhook));
 
         server.getCommandManager().register("alert", new AlertCommand(configManager,server));
         server.getCommandManager().register("velocityutils", new VelocityUtilsCommand(configManager, server));
@@ -101,10 +118,10 @@ public class VelocityUtils {
         } else {
             server.getCommandManager().register("stafflist", new StaffListCommand(configManager, server, null));
         }
-        server.getCommandManager().register("staffchat", new StaffChatCommand(configManager, server, staffchatWebhook));
-        server.getCommandManager().register("sc", new StaffChatCommand(configManager, server, staffchatWebhook));
-        server.getCommandManager().register("adminchat", new AdminChatCommand(configManager, server, adminchatWebhook));
-        server.getCommandManager().register("ac", new AdminChatCommand(configManager, server, adminchatWebhook));
+        server.getCommandManager().register("staffchat", new StaffChatCommand(this, configManager, server, staffchatWebhook));
+        server.getCommandManager().register("sc", new StaffChatCommand(this, configManager, server, staffchatWebhook));
+        server.getCommandManager().register("adminchat", new AdminChatCommand(this, configManager, server, adminchatWebhook));
+        server.getCommandManager().register("ac", new AdminChatCommand(this, configManager, server, adminchatWebhook));
 
         System.out.println(Component.text("The plugin has been activated").color(NamedTextColor.GREEN));
         System.out.println(Component.text("Thank you for using Rexi666 plugins").color(NamedTextColor.BLUE));
@@ -138,5 +155,13 @@ public class VelocityUtils {
                 event.setResult(LoginEvent.ComponentResult.denied(LegacyComponentSerializer.legacyAmpersand().deserialize(under_maintenance)));
             }
         }
+    }
+
+    public Set<UUID> getStaffChatToggled() {
+        return staffChatToggled;
+    }
+
+    public Set<UUID> getAdminChatToggled() {
+        return adminChatToggled;
     }
 }
