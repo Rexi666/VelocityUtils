@@ -9,7 +9,7 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 ### Dependencies
 - Java JDK 17
 - Luckperms (Optional for the stafflist)  
-- [StaffChatLink-VelocityUtils](https://github.com/Rexi666/StaffChatLink-VelocityUtils) On the backends, needed if you want to use the StaffChat and AdminChat features.  
+- [StaffChatLink-VelocityUtils](https://github.com/Rexi666/StaffChatLink-VelocityUtils/releases/tag/1.5) On the backends, needed if you want to use the StaffChat and AdminChat features.  
   This plugin is not required if you don't want to use the StaffChat and AdminChat features.
 
 ### Features
