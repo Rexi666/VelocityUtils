@@ -9,6 +9,8 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 ### Dependencies
 - Java JDK 17
 - Luckperms (Optional for the stafflist)  
+- [StaffChatLink-VelocityUtils](https://github.com/Rexi666/StaffChatLink-VelocityUtils) On the backends, needed if you want to use the StaffChat and AdminChat features.  
+  This plugin is not required if you don't want to use the StaffChat and AdminChat features.
 
 ### Features
 - **Broadcast alerts** - Use the command /alert to send a message to all the network. You can change the prefix of the message on the config.
