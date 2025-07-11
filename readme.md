@@ -18,6 +18,7 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 - **Find** - You can see in which server a player is.
 - **GoTo** - You can teleport to the server where a player is.
 - **StaffList** - You can see the staff list of your network.
+- **StaffChat** and **AdminChat** - You can enable a staff chat to communicate with other staff members.
 
 ### Commands:
 #### Staff commands
@@ -29,6 +30,8 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 - `/find <player>` - Tells you where a player is
 - `/goto <player>` - Sends you to the server where the player is
 - `/stafflist` - Shows the staff list of your network
+- `/staffchat` | `/sc` - Enables/Disables the staff chat
+- `/adminchat` | `/ac` - Enables/Disables the admin chat
 #### User commands
 - `/report <user> <reason>` - Report a user to the staff team
 
@@ -42,10 +45,11 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 - `velocityutils.report.see` - access to see reports
 - `velocityutils.stafflist.use` - access to /stafflist
 - `velocityutils.stafflist.staff` - permission to be listed in the staff list
+- `velocityutils.staffchat` - access to /staffchat
+- `velocityutils.adminchat` - access to /adminchat
 #### User permissions
 - `velocityutils.report.use` - access to /report
 
 ### TO DO:
-- Staff Chat
 - Lobby command
 - Moderation Time
