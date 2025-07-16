@@ -23,6 +23,9 @@ import org.slf4j.Logger;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,13 +67,19 @@ public class VelocityUtils {
 
     @Inject private Logger logger;
 
-
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         server.getChannelRegistrar().register(STAFFCHAT_CHANNEL);
         server.getChannelRegistrar().register(ADMINCHAT_CHANNEL);
 
         configManager.loadConfig();
+
+        createTables();
 
         try {
             this.luckPerms = LuckPermsProvider.get();
@@ -110,7 +119,7 @@ public class VelocityUtils {
                 adminchatWebhook.setColorRGB(configManager.getString("adminchat.discord_hook.color_rgb"));
             }
         }
-        if (configManager.getBoolean("stafftime.enabled") && configManager.getBoolean("stafftime.discord_hook.join.enabled")) {
+        if (configManager.getBoolean("stafftime.discord_hook.enabled") && configManager.getBoolean("stafftime.discord_hook.join.enabled")) {
             String staffJoinWebhookUrl = configManager.getString("stafftime.discord_hook.join.url");
             if (staffJoinWebhookUrl != null && staffJoinWebhookUrl.startsWith("http")) {
                 this.staffJoinWebhook = new DiscordWebhook(staffJoinWebhookUrl, configManager);
@@ -120,7 +129,7 @@ public class VelocityUtils {
                 staffJoinWebhook.setColorRGB(configManager.getString("stafftime.discord_hook.join.color_rgb"));
             }
         }
-        if (configManager.getBoolean("stafftime.enabled") && configManager.getBoolean("stafftime.discord_hook.change.enabled")) {
+        if (configManager.getBoolean("stafftime.discord_hook.enabled") && configManager.getBoolean("stafftime.discord_hook.change.enabled")) {
             String staffChangeWebhookUrl = configManager.getString("stafftime.discord_hook.change.url");
             if (staffChangeWebhookUrl != null && staffChangeWebhookUrl.startsWith("http")) {
                 this.staffChangeWebhook = new DiscordWebhook(staffChangeWebhookUrl, configManager);
@@ -130,7 +139,7 @@ public class VelocityUtils {
                 staffChangeWebhook.setColorRGB(configManager.getString("stafftime.discord_hook.change.color_rgb"));
             }
         }
-        if (configManager.getBoolean("stafftime.enabled") && configManager.getBoolean("stafftime.discord_hook.leave.enabled")) {
+        if (configManager.getBoolean("stafftime.discord_hook.enabled") && configManager.getBoolean("stafftime.discord_hook.leave.enabled")) {
             String staffLeaveWebhookUrl = configManager.getString("stafftime.discord_hook.leave.url");
             if (staffLeaveWebhookUrl != null && staffLeaveWebhookUrl.startsWith("http")) {
                 this.staffLeaveWebhook = new DiscordWebhook(staffLeaveWebhookUrl, configManager);
@@ -162,6 +171,7 @@ public class VelocityUtils {
         server.getCommandManager().register("sc", new StaffChatCommand(this, configManager, server, staffchatWebhook));
         server.getCommandManager().register("adminchat", new AdminChatCommand(this, configManager, server, adminchatWebhook));
         server.getCommandManager().register("ac", new AdminChatCommand(this, configManager, server, adminchatWebhook));
+        server.getCommandManager().register("stafftime", new StaffTimeCommand(configManager, server, this));
 
         System.out.println(Component.text("The plugin has been activated").color(NamedTextColor.GREEN));
         System.out.println(Component.text("Thank you for using Rexi666 plugins").color(NamedTextColor.BLUE));
@@ -204,4 +214,31 @@ public class VelocityUtils {
     public Set<UUID> getAdminChatToggled() {
         return adminChatToggled;
     }
+
+    private void createTables() {
+        String sql = """
+        CREATE TABLE IF NOT EXISTS staff_time_daily (
+            uuid TEXT NOT NULL,
+            date TEXT NOT NULL, -- Guardamos fecha en formato ISO yyyy-MM-dd
+            duration_seconds INTEGER NOT NULL,
+            PRIMARY KEY (uuid, date)
+        );
+        """;
+        try (var conn = getConnection();
+             var stmt = conn.createStatement()) {
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Connection getConnection() throws SQLException {
+        // Cambia esta ruta si quieres que la base esté en otro sitio
+        return DriverManager.getConnection("jdbc:sqlite:plugins/VelocityUtils/stafftime.db");
+    }
+
+    public StaffSession getStaffSession(UUID uuid) {
+        return staffSessions.get(uuid);
+    }
+
 }

@@ -2,16 +2,14 @@ package org.rexi.velocityUtils.listeners;
 
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
-import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.proxy.Player;
-import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.DiscordWebhook;
-import org.rexi.velocityUtils.StaffSession;
-import org.rexi.velocityUtils.VelocityUtils;
+import org.rexi.velocityUtils.*;
 
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
 
@@ -35,31 +33,6 @@ public class StaffConnectionListener {
         this.staffChangeWebhook = staffChangeWebhook;
         this.staffLeaveWebhook = staffLeaveWebhook;
     }
-
-    /*
-    @Subscribe
-    public void onLogin(PostLoginEvent event) {
-        Player player = event.getPlayer();
-        if (isAdmin(player)) {
-            return; // No action for admins
-        }
-        if (isStaff(player)) {
-            String currentServer = getCurrentServerName(player);
-            sessions.put(player.getUniqueId(), new StaffSession(Instant.now(), currentServer));
-
-            String uuid = getUuidFromName(player.getUsername());
-            String avatar = (uuid != null)
-                    ? "https://minotar.net/helm/" + uuid + "/64.png"
-                    : "https://i.pinimg.com/564x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg";
-            if (staffJoinWebhook != null && configManager.getBoolean("stafftime.enabled") && configManager.getBoolean("stafftime.discord_hook.join.enabled")) {
-                String raw = configManager.getString("stafftime.discord_hook.join.message");
-                String msg = raw
-                        .replace("{player}", player.getUsername());
-                staffJoinWebhook.send(msg, avatar);
-            }
-        }
-    }
-    */
 
     @Subscribe
     public void onServerConnected(ServerConnectedEvent event) {
@@ -122,10 +95,14 @@ public class StaffConnectionListener {
             if (session != null) {
                 session.finalizeSession();
 
-                String uuid = getUuidFromName(player.getUsername());
-                String avatar = (uuid != null)
-                        ? "https://minotar.net/helm/" + uuid + "/64.png"
-                        : "https://i.pinimg.com/564x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg";
+                LocalDate today = LocalDate.now();
+                Duration sessionDuration = session.getTotalTime();
+                saveSessionDurationDaily(player.getUniqueId(), today, sessionDuration);
+
+                Duration daily = getDurationForRange(player.getUniqueId(), today, today);
+                Duration weekly = getDurationForRange(player.getUniqueId(), DateUtils.getStartOfWeek(), DateUtils.getEndOfWeek());
+                Duration monthly = getDurationForRange(player.getUniqueId(), DateUtils.getStartOfMonth(), DateUtils.getEndOfMonth());
+
                 if (staffLeaveWebhook != null && configManager.getBoolean("stafftime.enabled") && configManager.getBoolean("stafftime.discord_hook.leave.enabled")) {
                     String raw = configManager.getString("stafftime.discord_hook.leave.message");
                     String serverTimeFormat = configManager.getString("stafftime.discord_hook.leave.serverstime");
@@ -138,9 +115,17 @@ public class StaffConnectionListener {
                         serverTimes.append(formatted).append("\n");
                     });
 
+                    String uuid = getUuidFromName(player.getUsername());
+                    String avatar = (uuid != null)
+                            ? "https://minotar.net/helm/" + uuid + "/64.png"
+                            : "https://i.pinimg.com/564x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg";
+
                     String msg = raw
                             .replace("{player}", player.getUsername())
                             .replace("{time}", formatDuration(session.getTotalTime()))
+                            .replace("{time_daily}", formatDuration(daily))
+                            .replace("{time_weekly}", formatDuration(weekly))
+                            .replace("{time_monthly}", formatDuration(monthly))
                             .replace("{serverstime}", serverTimes.toString().trim());
                     staffLeaveWebhook.send(msg, avatar);
                 }
@@ -168,4 +153,46 @@ public class StaffConnectionListener {
         long seconds = duration.toSecondsPart();
         return String.format("%02dh %02dm %02ds", hours, minutes, seconds);
     }
+
+    public void saveSessionDurationDaily(UUID uuid, LocalDate date, Duration duration) {
+        String sql = """
+        INSERT INTO staff_time_daily (uuid, date, duration_seconds)
+        VALUES (?, ?, ?)
+        ON CONFLICT(uuid, date) DO UPDATE SET
+        duration_seconds = duration_seconds + excluded.duration_seconds;
+        """;
+        try (var conn = plugin.getConnection();
+             var pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, uuid.toString());
+            pstmt.setString(2, date.toString()); // yyyy-MM-dd
+            pstmt.setLong(3, duration.getSeconds());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Duration getDurationForRange(UUID uuid, LocalDate startDate, LocalDate endDate) {
+        String sql = """
+        SELECT SUM(duration_seconds) FROM staff_time_daily
+        WHERE uuid = ? AND date BETWEEN ? AND ?
+        """;
+        try (var conn = plugin.getConnection();
+             var pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, uuid.toString());
+            pstmt.setString(2, startDate.toString());
+            pstmt.setString(3, endDate.toString());
+            try (var rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    long seconds = rs.getLong(1);
+                    return Duration.ofSeconds(seconds);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Duration.ZERO;
+    }
+
+
 }

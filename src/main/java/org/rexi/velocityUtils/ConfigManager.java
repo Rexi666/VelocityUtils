@@ -167,8 +167,8 @@ public class ConfigManager {
       """);
                 }
 
-                if (node.node("stafftime", "enabled").empty()) {
-                    node.node("stafftime", "enabled").set(false);
+                if (node.node("stafftime", "discord_hook", "enabled").empty()) {
+                    node.node("stafftime", "discord_hook", "enabled").set(false);
                 }
                 if (node.node("stafftime", "discord_hook", "join", "enabled").empty()) {
                     node.node("stafftime", "discord_hook", "join", "enabled").set(true);
@@ -238,13 +238,41 @@ public class ConfigManager {
                 if (node.node("stafftime", "discord_hook", "leave", "message").empty()) {
                     node.node("stafftime", "discord_hook", "leave", "message").set(String.class, """
       🕒 **{player}** left the server
+      📅 Time today: {time_daily}
+      📅 Time this week: {time_weekly}
+      📅 Time this month: {time_monthly}
       📋 {time} this session
-      🖊️ Servers:
+      🖊️ Servers this session:
       {serverstime}
       """);
                 }
                 if (node.node("stafftime", "discord_hook", "leave", "serverstime").empty()) {
                     node.node("stafftime", "discord_hook", "leave", "serverstime").set("- {server} - {time}");
+                }
+                if (node.node("stafftime", "command", "no_type").empty()) {
+                    node.node("stafftime", "command", "no_type").setList(String.class, List.of(
+                            "&f-----------------------------",
+                            "&eStaff Time from {player}",
+                            "&fToday: &b{day}",
+                            "&fWeek: &b{week}",
+                            "&fMonth: &b{month}",
+                            "&f-----------------------------"));
+                }
+                if (node.node("stafftime", "command", "type").empty()) {
+                    node.node("stafftime", "command", "type").setList(String.class, List.of(
+                            "&f-----------------------------",
+                            "&eStaff Time from {player} ({type})",
+                            "&f{type}: &b{time}",
+                            "&f-----------------------------"));
+                }
+                if (node.node("stafftime", "command", "day").empty()) {
+                    node.node("stafftime", "command", "day").set("Day");
+                }
+                if (node.node("stafftime", "command", "week").empty()) {
+                    node.node("stafftime", "command", "week").set("Week");
+                }
+                if (node.node("stafftime", "command", "month").empty()) {
+                    node.node("stafftime", "command", "month").set("Month");
                 }
 
                 if (node.node("messages", "no_permission").empty()) {
@@ -359,6 +387,15 @@ public class ConfigManager {
                 if (node.node("messages", "adminchat_format").empty()) {
                     node.node("messages", "adminchat_format").set("&8[&dAdminChat&8] &7{server} - &d{player}&7: &f{message}");
                 }
+                if (node.node("messages", "stafftime_usage").empty()) {
+                    node.node("messages", "stafftime_usage").set("&cUsage: /stafftime <player> [day|week|month]");
+                }
+                if (node.node("messages", "stafftime_not_found").empty()) {
+                    node.node("messages", "stafftime_not_found").set("&cPlayer {player} not found on the database.");
+                }
+                if (node.node("messages", "stafftime_invalid_type").empty()) {
+                    node.node("messages", "stafftime_invalid_type").set("&cInvalid type. Use day, week or month");
+                }
 
                 // Guardar en caso de que se hayan agregado valores predeterminados
                 loader.save(node);
@@ -434,7 +471,7 @@ public class ConfigManager {
       💬 **Message:** {message}
       """);
 
-            node.node("stafftime", "enabled").set(false);
+            node.node("stafftime", "discord_hook", "enabled").set(false);
             node.node("stafftime", "discord_hook", "join", "enabled").set(true);
             node.node("stafftime", "discord_hook", "join", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");
             node.node("stafftime", "discord_hook", "join", "avatar").set("https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968");
@@ -462,11 +499,29 @@ public class ConfigManager {
             node.node("stafftime", "discord_hook", "leave", "title").set("🕒Staff Leave🕒");
             node.node("stafftime", "discord_hook", "leave", "message").set(String.class, """
       🕒 **{player}** left the server
+      📅 Time today: {time_daily}
+      📅 Time this week: {time_weekly}
+      📅 Time this month: {time_monthly}
       📋 {time} this session
-      🖊️ Servers:
+      🖊️ Servers this session:
       {serverstime}
       """);
             node.node("stafftime", "discord_hook", "leave", "serverstime").set("- {server} - {time}");
+            node.node("stafftime", "command", "no_type").setList(String.class, List.of(
+                    "&f-----------------------------",
+                    "&eStaff Time from {player}",
+                    "&fToday: &b{day}",
+                    "&fWeek: &b{week}",
+                    "&fMonth: &b{month}",
+                    "&f-----------------------------"));
+            node.node("stafftime", "command", "type").setList(String.class, List.of(
+                    "&f-----------------------------",
+                    "&eStaff Time from {player} ({type})",
+                    "&f{type}: &b{time}",
+                    "&f-----------------------------"));
+            node.node("stafftime", "command", "day").set("Day");
+            node.node("stafftime", "command", "week").set("Week");
+            node.node("stafftime", "command", "month").set("Month");
 
             node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
             node.node("messages", "no_console").set("&cOnly players can use this command");
@@ -505,6 +560,9 @@ public class ConfigManager {
             node.node("messages", "adminchat_disabled").set("&eAdmin chat &cdisabled");
             node.node("messages", "adminchat_enabled").set("&eAdmin chat &aenabled");
             node.node("messages", "adminchat_format").set("&8[&dAdminChat&8] &7{server} - &d{player}&7: &f{message}");
+            node.node("messages", "stafftime_usage").set("&cUsage: /stafftime <player> [day|week|month]");
+            node.node("messages", "stafftime_not_found").set("&cPlayer {player} not found on the database.");
+            node.node("messages", "stafftime_invalid_type").set("&cInvalid type. Use day, week or month");
 
             loader.save(node);
         } catch (SerializationException e) {

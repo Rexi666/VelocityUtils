@@ -56,8 +56,8 @@ adminchat:
       🌍 **Server:** {server}
       💬 **Message:** {message}
 stafftime:
-  enabled: false
   discord_hook:
+    enabled: false
     join:
       enabled: true
       url: "https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy"
@@ -86,10 +86,29 @@ stafftime:
       title: '🕒Staff Leave🕒'
       message: |
         🕒 **{player}** left the server
+        📅 Time today: {time_daily}
+        📅 Time this week: {time_weekly}
+        📅 Time this month: {time_monthly}
         📋 {time} this session
-        🖊️ Servers:
+        🖊️ Servers this session:
         {serverstime}
       serverstime: "- {server} - {time}"
+  command:
+    no_type:
+      - "&f-----------------------------"
+      - "&eStaff Time from {player}"
+      - "&fToday: &b{day}"
+      - "&fWeek: &b{week}"
+      - "&fMonth: &b{month}"
+      - "&f-----------------------------"
+    type:
+      - "&f-----------------------------"
+      - "&eStaff Time from {player} ({type})"
+      - "&f{type}: &b{time}"
+      - "&f-----------------------------"
+    day: "Day"
+    week: "Week"
+    month: "Month"
 messages:
   no_permission: "&cYou don't have permission to use this command"
   no_console: "&cOnly players can use this command"
@@ -128,3 +147,6 @@ messages:
   adminchat_disabled: "&eAdmin chat &cdisabled"
   adminchat_enabled: "&eAdmin chat &aenabled"
   adminchat_format: "&8[&dAdminChat&8] &7{server} - &d{player}&7: &f{message}"
+  stafftime_usage: "&cUsage: /stafftime <player> [day|week|month]"
+  stafftime_not_found: "&cPlayer {player} not found on the database."
+  stafftime_invalid_type: "&cInvalid type. Use day, week or month"

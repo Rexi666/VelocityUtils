@@ -25,6 +25,7 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 ### Commands:
 #### Admin commands
 - `/velocityutils reload` | `/vu reload` - Reload the config
+- `/stafftime <jugador> [day|week|month]` - See how long a staff member has been online on the network.
 #### Staff commands
 - `/alert <message>` - Send a broadcast message to all the server
 - `/maintenance`
@@ -42,6 +43,7 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 #### Admin permissions
 - `velocityutils.admin` - access to /velocityutils reload and /vu reload
 - `velocityutils.stafftime.exclude` - permission to be excluded from the staff time
+- `velocityutils.stafftime.use` - access to /stafftime
 #### Staff permissions
 - `velocityutils.alert` - access to /alert
 - `velocityutils.maintenance` - access to /maintenance
