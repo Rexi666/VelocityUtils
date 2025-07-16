@@ -167,6 +167,86 @@ public class ConfigManager {
       """);
                 }
 
+                if (node.node("stafftime", "enabled").empty()) {
+                    node.node("stafftime", "enabled").set(false);
+                }
+                if (node.node("stafftime", "discord_hook", "join", "enabled").empty()) {
+                    node.node("stafftime", "discord_hook", "join", "enabled").set(true);
+                }
+                if (node.node("stafftime", "discord_hook", "join", "url").empty()) {
+                    node.node("stafftime", "discord_hook", "join", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");
+                }
+                if (node.node("stafftime", "discord_hook", "join", "avatar").empty()) {
+                    node.node("stafftime", "discord_hook", "join", "avatar").set("https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968");
+                }
+                if (node.node("stafftime", "discord_hook", "join", "username").empty()) {
+                    node.node("stafftime", "discord_hook", "join", "username").set("VelocityUtils");
+                }
+                if (node.node("stafftime", "discord_hook", "join", "color_rgb").empty()) {
+                    node.node("stafftime", "discord_hook", "join", "color_rgb").set("45,255,0");
+                }
+                if (node.node("stafftime", "discord_hook", "join", "title").empty()) {
+                    node.node("stafftime", "discord_hook", "join", "title").set("\uD83D\uDD52Staff Join\uD83D\uDD52");
+                }
+                if (node.node("stafftime", "discord_hook", "join", "message").empty()) {
+                    node.node("stafftime", "discord_hook", "join", "message").set(String.class, """
+      🕒 **{player}** joined the server
+      """);
+                }
+                if (node.node("stafftime", "discord_hook", "change", "enabled").empty()) {
+                    node.node("stafftime", "discord_hook", "change", "enabled").set(true);
+                }
+                if (node.node("stafftime", "discord_hook", "change", "url").empty()) {
+                    node.node("stafftime", "discord_hook", "change", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");
+                }
+                if (node.node("stafftime", "discord_hook", "change", "avatar").empty()) {
+                    node.node("stafftime", "discord_hook", "change", "avatar").set("https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968");
+                }
+                if (node.node("stafftime", "discord_hook", "change", "username").empty()) {
+                    node.node("stafftime", "discord_hook", "change", "username").set("VelocityUtils");
+                }
+                if (node.node("stafftime", "discord_hook", "change", "color_rgb").empty()) {
+                    node.node("stafftime", "discord_hook", "change", "color_rgb").set("255,255,0");
+                }
+                if (node.node("stafftime", "discord_hook", "change", "title").empty()) {
+                    node.node("stafftime", "discord_hook", "change", "title").set("\uD83D\uDD52Staff Change\uD83D\uDD52");
+                }
+                if (node.node("stafftime", "discord_hook", "change", "message").empty()) {
+                    node.node("stafftime", "discord_hook", "change", "message").set(String.class, """
+      🕒 **{player}** changed the server
+      📋 {from} > {to}
+      """);
+                }
+                if (node.node("stafftime", "discord_hook", "leave", "enabled").empty()) {
+                    node.node("stafftime", "discord_hook", "leave", "enabled").set(true);
+                }
+                if (node.node("stafftime", "discord_hook", "leave", "url").empty()) {
+                    node.node("stafftime", "discord_hook", "leave", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");
+                }
+                if (node.node("stafftime", "discord_hook", "leave", "avatar").empty()) {
+                    node.node("stafftime", "discord_hook", "leave", "avatar").set("https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968");
+                }
+                if (node.node("stafftime", "discord_hook", "leave", "username").empty()) {
+                    node.node("stafftime", "discord_hook", "leave", "username").set("VelocityUtils");
+                }
+                if (node.node("stafftime", "discord_hook", "leave", "color_rgb").empty()) {
+                    node.node("stafftime", "discord_hook", "leave", "color_rgb").set("255,0,0");
+                }
+                if (node.node("stafftime", "discord_hook", "leave", "title").empty()) {
+                    node.node("stafftime", "discord_hook", "leave", "title").set("\uD83D\uDD52Staff Leave\uD83D\uDD52");
+                }
+                if (node.node("stafftime", "discord_hook", "leave", "message").empty()) {
+                    node.node("stafftime", "discord_hook", "leave", "message").set(String.class, """
+      🕒 **{player}** left the server
+      📋 {time} this session
+      🖊️ Servers:
+      {serverstime}
+      """);
+                }
+                if (node.node("stafftime", "discord_hook", "leave", "serverstime").empty()) {
+                    node.node("stafftime", "discord_hook", "leave", "serverstime").set("- {server} - {time}");
+                }
+
                 if (node.node("messages", "no_permission").empty()) {
                     node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
                 }
@@ -277,7 +357,7 @@ public class ConfigManager {
                     node.node("messages", "adminchat_enabled").set("&eAdmin chat &aenabled");
                 }
                 if (node.node("messages", "adminchat_format").empty()) {
-                    node.node("messages", "adminchat_format").set("&8[&dAdminChat&8] &7{server} - &b{player}&7: &f{message}");
+                    node.node("messages", "adminchat_format").set("&8[&dAdminChat&8] &7{server} - &d{player}&7: &f{message}");
                 }
 
                 // Guardar en caso de que se hayan agregado valores predeterminados
@@ -354,6 +434,40 @@ public class ConfigManager {
       💬 **Message:** {message}
       """);
 
+            node.node("stafftime", "enabled").set(false);
+            node.node("stafftime", "discord_hook", "join", "enabled").set(true);
+            node.node("stafftime", "discord_hook", "join", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");
+            node.node("stafftime", "discord_hook", "join", "avatar").set("https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968");
+            node.node("stafftime", "discord_hook", "join", "username").set("VelocityUtils");
+            node.node("stafftime", "discord_hook", "join", "color_rgb").set("45,255,0");
+            node.node("stafftime", "discord_hook", "join", "title").set("🕒Staff Join🕒");
+            node.node("stafftime", "discord_hook", "join", "message").set(String.class, """
+      🕒 **{player}** joined the server
+      """);
+            node.node("stafftime", "discord_hook", "change", "enabled").set(true);
+            node.node("stafftime", "discord_hook", "change", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");
+            node.node("stafftime", "discord_hook", "change", "avatar").set("https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968");
+            node.node("stafftime", "discord_hook", "change", "username").set("VelocityUtils");
+            node.node("stafftime", "discord_hook", "change", "color_rgb").set("255,255,0");
+            node.node("stafftime", "discord_hook", "change", "title").set("🕒Staff Change🕒");
+            node.node("stafftime", "discord_hook", "change", "message").set(String.class, """
+      🕒 **{player}** changed the server
+      📋 {from} > {to}
+      """);
+            node.node("stafftime", "discord_hook", "leave", "enabled").set(true);
+            node.node("stafftime", "discord_hook", "leave", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");
+            node.node("stafftime", "discord_hook", "leave", "avatar").set("https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968");
+            node.node("stafftime", "discord_hook", "leave", "username").set("VelocityUtils");
+            node.node("stafftime", "discord_hook", "leave", "color_rgb").set("255,0,0");
+            node.node("stafftime", "discord_hook", "leave", "title").set("🕒Staff Leave🕒");
+            node.node("stafftime", "discord_hook", "leave", "message").set(String.class, """
+      🕒 **{player}** left the server
+      📋 {time} this session
+      🖊️ Servers:
+      {serverstime}
+      """);
+            node.node("stafftime", "discord_hook", "leave", "serverstime").set("- {server} - {time}");
+
             node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
             node.node("messages", "no_console").set("&cOnly players can use this command");
             node.node("messages", "alert_usage").set("&cUsage: /alert <message>");
@@ -390,7 +504,7 @@ public class ConfigManager {
             node.node("messages", "staffchat_format").set("&8[&bStaffChat&8] &7{server} - &b{player}&7: &f{message}");
             node.node("messages", "adminchat_disabled").set("&eAdmin chat &cdisabled");
             node.node("messages", "adminchat_enabled").set("&eAdmin chat &aenabled");
-            node.node("messages", "adminchat_format").set("&8[&dAdminChat&8] &7{server} - &b{player}&7: &f{message}");
+            node.node("messages", "adminchat_format").set("&8[&dAdminChat&8] &7{server} - &d{player}&7: &f{message}");
 
             loader.save(node);
         } catch (SerializationException e) {

@@ -1,5 +1,5 @@
 alert:
-  prefix: "&7[&b&lSERVER&7]" #Prefix for the alert command
+  prefix: "&7[&b&lSERVER&7]"
 motd:
   line1: "&aWelcome to this Velocity Server!"
   line2: "<bold><gradient:yellow:green>Enjoy your stay</gradient></bold>"
@@ -55,6 +55,41 @@ adminchat:
       🗨️ **Admin Chat from {player}**
       🌍 **Server:** {server}
       💬 **Message:** {message}
+stafftime:
+  enabled: false
+  discord_hook:
+    join:
+      enabled: true
+      url: "https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy"
+      avatar: 'https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968'
+      username: 'VelocityUtils'
+      color_rgb: "45,255,0"
+      title: '🕒Staff Join🕒'
+      message: |
+          🕒 **{player}** joined the server
+    change:
+      enabled: true
+      url: "https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy"
+      avatar: 'https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968'
+      username: 'VelocityUtils'
+      color_rgb: "255,255,0"
+      title: '🕒Staff Change🕒'
+      message: |
+        🕒 **{player}** changed the server
+        📋 {from} > {to}
+    leave:
+      enabled: true
+      url: "https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy"
+      avatar: 'https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968'
+      username: 'VelocityUtils'
+      color_rgb: "255,0,0"
+      title: '🕒Staff Leave🕒'
+      message: |
+        🕒 **{player}** left the server
+        📋 {time} this session
+        🖊️ Servers:
+        {serverstime}
+      serverstime: "- {server} - {time}"
 messages:
   no_permission: "&cYou don't have permission to use this command"
   no_console: "&cOnly players can use this command"
@@ -92,4 +127,4 @@ messages:
   staffchat_format: "&8[&bStaffChat&8] &7{server} - &b{player}&7: &f{message}"
   adminchat_disabled: "&eAdmin chat &cdisabled"
   adminchat_enabled: "&eAdmin chat &aenabled"
-  adminchat_format: "&8[&dAdminChat&8] &7{server} - &b{player}&7: &f{message}"
+  adminchat_format: "&8[&dAdminChat&8] &7{server} - &d{player}&7: &f{message}"

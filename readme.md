@@ -20,10 +20,12 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 - **GoTo** - You can teleport to the server where a player is.
 - **StaffList** - You can see the staff list of your network.
 - **StaffChat** and **AdminChat** - You can enable a staff chat to communicate with other staff members.
+- **StaffTime** - You can see how long a staff member has been online on the network.
 
 ### Commands:
-#### Staff commands
+#### Admin commands
 - `/velocityutils reload` | `/vu reload` - Reload the config
+#### Staff commands
 - `/alert <message>` - Send a broadcast message to all the server
 - `/maintenance`
   - `<on/off>` - Activate/Deactivate the maintenance mode
@@ -37,8 +39,10 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 - `/report <user> <reason>` - Report a user to the staff team
 
 ### Permissions:
-#### Staff permissions
+#### Admin permissions
 - `velocityutils.admin` - access to /velocityutils reload and /vu reload
+- `velocityutils.stafftime.exclude` - permission to be excluded from the staff time
+#### Staff permissions
 - `velocityutils.alert` - access to /alert
 - `velocityutils.maintenance` - access to /maintenance
 - `velocityutils.find` - access to /find
@@ -48,9 +52,9 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 - `velocityutils.stafflist.staff` - permission to be listed in the staff list
 - `velocityutils.staffchat` - access to /staffchat
 - `velocityutils.adminchat` - access to /adminchat
+- `velocityutils.stafftime.staff` - permission to be listed in the staff time
 #### User permissions
 - `velocityutils.report.use` - access to /report
 
 ### TO DO:
 - Lobby command
-- Moderation Time

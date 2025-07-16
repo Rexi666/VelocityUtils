@@ -18,11 +18,13 @@ import org.rexi.velocityUtils.commands.*;
 import org.rexi.velocityUtils.listeners.ChatListener;
 import org.rexi.velocityUtils.listeners.PluginMessageListenerAdminChat;
 import org.rexi.velocityUtils.listeners.PluginMessageListenerStaffChat;
+import org.rexi.velocityUtils.listeners.StaffConnectionListener;
 import org.slf4j.Logger;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,15 +39,22 @@ public class VelocityUtils {
 
     private final ProxyServer server;
     private final ConfigManager configManager;
+    private LuckPerms luckPerms = null;
+
     private DiscordWebhook reportWebhook;
     private DiscordWebhook staffchatWebhook;
     private DiscordWebhook adminchatWebhook;
-    private LuckPerms luckPerms = null;
+    private DiscordWebhook staffJoinWebhook;
+    private DiscordWebhook staffChangeWebhook;
+    private DiscordWebhook staffLeaveWebhook;
 
     private final ChannelIdentifier STAFFCHAT_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "staffchat");
     private final ChannelIdentifier ADMINCHAT_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "adminchat");
     public final Set<UUID> staffChatToggled = ConcurrentHashMap.newKeySet();
     public final Set<UUID> adminChatToggled = ConcurrentHashMap.newKeySet();
+
+    private final Map<UUID, StaffSession> staffSessions = new ConcurrentHashMap<>();
+
 
     @Inject
     public VelocityUtils(ProxyServer server) {
@@ -101,10 +110,41 @@ public class VelocityUtils {
                 adminchatWebhook.setColorRGB(configManager.getString("adminchat.discord_hook.color_rgb"));
             }
         }
+        if (configManager.getBoolean("stafftime.enabled") && configManager.getBoolean("stafftime.discord_hook.join.enabled")) {
+            String staffJoinWebhookUrl = configManager.getString("stafftime.discord_hook.join.url");
+            if (staffJoinWebhookUrl != null && staffJoinWebhookUrl.startsWith("http")) {
+                this.staffJoinWebhook = new DiscordWebhook(staffJoinWebhookUrl, configManager);
+                staffJoinWebhook.setAvatarUrl(configManager.getString("stafftime.discord_hook.join.avatar"));
+                staffJoinWebhook.setUsername(configManager.getString("stafftime.discord_hook.join.username"));
+                staffJoinWebhook.setTitle(configManager.getString("stafftime.discord_hook.join.title"));
+                staffJoinWebhook.setColorRGB(configManager.getString("stafftime.discord_hook.join.color_rgb"));
+            }
+        }
+        if (configManager.getBoolean("stafftime.enabled") && configManager.getBoolean("stafftime.discord_hook.change.enabled")) {
+            String staffChangeWebhookUrl = configManager.getString("stafftime.discord_hook.change.url");
+            if (staffChangeWebhookUrl != null && staffChangeWebhookUrl.startsWith("http")) {
+                this.staffChangeWebhook = new DiscordWebhook(staffChangeWebhookUrl, configManager);
+                staffChangeWebhook.setAvatarUrl(configManager.getString("stafftime.discord_hook.change.avatar"));
+                staffChangeWebhook.setUsername(configManager.getString("stafftime.discord_hook.change.username"));
+                staffChangeWebhook.setTitle(configManager.getString("stafftime.discord_hook.change.title"));
+                staffChangeWebhook.setColorRGB(configManager.getString("stafftime.discord_hook.change.color_rgb"));
+            }
+        }
+        if (configManager.getBoolean("stafftime.enabled") && configManager.getBoolean("stafftime.discord_hook.leave.enabled")) {
+            String staffLeaveWebhookUrl = configManager.getString("stafftime.discord_hook.leave.url");
+            if (staffLeaveWebhookUrl != null && staffLeaveWebhookUrl.startsWith("http")) {
+                this.staffLeaveWebhook = new DiscordWebhook(staffLeaveWebhookUrl, configManager);
+                staffLeaveWebhook.setAvatarUrl(configManager.getString("stafftime.discord_hook.leave.avatar"));
+                staffLeaveWebhook.setUsername(configManager.getString("stafftime.discord_hook.leave.username"));
+                staffLeaveWebhook.setTitle(configManager.getString("stafftime.discord_hook.leave.title"));
+                staffLeaveWebhook.setColorRGB(configManager.getString("stafftime.discord_hook.leave.color_rgb"));
+            }
+        }
 
         server.getEventManager().register(this, new ChatListener(this, configManager, server, staffchatWebhook, adminchatWebhook));
         server.getEventManager().register(this, new PluginMessageListenerStaffChat(this, server, configManager, staffchatWebhook));
         server.getEventManager().register(this, new PluginMessageListenerAdminChat(this, server, configManager, adminchatWebhook));
+        server.getEventManager().register(this, new StaffConnectionListener(this, staffSessions, configManager, staffJoinWebhook, staffChangeWebhook, staffLeaveWebhook));
 
         server.getCommandManager().register("alert", new AlertCommand(configManager,server));
         server.getCommandManager().register("velocityutils", new VelocityUtilsCommand(configManager, server));
