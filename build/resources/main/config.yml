@@ -125,6 +125,16 @@ vlist:
       - "{rankcount}"
       - "&f-----------------------------"
     rankcount: "&7[&b{rank} &7(&b{count}&7)] - &f{players}"
+movecommands:
+  lobby:
+    server:
+      - lobby1
+      - lobby2
+    message: "&aYou have been moved to a &blobby"
+  survival:
+    server:
+      - survival
+    message: "&aYou have been moved to the &dsurvival"
 messages:
   no_permission: "&cYou don't have permission to use this command"
   no_console: "&cOnly players can use this command"
@@ -167,3 +177,6 @@ messages:
   stafftime_not_found: "&cPlayer {player} not found on the database."
   stafftime_invalid_type: "&cInvalid type. Use day, week or month"
   vlist_no_players: "&cThere is no players online."
+  movecommands_no_servers: "&cThere are no servers configured for this command"
+  movecommands_server_not_found: "&cThat server is not available at this moment."
+  movecommands_already_connected: "&cYou are already connected to that server"

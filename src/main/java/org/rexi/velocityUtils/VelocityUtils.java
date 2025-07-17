@@ -22,6 +22,7 @@ import org.rexi.velocityUtils.listeners.StaffConnectionListener;
 import org.slf4j.Logger;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
+import org.spongepowered.configurate.ConfigurationNode;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -156,8 +157,8 @@ public class VelocityUtils {
         server.getEventManager().register(this, new StaffConnectionListener(this, staffSessions, configManager, staffJoinWebhook, staffChangeWebhook, staffLeaveWebhook));
 
         server.getCommandManager().register("alert", new AlertCommand(configManager,server));
-        server.getCommandManager().register("velocityutils", new VelocityUtilsCommand(configManager, server));
-        server.getCommandManager().register("vu", new VelocityUtilsCommand(configManager, server));
+        server.getCommandManager().register("velocityutils", new VelocityUtilsCommand(configManager, server, this));
+        server.getCommandManager().register("vu", new VelocityUtilsCommand(configManager, server, this));
         server.getCommandManager().register("maintenance", new MaintenanceCommand(configManager, server));
         server.getCommandManager().register("report", new ReportCommand(configManager, server, reportWebhook));
         server.getCommandManager().register("goto", new GotoCommand(configManager, server));
@@ -173,9 +174,20 @@ public class VelocityUtils {
         server.getCommandManager().register("ac", new AdminChatCommand(this, configManager, server, adminchatWebhook));
         server.getCommandManager().register("stafftime", new StaffTimeCommand(configManager, server, this));
         server.getCommandManager().register("vlist", new VListCommand(configManager, server, luckPerms));
+        registerMoveCommands();
 
         System.out.println(Component.text("The plugin has been activated").color(NamedTextColor.GREEN));
         System.out.println(Component.text("Thank you for using Rexi666 plugins").color(NamedTextColor.BLUE));
+    }
+
+    public void registerMoveCommands() {
+        ConfigurationNode moveCommandsNode = configManager.getRootNode().node("movecommands");
+        if (!moveCommandsNode.virtual()) {
+            for (ConfigurationNode commandNode : moveCommandsNode.childrenMap().values()) {
+                String commandName = commandNode.key().toString();
+                server.getCommandManager().register(commandName, new MoveCommand(configManager, server, commandName));
+            }
+        }
     }
 
     @Subscribe

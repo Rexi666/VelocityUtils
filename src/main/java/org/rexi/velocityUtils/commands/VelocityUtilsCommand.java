@@ -7,15 +7,18 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.VelocityUtils;
 
 public class VelocityUtilsCommand implements SimpleCommand {
 
     private final ConfigManager configManager;
     private final ProxyServer server;
+    private final VelocityUtils plugin;
 
-    public VelocityUtilsCommand(ConfigManager configManager, ProxyServer server) {
+    public VelocityUtilsCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin) {
         this.configManager = configManager;
         this.server = server;
+        this.plugin = plugin;
     }
 
     @Override
@@ -25,6 +28,7 @@ public class VelocityUtilsCommand implements SimpleCommand {
         if (invocation.arguments().length > 0 && invocation.arguments()[0].equalsIgnoreCase("reload")) {
             if (source.hasPermission("velocityutils.admin") || source instanceof ConsoleCommandSource) {
                 configManager.loadConfig();
+                plugin.registerMoveCommands();
                 Component motd = configManager.getMotd();
                 String configuration_reloaded = configManager.getMessage("configuration_reloaded");
                 source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(configuration_reloaded));

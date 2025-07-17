@@ -22,6 +22,7 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 - **StaffChat** and **AdminChat** - You can enable a staff chat to communicate with other staff members.
 - **StaffTime** - You can see how long a staff member has been online on the network.
 - **vList** - You can see the list of players in your network. If you filter by rank, you need luckperms installed on your network.
+- **MoveCommands** - You can configure commands for players to move to another server. For example /lobby, /survival, etc
 
 ### Commands:
 #### Admin commands
@@ -37,9 +38,10 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 - `/stafflist` - Shows the staff list of your network
 - `/staffchat` | `/sc` - Enables/Disables the staff chat
 - `/adminchat` | `/ac` - Enables/Disables the admin chat
-- `/vlist [server/rank]` - Shows the list of players in your network.
+- `/vlist [server|rank]` - Shows the list of players in your network.
 #### User commands
 - `/report <user> <reason>` - Report a user to the staff team
+- You can configure a MoveCommand to move players to another server, for example /lobby or /survival
 
 ### Permissions:
 #### Admin permissions
@@ -60,3 +62,4 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 - `velocityutils.vlist` - access to /vlist
 #### User permissions
 - `velocityutils.report.use` - access to /report
+- `velocityutils.movecommand.<command>` - permission to use a MoveCommand, for example `velocityutils.movecommand.lobby` to use the command /lobby. Use `velocityutils.movecommand.*` to give access to all MoveCommands.

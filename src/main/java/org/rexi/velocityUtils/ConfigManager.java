@@ -423,6 +423,15 @@ public class ConfigManager {
                 if (node.node("messages", "vlist_no_players").empty()) {
                     node.node("messages", "vlist_no_players").set("&cThere is no players online.");
                 }
+                if (node.node("messages", "movecommands_no_servers").empty()) {
+                    node.node("messages", "movecommands_no_servers").set("&cThere are no servers configured for this command");
+                }
+                if (node.node("messages", "movecommands_server_not_found").empty()) {
+                    node.node("messages", "movecommands_server_not_found").set("&cThat server is not available at this moment.");
+                }
+                if (node.node("messages", "movecommands_already_connected").empty()) {
+                    node.node("messages", "movecommands_already_connected").set("&cYou are already connected to that server");
+                }
 
                 // Guardar en caso de que se hayan agregado valores predeterminados
                 loader.save(node);
@@ -564,6 +573,14 @@ public class ConfigManager {
                     "&f-----------------------------"));
             node.node("vlist", "rank", "rankcount").set("&7[&b{rank} &7(&b{count}&7)] - &f{players}");
 
+            node.node("movecommands", "lobby", "server").setList(String.class, List.of(
+                    "lobby1",
+                    "lobby2"));
+            node.node("movecommands", "lobby", "message").set("&aYou have been moved to a &blobby");
+            node.node("movecommands", "survival", "server").setList(String.class, List.of(
+                    "survival"));
+            node.node("movecommands", "survival", "message").set("&aYou have been moved to the &dsurvival");
+
             node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
             node.node("messages", "no_console").set("&cOnly players can use this command");
             node.node("messages", "alert_usage").set("&cUsage: /alert <message>");
@@ -605,6 +622,9 @@ public class ConfigManager {
             node.node("messages", "stafftime_not_found").set("&cPlayer {player} not found on the database.");
             node.node("messages", "stafftime_invalid_type").set("&cInvalid type. Use day, week or month");
             node.node("messages", "vlist_no_players").set("&cThere is no players online.");
+            node.node("messages", "movecommands_no_servers").set("&cThere are no servers configured for this command");
+            node.node("messages", "movecommands_server_not_found").set("&cThat server is not available at this moment.");
+            node.node("messages", "movecommands_already_connected").set("&cYou are already connected to that server");
 
             loader.save(node);
         } catch (SerializationException e) {
@@ -799,4 +819,14 @@ public class ConfigManager {
             e.printStackTrace();
         }
     }
+
+    public ConfigurationNode getRootNode() {
+        try {
+            return loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }
