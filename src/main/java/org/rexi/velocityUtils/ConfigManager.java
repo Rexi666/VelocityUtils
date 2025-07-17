@@ -275,6 +275,30 @@ public class ConfigManager {
                     node.node("stafftime", "command", "month").set("Month");
                 }
 
+                if (node.node("vlist", "default_mode").empty()) {
+                    node.node("vlist", "default_mode").set("server");
+                }
+                if (node.node("vlist", "server", "message").empty()) {
+                    node.node("vlist", "server", "message").setList(String.class, List.of(
+                            "&f-----------------------------",
+                            "&eThere is {count} players online",
+                            "{servercount}",
+                            "&f-----------------------------"));
+                }
+                if (node.node("vlist", "server", "servercount").empty()) {
+                    node.node("vlist", "server", "servercount").set("&7[&b{server} &7(&b{count}&7)] - &f{players}");
+                }
+                if (node.node("vlist", "rank", "message").empty()) {
+                    node.node("vlist", "rank", "message").setList(String.class, List.of(
+                            "&f-----------------------------",
+                            "&eThere is {count} players online",
+                            "{rankcount}",
+                            "&f-----------------------------"));
+                }
+                if (node.node("vlist", "rank", "rankcount").empty()) {
+                    node.node("vlist", "rank", "rankcount").set("&7[&b{rank} &7(&b{count}&7)] - &f{players}");
+                }
+
                 if (node.node("messages", "no_permission").empty()) {
                     node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
                 }
@@ -395,6 +419,9 @@ public class ConfigManager {
                 }
                 if (node.node("messages", "stafftime_invalid_type").empty()) {
                     node.node("messages", "stafftime_invalid_type").set("&cInvalid type. Use day, week or month");
+                }
+                if (node.node("messages", "vlist_no_players").empty()) {
+                    node.node("messages", "vlist_no_players").set("&cThere is no players online.");
                 }
 
                 // Guardar en caso de que se hayan agregado valores predeterminados
@@ -563,6 +590,7 @@ public class ConfigManager {
             node.node("messages", "stafftime_usage").set("&cUsage: /stafftime <player> [day|week|month]");
             node.node("messages", "stafftime_not_found").set("&cPlayer {player} not found on the database.");
             node.node("messages", "stafftime_invalid_type").set("&cInvalid type. Use day, week or month");
+            node.node("messages", "vlist_no_players").set("&cThere is no players online.");
 
             loader.save(node);
         } catch (SerializationException e) {

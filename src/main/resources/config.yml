@@ -109,6 +109,22 @@ stafftime:
     day: "Day"
     week: "Week"
     month: "Month"
+vlist:
+  default_mode: "server"
+  server:
+    message:
+      - "&f-----------------------------"
+      - "&eThere is {count} players online"
+      - "{servercount}"
+      - "&f-----------------------------"
+    servercount: "&7[&b{server} &7(&b{count}&7)] - &f{players}"
+  rank:
+    message:
+      - "&f-----------------------------"
+      - "&eThere is {count} players online"
+      - "{rankcount}"
+      - "&f-----------------------------"
+    rankcount: "&7[&b{rank} &7(&b{count}&7)] - &f{players}"
 messages:
   no_permission: "&cYou don't have permission to use this command"
   no_console: "&cOnly players can use this command"
@@ -150,3 +166,4 @@ messages:
   stafftime_usage: "&cUsage: /stafftime <player> [day|week|month]"
   stafftime_not_found: "&cPlayer {player} not found on the database."
   stafftime_invalid_type: "&cInvalid type. Use day, week or month"
+  vlist_no_players: "&cThere is no players online."

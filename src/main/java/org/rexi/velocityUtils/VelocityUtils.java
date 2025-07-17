@@ -172,6 +172,7 @@ public class VelocityUtils {
         server.getCommandManager().register("adminchat", new AdminChatCommand(this, configManager, server, adminchatWebhook));
         server.getCommandManager().register("ac", new AdminChatCommand(this, configManager, server, adminchatWebhook));
         server.getCommandManager().register("stafftime", new StaffTimeCommand(configManager, server, this));
+        server.getCommandManager().register("vlist", new VListCommand(configManager, server));
 
         System.out.println(Component.text("The plugin has been activated").color(NamedTextColor.GREEN));
         System.out.println(Component.text("Thank you for using Rexi666 plugins").color(NamedTextColor.BLUE));

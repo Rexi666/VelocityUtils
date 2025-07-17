@@ -8,7 +8,7 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 
 ### Dependencies
 - Java JDK 17
-- Luckperms (Optional for the stafflist)  
+- Luckperms (Optional for the stafflist and vlist)  
 - [StaffChatLink-VelocityUtils](https://github.com/Rexi666/StaffChatLink-VelocityUtils/releases/latest) On the backends, needed if you want to use the StaffChat and AdminChat features. This plugin is not required if you don't want to use the StaffChat and AdminChat features.
 
 ### Features
@@ -21,6 +21,7 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 - **StaffList** - You can see the staff list of your network.
 - **StaffChat** and **AdminChat** - You can enable a staff chat to communicate with other staff members.
 - **StaffTime** - You can see how long a staff member has been online on the network.
+- **vList** - You can see the list of players in your network. If you filter by rank, you need luckperms installed on your network.
 
 ### Commands:
 #### Admin commands
@@ -36,6 +37,7 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 - `/stafflist` - Shows the staff list of your network
 - `/staffchat` | `/sc` - Enables/Disables the staff chat
 - `/adminchat` | `/ac` - Enables/Disables the admin chat
+- `/vlist [server/rank]` - Shows the list of players in your network.
 #### User commands
 - `/report <user> <reason>` - Report a user to the staff team
 
@@ -55,5 +57,6 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 - `velocityutils.staffchat` - access to /staffchat
 - `velocityutils.adminchat` - access to /adminchat
 - `velocityutils.stafftime.staff` - permission to be listed in the staff time
+- `velocityutils.vlist` - access to /vlist
 #### User permissions
 - `velocityutils.report.use` - access to /report
