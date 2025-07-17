@@ -80,23 +80,34 @@ public class VListCommand implements SimpleCommand {
     }
 
     private void mostrarPorRangos(CommandSource source, int totalPlayers) {
+        // Map de rango -> lista de jugadores
         Map<String, List<String>> rangos = new HashMap<>();
+        // Map de rango -> weight
+        Map<String, Integer> rangosWeight = new HashMap<>();
 
         for (Player player : server.getAllPlayers()) {
             String rango = obtenerRango(player);
+            int weight = obtenerWeightRango(player);
+
             rangos.computeIfAbsent(rango, k -> new ArrayList<>()).add(player.getUsername());
+            rangosWeight.put(rango, weight); // Guardamos el weight asociado al rango
         }
 
         List<String> lines = configManager.getStringList("vlist.rank.message");
         for (String line : lines) {
             if (line.contains("{rankcount}")) {
-                for (Map.Entry<String, List<String>> entry : rangos.entrySet()) {
-                    String formatted = configManager.getString("vlist.rank.rankcount")
-                            .replace("{rank}", entry.getKey())
-                            .replace("{count}", String.valueOf(entry.getValue().size()))
-                            .replace("{players}", String.join(", ", entry.getValue()));
-                    source.sendMessage(legacy(formatted));
-                }
+                rangos.entrySet().stream()
+                        .sorted((e1, e2) -> Integer.compare(
+                                rangosWeight.getOrDefault(e2.getKey(), 0),
+                                rangosWeight.getOrDefault(e1.getKey(), 0)
+                        ))
+                        .forEach(entry -> {
+                            String formatted = configManager.getString("vlist.rank.rankcount")
+                                    .replace("{rank}", entry.getKey())
+                                    .replace("{count}", String.valueOf(entry.getValue().size()))
+                                    .replace("{players}", String.join(", ", entry.getValue()));
+                            source.sendMessage(legacy(formatted));
+                        });
             } else {
                 source.sendMessage(legacy(line.replace("{count}", String.valueOf(totalPlayers))));
             }
@@ -122,6 +133,20 @@ public class VListCommand implements SimpleCommand {
         }
         return "Default";
     }
+
+    private int obtenerWeightRango(Player player) {
+        if (luckPerms == null) return 0;
+
+        User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+        if (user != null) {
+            var group = luckPerms.getGroupManager().getGroup(user.getPrimaryGroup());
+            if (group != null && group.getWeight().isPresent()) {
+                return group.getWeight().getAsInt();
+            }
+        }
+        return 0; // Default weight
+    }
+
 
     private Component legacy(String s) {
         return LegacyComponentSerializer.legacyAmpersand().deserialize(s);
