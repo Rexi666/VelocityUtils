@@ -216,7 +216,7 @@ public class VelocityUtils {
     }
 
     private void createTables() {
-        String sql = """
+        String staffTimeTable = """
         CREATE TABLE IF NOT EXISTS staff_time_daily (
             uuid TEXT NOT NULL,
             date TEXT NOT NULL, -- Guardamos fecha en formato ISO yyyy-MM-dd
@@ -224,9 +224,17 @@ public class VelocityUtils {
             PRIMARY KEY (uuid, date)
         );
         """;
+
+        String playerInfoTable = """
+    CREATE TABLE IF NOT EXISTS player_info (
+        uuid TEXT PRIMARY KEY,
+        name TEXT NOT NULL
+    );
+    """;
         try (var conn = getConnection();
              var stmt = conn.createStatement()) {
-            stmt.execute(sql);
+            stmt.execute(staffTimeTable);
+            stmt.execute(playerInfoTable);
         } catch (SQLException e) {
             e.printStackTrace();
         }

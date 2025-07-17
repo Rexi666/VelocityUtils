@@ -41,6 +41,7 @@ public class StaffConnectionListener {
             return; // No action for admins
         }
         if (isStaff(player)) {
+            savePlayerInfo(player);
             StaffSession session = sessions.get(player.getUniqueId());
 
             String newServer = event.getServer().getServerInfo().getName();  // Servidor al que acaba de conectar
@@ -53,7 +54,7 @@ public class StaffConnectionListener {
                 String avatar = (uuid != null)
                         ? "https://minotar.net/helm/" + uuid + "/64.png"
                         : "https://i.pinimg.com/564x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg";
-                if (staffJoinWebhook != null && configManager.getBoolean("stafftime.enabled") && configManager.getBoolean("stafftime.discord_hook.join.enabled")) {
+                if (staffJoinWebhook != null && configManager.getBoolean("stafftime.discord_hook.enabled") && configManager.getBoolean("stafftime.discord_hook.join.enabled")) {
                     String raw = configManager.getString("stafftime.discord_hook.join.message");
                     String msg = raw.replace("{player}", player.getUsername());
                     staffJoinWebhook.send(msg, avatar);
@@ -70,7 +71,7 @@ public class StaffConnectionListener {
                 String avatar = (uuid != null)
                         ? "https://minotar.net/helm/" + uuid + "/64.png"
                         : "https://i.pinimg.com/564x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg";
-                if (staffChangeWebhook != null && configManager.getBoolean("stafftime.enabled") && configManager.getBoolean("stafftime.discord_hook.change.enabled")) {
+                if (staffChangeWebhook != null && configManager.getBoolean("stafftime.discord_hook.enabled") && configManager.getBoolean("stafftime.discord_hook.change.enabled")) {
                     String raw = configManager.getString("stafftime.discord_hook.change.message");
                     String msg = raw
                             .replace("{player}", player.getUsername())
@@ -103,7 +104,7 @@ public class StaffConnectionListener {
                 Duration weekly = getDurationForRange(player.getUniqueId(), DateUtils.getStartOfWeek(), DateUtils.getEndOfWeek());
                 Duration monthly = getDurationForRange(player.getUniqueId(), DateUtils.getStartOfMonth(), DateUtils.getEndOfMonth());
 
-                if (staffLeaveWebhook != null && configManager.getBoolean("stafftime.enabled") && configManager.getBoolean("stafftime.discord_hook.leave.enabled")) {
+                if (staffLeaveWebhook != null && configManager.getBoolean("stafftime.discord_hook.enabled") && configManager.getBoolean("stafftime.discord_hook.leave.enabled")) {
                     String raw = configManager.getString("stafftime.discord_hook.leave.message");
                     String serverTimeFormat = configManager.getString("stafftime.discord_hook.leave.serverstime");
 
@@ -193,6 +194,24 @@ public class StaffConnectionListener {
         }
         return Duration.ZERO;
     }
+
+    private void savePlayerInfo(Player player) {
+        String sql = """
+    INSERT INTO player_info (uuid, name)
+    VALUES (?, ?)
+    ON CONFLICT(uuid) DO UPDATE SET name = excluded.name;
+    """;
+
+        try (var conn = plugin.getConnection();
+             var pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, player.getUniqueId().toString());
+            pstmt.setString(2, player.getUsername());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
 }
