@@ -6,6 +6,9 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.cacheddata.CachedMetaData;
+import net.luckperms.api.model.user.User;
 import org.rexi.velocityUtils.ConfigManager;
 
 import java.util.*;
@@ -14,10 +17,12 @@ public class VListCommand implements SimpleCommand {
 
     private final ConfigManager configManager;
     private final ProxyServer server;
+    private final LuckPerms luckPerms;
 
-    public VListCommand(ConfigManager configManager, ProxyServer server) {
+    public VListCommand(ConfigManager configManager, ProxyServer server, LuckPerms luckPerms) {
         this.configManager = configManager;
         this.server = server;
+        this.luckPerms = luckPerms;
     }
 
     @Override
@@ -99,9 +104,22 @@ public class VListCommand implements SimpleCommand {
     }
 
     private String obtenerRango(Player player) {
-        if (player.hasPermission("group.admin")) return "Admin";
-        if (player.hasPermission("group.moderator")) return "Moderator";
-        if (player.hasPermission("group.vip")) return "VIP";
+        if (luckPerms == null) return "Default";
+
+        User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+        if (user != null) {
+            String primaryGroupName = user.getPrimaryGroup();
+            var group = luckPerms.getGroupManager().getGroup(primaryGroupName);
+
+            if (group != null) {
+                String groupPrefix = group.getCachedData().getMetaData().getPrefix();
+                if (groupPrefix != null && !groupPrefix.isEmpty()) {
+                    return groupPrefix;
+                }
+                return primaryGroupName; // Si el grupo no tiene prefix, devolvemos el nombre del grupo
+            }
+            return primaryGroupName; // Si no encuentra el grupo, devolvemos el nombre
+        }
         return "Default";
     }
 

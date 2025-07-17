@@ -550,6 +550,20 @@ public class ConfigManager {
             node.node("stafftime", "command", "week").set("Week");
             node.node("stafftime", "command", "month").set("Month");
 
+            node.node("vlist", "default_mode").set("server");
+            node.node("vlist", "server", "message").setList(String.class, List.of(
+                    "&f-----------------------------",
+                    "&eThere is {count} players online",
+                    "{servercount}",
+                    "&f-----------------------------"));
+            node.node("vlist", "server", "servercount").set("&7[&b{server} &7(&b{count}&7)] - &f{players}");
+            node.node("vlist", "rank", "message").setList(String.class, List.of(
+                    "&f-----------------------------",
+                    "&eThere is {count} players online",
+                    "{rankcount}",
+                    "&f-----------------------------"));
+            node.node("vlist", "rank", "rankcount").set("&7[&b{rank} &7(&b{count}&7)] - &f{players}");
+
             node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
             node.node("messages", "no_console").set("&cOnly players can use this command");
             node.node("messages", "alert_usage").set("&cUsage: /alert <message>");
