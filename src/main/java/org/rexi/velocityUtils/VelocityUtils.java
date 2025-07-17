@@ -245,8 +245,8 @@ public class VelocityUtils {
         return DriverManager.getConnection("jdbc:sqlite:plugins/VelocityUtils/stafftime.db");
     }
 
-    public StaffSession getStaffSession(UUID uuid) {
-        return staffSessions.get(uuid);
+    public Map<UUID, StaffSession> getStaffSessions() {
+        return staffSessions;
     }
 
 }

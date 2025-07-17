@@ -39,10 +39,8 @@ public class StaffSession {
         return timePerServer;
     }
 
-    public void updateCurrentSession() {
-        Duration timeSpent = Duration.between(lastSwitch, Instant.now());
-        timePerServer.merge(currentServer, timeSpent, Duration::plus);
-        lastSwitch = Instant.now();
+    public Instant getStartTime() {
+        return loginTime;
     }
 
 }

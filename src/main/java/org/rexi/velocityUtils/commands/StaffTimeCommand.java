@@ -9,15 +9,12 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
 import org.rexi.velocityUtils.StaffSession;
 import org.rexi.velocityUtils.VelocityUtils;
-import org.rexi.velocityUtils.listeners.StaffConnectionListener;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.LocalDate;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -67,12 +64,27 @@ public class StaffTimeCommand implements SimpleCommand {
                 }
             }
 
+            // Obtener el tiempo ya registrado en base de datos
+            long daySeconds = getSecondsForDay(conn, uuid, LocalDate.now());
+            long weekSeconds = getSecondsForWeek(conn, uuid, LocalDate.now());
+            long monthSeconds = getSecondsForMonth(conn, uuid, LocalDate.now());
+
+            // Si el jugador está online, sumamos el tiempo que lleva conectado en esta sesión
+            if (targetOpt.isPresent()) {
+                Player target = targetOpt.get();
+                StaffSession session = plugin.getStaffSessions().get(uuid);  // Asumo que tienes acceso a las sesiones aquí
+                if (session != null) {
+                    Duration connectedDuration = Duration.between(session.getStartTime(), Instant.now());
+                    long connectedSeconds = connectedDuration.getSeconds();
+
+                    // Sumamos ese tiempo solo para mostrar, no lo guardamos en BD aquí
+                    daySeconds += connectedSeconds;
+                    weekSeconds += connectedSeconds;
+                    monthSeconds += connectedSeconds;
+                }
+            }
 
             if (period.isEmpty()) {
-                long daySeconds = getSecondsForDay(conn, uuid, LocalDate.now());
-                long weekSeconds = getSecondsForWeek(conn, uuid, LocalDate.now());
-                long monthSeconds = getSecondsForMonth(conn, uuid, LocalDate.now());
-
                 List<String> lines = configManager.getStringList("stafftime.command.no_type");
                 for (String line : lines) {
                     String parsed = line
@@ -88,15 +100,15 @@ public class StaffTimeCommand implements SimpleCommand {
 
                 switch (period) {
                     case "day":
-                        seconds = getSecondsForDay(conn, uuid, LocalDate.now());
+                        seconds = daySeconds;
                         typeLabel = configManager.getString("stafftime.command.day");
                         break;
                     case "week":
-                        seconds = getSecondsForWeek(conn, uuid, LocalDate.now());
+                        seconds = weekSeconds;
                         typeLabel = configManager.getString("stafftime.command.week");
                         break;
                     case "month":
-                        seconds = getSecondsForMonth(conn, uuid, LocalDate.now());
+                        seconds = monthSeconds;
                         typeLabel = configManager.getString("stafftime.command.month");
                         break;
                     default:
@@ -118,6 +130,7 @@ public class StaffTimeCommand implements SimpleCommand {
             source.sendMessage(legacy("&cError trying to reach database."));
         }
     }
+
 
     private long getSecondsForDay(Connection conn, UUID uuid, LocalDate day) throws SQLException {
         String sql = "SELECT duration_seconds FROM staff_time_daily WHERE uuid = ? AND date = ?";

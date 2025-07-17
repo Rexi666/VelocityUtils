@@ -57,6 +57,3 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 - `velocityutils.stafftime.staff` - permission to be listed in the staff time
 #### User permissions
 - `velocityutils.report.use` - access to /report
-
-### TO DO:
-- Lobby command
