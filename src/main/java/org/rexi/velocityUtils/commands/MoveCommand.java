@@ -54,16 +54,21 @@ public class MoveCommand implements SimpleCommand {
         List<String> shuffledServers = new ArrayList<>(servers);
         Collections.shuffle(shuffledServers, random);
 
-        for (String serverName : shuffledServers) {
-            var optionalServer = server.getServer(serverName);
-            if (optionalServer.isPresent()) {
-                // Comprobar si el jugador ya está conectado
-                if (player.getCurrentServer().isPresent() &&
-                        player.getCurrentServer().get().getServerInfo().getName().equalsIgnoreCase(serverName)) {
+        // Comprobar si ya está conectado a alguno de los servidores
+        if (player.getCurrentServer().isPresent()) {
+            String currentServer = player.getCurrentServer().get().getServerInfo().getName();
+            for (String serverName : shuffledServers) {
+                if (currentServer.equalsIgnoreCase(serverName)) {
                     player.sendMessage(legacy(configManager.getMessage("movecommands_already_connected")));
                     return;
                 }
+            }
+        }
 
+        // Conectar al primer servidor disponible
+        for (String serverName : shuffledServers) {
+            var optionalServer = server.getServer(serverName);
+            if (optionalServer.isPresent()) {
                 optionalServer.get().ping().thenAccept(ping -> {
                     player.createConnectionRequest(optionalServer.get()).connect().thenAccept(result -> {
                         if (result.isSuccessful()) {
