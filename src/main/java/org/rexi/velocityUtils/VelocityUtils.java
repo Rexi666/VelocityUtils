@@ -157,12 +157,26 @@ public class VelocityUtils {
         server.getEventManager().register(this, new StaffConnectionListener(this, staffSessions, configManager, staffJoinWebhook, staffChangeWebhook, staffLeaveWebhook));
 
         server.getCommandManager().register("alert", new AlertCommand(configManager,server));
-        server.getCommandManager().register("velocityutils", new VelocityUtilsCommand(configManager, server, this));
-        server.getCommandManager().register("vu", new VelocityUtilsCommand(configManager, server, this));
-        server.getCommandManager().register("maintenance", new MaintenanceCommand(configManager, server));
-        server.getCommandManager().register("report", new ReportCommand(configManager, server, reportWebhook));
-        server.getCommandManager().register("goto", new GotoCommand(configManager, server));
-        server.getCommandManager().register("find", new FindCommand(configManager, server));
+        server.getCommandManager().register(
+                server.getCommandManager().metaBuilder("velocityutils").build(),
+                new VelocityUtilsCommand(configManager, server, this));
+        server.getCommandManager().register(
+                server.getCommandManager().metaBuilder("vu").build(),
+                new VelocityUtilsCommand(configManager, server, this));
+        server.getCommandManager().register(
+                server.getCommandManager().metaBuilder("maintenance").build(),
+                new MaintenanceCommand(configManager, server));
+        server.getCommandManager().register(
+                server.getCommandManager().metaBuilder("report").build(),
+                new ReportCommand(configManager, server, reportWebhook)
+        );
+
+        server.getCommandManager().register(
+                server.getCommandManager().metaBuilder("goto").build(),
+                new GotoCommand(configManager, server));
+        server.getCommandManager().register(
+                server.getCommandManager().metaBuilder("find").build(),
+                new FindCommand(configManager, server));
         if (this.luckPerms != null) {
             server.getCommandManager().register("stafflist", new StaffListCommand(configManager, server, luckPerms));
         } else {
@@ -172,8 +186,12 @@ public class VelocityUtils {
         server.getCommandManager().register("sc", new StaffChatCommand(this, configManager, server, staffchatWebhook));
         server.getCommandManager().register("adminchat", new AdminChatCommand(this, configManager, server, adminchatWebhook));
         server.getCommandManager().register("ac", new AdminChatCommand(this, configManager, server, adminchatWebhook));
-        server.getCommandManager().register("stafftime", new StaffTimeCommand(configManager, server, this));
-        server.getCommandManager().register("vlist", new VListCommand(configManager, server, luckPerms));
+        server.getCommandManager().register(
+                server.getCommandManager().metaBuilder("stafftime").build(),
+                new StaffTimeCommand(configManager, server, this));
+        server.getCommandManager().register(
+                server.getCommandManager().metaBuilder("vlist").build(),
+                new VListCommand(configManager, server, luckPerms));
         registerMoveCommands();
 
         System.out.println(Component.text("The plugin has been activated").color(NamedTextColor.GREEN));

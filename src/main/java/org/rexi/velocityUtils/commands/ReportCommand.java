@@ -12,6 +12,7 @@ import org.rexi.velocityUtils.ConfigManager;
 import org.rexi.velocityUtils.DiscordWebhook;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.rexi.velocityUtils.DiscordWebhook.getUuidFromName;
 
@@ -153,5 +154,27 @@ public class ReportCommand implements SimpleCommand {
     /* Utilidad para traducir códigos & */
     private Component legacy(String s) {
         return LegacyComponentSerializer.legacyAmpersand().deserialize(s);
+    }
+
+    @Override
+    public List<String> suggest(Invocation invocation) {
+        String[] args = invocation.arguments();
+
+        if (args.length == 0) {
+            // No se ha escrito nada aún, sugerimos todos los jugadores
+            return server.getAllPlayers().stream()
+                    .map(Player::getUsername)
+                    .collect(Collectors.toList());
+        }
+
+        if (args.length == 1) {
+            String input = args[0].toLowerCase(Locale.ROOT);
+            return server.getAllPlayers().stream()
+                    .map(Player::getUsername)
+                    .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(input))
+                    .collect(Collectors.toList());
+        }
+
+        return List.of();
     }
 }

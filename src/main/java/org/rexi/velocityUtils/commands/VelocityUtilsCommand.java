@@ -3,11 +3,15 @@ package org.rexi.velocityUtils.commands;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.ConsoleCommandSource;
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
 import org.rexi.velocityUtils.VelocityUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class VelocityUtilsCommand implements SimpleCommand {
 
@@ -41,4 +45,23 @@ public class VelocityUtilsCommand implements SimpleCommand {
             source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(velocityutils_usage));
         }
     }
+
+    @Override
+    public List<String> suggest(Invocation invocation) {
+        String[] args = invocation.arguments();
+
+        if (args.length == 0) {
+            // No se ha escrito nada aún, sugerimos reload
+            return List.of("reload");
+        }
+
+        if (args.length == 1) {
+            String input = args[0].toLowerCase();
+            if ("reload".startsWith(input)) {
+                return List.of("reload");
+            }
+        }
+        return List.of();
+    }
+
 }

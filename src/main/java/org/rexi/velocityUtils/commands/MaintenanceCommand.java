@@ -2,12 +2,12 @@ package org.rexi.velocityUtils.commands;
 
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.command.CommandSource;
-import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MaintenanceCommand implements SimpleCommand {
@@ -97,4 +97,70 @@ public class MaintenanceCommand implements SimpleCommand {
             source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(maintenance_usage));
         }
     }
+
+    @Override
+    public List<String> suggest(Invocation invocation) {
+        String[] args = invocation.arguments();
+        List<String> allowedPlayers = configManager.getAllowedPlayers();
+        List<String> suggestions = new ArrayList<>();
+
+        if (args.length == 0) {
+            return List.of("on", "off", "add", "remove");
+        }
+
+        if (args.length == 1) {
+            String input = args[0].toLowerCase();
+            List<String> options = List.of("on", "off", "add", "remove");
+
+            for (String option : options) {
+                if (option.startsWith(input)) {
+                    suggestions.add(option);
+                }
+            }
+
+            /*if (input.equals("add")) {
+                // Sugerir jugadores que NO están en la lista de permitidos
+                for (Player player : server.getAllPlayers()) {
+                    String name = player.getUsername();
+                    if (!allowedPlayers.contains(name) &&
+                            (name.toLowerCase().startsWith(input))) {
+                        suggestions.add(name);
+                    }
+                }
+            } else if (input.equals("remove")) {
+                // Sugerir jugadores que SÍ están en la lista de permitidos
+                for (String name : allowedPlayers) {
+                    if (name.toLowerCase().startsWith(input)) {
+                        suggestions.add(name);
+                    }
+                }
+            }*/
+            return suggestions;
+        } else if (args.length == 2) {
+            String subCommand = args[0].toLowerCase();
+            String input = args[1].toLowerCase();
+
+            if (subCommand.equals("add")) {
+                // Sugerir jugadores que NO están en la lista de permitidos (podrías cambiar esto según convenga)
+                for (Player player : server.getAllPlayers()) {
+                    String name = player.getUsername();
+                    if (!allowedPlayers.contains(name) &&
+                            (name.toLowerCase().startsWith(input))) {
+                        suggestions.add(name);
+                    }
+                }
+            } else if (subCommand.equals("remove")) {
+                // Sugerir jugadores que SÍ están en la lista de permitidos
+                for (String name : allowedPlayers) {
+                    if (name.toLowerCase().startsWith(input)) {
+                        suggestions.add(name);
+                    }
+                }
+                return suggestions;
+            }
+        }
+
+        return List.of();
+    }
 }
+

@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class StaffTimeCommand implements SimpleCommand {
 
@@ -187,8 +188,31 @@ public class StaffTimeCommand implements SimpleCommand {
     @Override
     public List<String> suggest(Invocation invocation) {
         String[] args = invocation.arguments();
+
+        if (args.length == 0) {
+            // No se ha escrito nada aún, sugerimos todos los jugadores con permiso "velocityutils.stafftime.staff"
+            return server.getAllPlayers().stream()
+                    .filter(player -> player.hasPermission("velocityutils.stafftime.staff"))
+                    .map(Player::getUsername)
+                    .collect(Collectors.toList());
+        }
+
+        if (args.length == 1) {
+            String partial = args[0].toLowerCase(Locale.ROOT);
+            // Sugerir jugadores conectados con permiso "velocityutils.stafftime.staff"
+            return server.getAllPlayers().stream()
+                    .filter(player -> player.hasPermission("velocityutils.stafftime.staff"))
+                    .map(Player::getUsername)
+                    .filter(name -> partial.isEmpty() || name.toLowerCase(Locale.ROOT).startsWith(partial))
+                    .toList();
+        }
+
         if (args.length == 2) {
-            return List.of("day", "week", "month");
+            String partial = args[1].toLowerCase(Locale.ROOT);
+            List<String> options = List.of("day", "week", "month");
+            return options.stream()
+                    .filter(option -> partial.isEmpty() || option.startsWith(partial))
+                    .toList();
         }
         return List.of();
     }
@@ -205,4 +229,5 @@ public class StaffTimeCommand implements SimpleCommand {
         }
         return null;
     }
+
 }

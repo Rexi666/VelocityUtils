@@ -9,7 +9,10 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
 
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class FindCommand implements SimpleCommand {
 
@@ -57,5 +60,27 @@ public class FindCommand implements SimpleCommand {
         find_where = find_where.replace("{player}", player.getUsername());
         find_where = find_where.replace("{server}", serverName);
         source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(find_where));
+    }
+
+    @Override
+    public List<String> suggest(Invocation invocation) {
+        String[] args = invocation.arguments();
+
+        if (args.length == 0) {
+            // No se ha escrito nada aún, sugerimos todos los jugadores
+            return server.getAllPlayers().stream()
+                    .map(Player::getUsername)
+                    .collect(Collectors.toList());
+        }
+
+        if (args.length == 1) {
+            String input = args[0].toLowerCase(Locale.ROOT);
+            return server.getAllPlayers().stream()
+                    .map(Player::getUsername)
+                    .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(input))
+                    .collect(Collectors.toList());
+        }
+
+        return List.of();
     }
 }

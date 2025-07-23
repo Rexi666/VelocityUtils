@@ -151,4 +151,29 @@ public class VListCommand implements SimpleCommand {
     private Component legacy(String s) {
         return LegacyComponentSerializer.legacyAmpersand().deserialize(s);
     }
+
+    @Override
+    public List<String> suggest(Invocation invocation) {
+        String[] args = invocation.arguments();
+
+        if (args.length == 0) {
+            // No se ha escrito nada aún, sugerimos los modos disponibles
+            return List.of("rank", "server");
+        }
+
+        if (args.length == 1) {
+            String partial = args[0].toLowerCase(Locale.ROOT);
+            List<String> options = List.of("rank", "server");
+            List<String> suggestions = new ArrayList<>();
+            for (String option : options) {
+                if (option.startsWith(partial)) {
+                    suggestions.add(option);
+                }
+            }
+            return suggestions;
+        }
+
+        return Collections.emptyList();
+    }
+
 }
