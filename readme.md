@@ -21,6 +21,7 @@
 - 🔁 [StaffChatLink-VelocityUtils (backend plugin)](https://github.com/Rexi666/StaffChatLink-VelocityUtils/releases/latest) only needed if you want to use StaffChat and AdminChat features.
 
 ### 📸 Screenshots
+|                                   |                         |
 | :-------------------------------------------: | :--------------------------------------: |
 | ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/tree/main/Wiki/Images/report.png) | ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/tree/main/Wiki/Images/report_discord.png) | 
 | *Report Message* | *Discord Report alert* | 
