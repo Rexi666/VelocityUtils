@@ -66,6 +66,8 @@
 - 🧠 Suitable for small to large Velocity networks.
 - 🔗 Discord integration via webhook.
 
+### 💬 Need Help or Support?
+Join my Discord server (Spanish/English):
 <p align="center">
   <a href="https://discord.com/invite/a3zkKtrjTr">
     <img src="https://discordapp.com/api/guilds/1025688556779360266/widget.png?style=banner3" alt="Discord Invite"/>
