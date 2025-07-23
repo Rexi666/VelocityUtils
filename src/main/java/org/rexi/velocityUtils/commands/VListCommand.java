@@ -5,6 +5,8 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.cacheddata.CachedMetaData;
@@ -84,13 +86,16 @@ public class VListCommand implements SimpleCommand {
         Map<String, List<String>> rangos = new HashMap<>();
         // Map de rango -> weight
         Map<String, Integer> rangosWeight = new HashMap<>();
+        Map<String, Component> rangosComponentes = new HashMap<>();
 
         for (Player player : server.getAllPlayers()) {
-            String rango = obtenerRango(player);
+            String rangoRaw = obtenerRango(player);
+            Component prefix = deserializePrefix(rangoRaw);
             int weight = obtenerWeightRango(player);
 
-            rangos.computeIfAbsent(rango, k -> new ArrayList<>()).add(player.getUsername());
-            rangosWeight.put(rango, weight); // Guardamos el weight asociado al rango
+            rangos.computeIfAbsent(rangoRaw, k -> new ArrayList<>()).add(player.getUsername());
+            rangosWeight.put(rangoRaw, weight); // Guardamos el weight asociado al rango
+            rangosComponentes.put(rangoRaw, prefix);
         }
 
         List<String> lines = configManager.getStringList("vlist.rank.message");
@@ -102,11 +107,18 @@ public class VListCommand implements SimpleCommand {
                                 rangosWeight.getOrDefault(e1.getKey(), 0)
                         ))
                         .forEach(entry -> {
-                            String formatted = configManager.getString("vlist.rank.rankcount")
-                                    .replace("{rank}", entry.getKey())
+                            String semiFormatted = configManager.getString("vlist.rank.rankcount")
                                     .replace("{count}", String.valueOf(entry.getValue().size()))
                                     .replace("{players}", String.join(", ", entry.getValue()));
-                            source.sendMessage(legacy(formatted));
+
+                            Component formatted = LegacyComponentSerializer.legacyAmpersand().deserialize(semiFormatted);
+
+                            formatted = formatted.replaceText(TextReplacementConfig.builder()
+                                    .matchLiteral("{rank}")
+                                    .replacement(rangosComponentes.getOrDefault(entry.getKey(), Component.text(entry.getKey())))
+                                    .build());
+
+                            source.sendMessage(formatted);
                         });
             } else {
                 source.sendMessage(legacy(line.replace("{count}", String.valueOf(totalPlayers))));
@@ -174,6 +186,21 @@ public class VListCommand implements SimpleCommand {
         }
 
         return Collections.emptyList();
+    }
+
+    private Component deserializePrefix(String input) {
+        // Si contiene <...> asumimos que es MiniMessage
+        if (input.contains("<") && input.contains(">")) {
+            try {
+                return MiniMessage.miniMessage().deserialize(input);
+            } catch (Exception e) {
+                // En caso de error, usa como texto plano
+                return Component.text(input);
+            }
+        }
+
+        // Si no, asumimos que es con códigos &
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
     }
 
 }

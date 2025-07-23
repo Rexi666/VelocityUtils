@@ -4,6 +4,9 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
@@ -31,8 +34,7 @@ public class StaffListCommand implements SimpleCommand {
 
         // Comprobar permiso de uso
         if (!(source.hasPermission("velocityutils.stafflist.use"))) {
-            String no_permission = configManager.getMessage("no_permission");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(no_permission));
+            source.sendMessage(deserializeLegacy(configManager.getMessage("no_permission")));
             return;
         }
 
@@ -41,34 +43,60 @@ public class StaffListCommand implements SimpleCommand {
                 .collect(Collectors.toList());
 
         if (staffOnline.isEmpty()) {
-            String stafflist_no_staff = configManager.getMessage("stafflist_no_staff");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(stafflist_no_staff));
+            source.sendMessage(deserializeLegacy(configManager.getMessage("stafflist_no_staff")));
             return;
         }
 
-        String stafflist_header = configManager.getMessage("stafflist_header");
-        source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(stafflist_header));
+        source.sendMessage(deserializeLegacy(configManager.getMessage("stafflist_header")));
 
         for (Player player : staffOnline) {
-            String prefix = "";
+            String prefixRaw = "";
             if (luckPerms != null) {
                 User user = luckPerms.getUserManager().getUser(player.getUniqueId());
 
                 if (user != null) {
                     CachedMetaData metaData = user.getCachedData().getMetaData();
-                    prefix = metaData.getPrefix() != null ? metaData.getPrefix() : "";
+                    prefixRaw = metaData.getPrefix() != null ? metaData.getPrefix() : "";
                 }
             }
+
+            Component prefix = deserializePrefix(prefixRaw);
 
             String serverName = player.getCurrentServer()
                     .map(s -> s.getServerInfo().getName())
                     .orElse(configManager.getMessage("server_unknown"));
 
+            String rawMessage = configManager.getMessage("stafflist_staff")
+                    .replace("{player}", player.getUsername())
+                    .replace("{server}", serverName);
 
-            String stafflist_staff = configManager.getMessage("stafflist_staff");
-            stafflist_staff = stafflist_staff.replace("{prefix}", prefix).replace("{player}", player.getUsername())
-                        .replace("{server}", serverName);
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(stafflist_staff));
+            Component message = LegacyComponentSerializer.legacyAmpersand().deserialize(rawMessage);
+
+            message = message.replaceText(TextReplacementConfig.builder()
+                    .matchLiteral("{prefix}")
+                    .replacement(prefix)
+                    .build());
+
+            source.sendMessage(message);
         }
+    }
+
+    private Component deserializeLegacy(String input) {
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
+    }
+
+    private Component deserializePrefix(String input) {
+        // Si contiene <...> asumimos que es MiniMessage
+        if (input.contains("<") && input.contains(">")) {
+            try {
+                return MiniMessage.miniMessage().deserialize(input);
+            } catch (Exception e) {
+                // En caso de error, usa como texto plano
+                return Component.text(input);
+            }
+        }
+
+        // Si no, asumimos que es con códigos &
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
     }
 }
