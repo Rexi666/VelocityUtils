@@ -21,14 +21,14 @@
 - 🔁 [StaffChatLink-VelocityUtils (backend plugin)](https://github.com/Rexi666/StaffChatLink-VelocityUtils/releases/latest) only needed if you want to use StaffChat and AdminChat features.
 
 ### 📸 Screenshots
-|                                   |                         |
-| :-------------------------------------------: | :--------------------------------------: |
-| ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/refs/heads/main/Wiki/Images/alert.png) | ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/refs/heads/main/Wiki/Images/report_discord.png) | 
-| *Report Message* | *Discord Report alert* | 
-| ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/refs/heads/main/Wiki/Images/stafflist.png) | ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/refs/heads/main/Wiki/Images/maintenance.png) | 
-| *Stafflist Message* | *Maintenance mode MOTD* |
+|                                                                                                                  |                         |
+|:----------------------------------------------------------------------------------------------------------------:| :--------------------------------------: |
+|       ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/refs/heads/main/Wiki/Images/report.png)        | ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/refs/heads/main/Wiki/Images/report_discord.png) | 
+|                                                 *Report Message*                                                 | *Discord Report alert* | 
+|      ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/refs/heads/main/Wiki/Images/stafflist.png)      | ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/refs/heads/main/Wiki/Images/maintenance.png) | 
+|                                               *Stafflist Message*                                                | *Maintenance mode MOTD* |
 | ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/refs/heads/main/Wiki/Images/staffchat_adminchat.png) | ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/refs/heads/main/Wiki/Images/alert.png) |
-| *StaffChat and AdminChat Messages* | *Alert message* |
+|                                        *StaffChat and AdminChat Messages*                                        | *Alert message* |
 
 ### 🧪 Commands:
 #### Admin commands
