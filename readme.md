@@ -23,11 +23,11 @@
 ### 📸 Screenshots
 |                                   |                         |
 | :-------------------------------------------: | :--------------------------------------: |
-| ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/tree/main/Wiki/Images/report.png) | ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/tree/main/Wiki/Images/report_discord.png) | 
+| ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/refs/heads/main/Wiki/Images/alert.png) | ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/refs/heads/main/Wiki/Images/report_discord.png) | 
 | *Report Message* | *Discord Report alert* | 
-| ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/tree/main/Wiki/Images/stafflist.png) | ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/tree/main/Wiki/Images/maintenance.png) | 
+| ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/refs/heads/main/Wiki/Images/stafflist.png) | ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/refs/heads/main/Wiki/Images/maintenance.png) | 
 | *Stafflist Message* | *Maintenance mode MOTD* |
-| ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/tree/main/Wiki/Images/staffchat_adminchat.png) | ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/tree/main/Wiki/Images/alert.png) |
+| ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/refs/heads/main/Wiki/Images/staffchat_adminchat.png) | ![](https://raw.githubusercontent.com/Rexi666/VelocityUtils/refs/heads/main/Wiki/Images/alert.png) |
 | *StaffChat and AdminChat Messages* | *Alert message* |
 
 ### 🧪 Commands:
