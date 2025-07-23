@@ -307,7 +307,7 @@ public class ConfigManager {
                 if (node.node("vlist", "server", "message").empty()) {
                     node.node("vlist", "server", "message").setList(String.class, List.of(
                             "&f-----------------------------",
-                            "&eThere is {count} players online",
+                            "&eThere are {count} players online",
                             "{servercount}",
                             "&f-----------------------------"));
                 }
@@ -317,7 +317,7 @@ public class ConfigManager {
                 if (node.node("vlist", "rank", "message").empty()) {
                     node.node("vlist", "rank", "message").setList(String.class, List.of(
                             "&f-----------------------------",
-                            "&eThere is {count} players online",
+                            "&eThere are {count} players online",
                             "{rankcount}",
                             "&f-----------------------------"));
                 }
@@ -457,7 +457,7 @@ public class ConfigManager {
                     node.node("messages", "stafftime_invalid_type").set("&cInvalid type. Use day, week or month");
                 }
                 if (node.node("messages", "vlist_no_players").empty()) {
-                    node.node("messages", "vlist_no_players").set("&cThere is no players online.");
+                    node.node("messages", "vlist_no_players").set("&cThere are no players online.");
                 }
                 if (node.node("messages", "movecommands_no_servers").empty()) {
                     node.node("messages", "movecommands_no_servers").set("&cThere are no servers configured for this command");
@@ -606,13 +606,13 @@ public class ConfigManager {
             node.node("vlist", "default_mode").set("server");
             node.node("vlist", "server", "message").setList(String.class, List.of(
                     "&f-----------------------------",
-                    "&eThere is {count} players online",
+                    "&eThere are {count} players online",
                     "{servercount}",
                     "&f-----------------------------"));
             node.node("vlist", "server", "servercount").set("&7[&b{server} &7(&b{count}&7)] - &f{players}");
             node.node("vlist", "rank", "message").setList(String.class, List.of(
                     "&f-----------------------------",
-                    "&eThere is {count} players online",
+                    "&eThere are {count} players online",
                     "{rankcount}",
                     "&f-----------------------------"));
             node.node("vlist", "rank", "rankcount").set("&7[&b{rank} &7(&b{count}&7)] - &f{players}");
@@ -670,7 +670,7 @@ public class ConfigManager {
             node.node("messages", "stafftime_usage").set("&cUsage: /stafftime <player> [day|week|month]");
             node.node("messages", "stafftime_not_found").set("&cPlayer {player} not found on the database.");
             node.node("messages", "stafftime_invalid_type").set("&cInvalid type. Use day, week or month");
-            node.node("messages", "vlist_no_players").set("&cThere is no players online.");
+            node.node("messages", "vlist_no_players").set("&cThere are no players online.");
             node.node("messages", "movecommands_no_servers").set("&cThere are no servers configured for this command");
             node.node("messages", "movecommands_server_not_found").set("&cThat server is not available at this moment.");
             node.node("messages", "movecommands_already_connected").set("&cYou are already connected to that server");

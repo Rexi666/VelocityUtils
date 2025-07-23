@@ -40,6 +40,9 @@ public class StaffListCommand implements SimpleCommand {
 
         List<Player> staffOnline = server.getAllPlayers().stream()
                 .filter(p -> p.hasPermission("velocityutils.stafflist.staff"))
+                .sorted((p1, p2) -> Integer.compare(
+                        getGroupWeight(p2), getGroupWeight(p1)
+                ))
                 .collect(Collectors.toList());
 
         if (staffOnline.isEmpty()) {
@@ -99,4 +102,18 @@ public class StaffListCommand implements SimpleCommand {
         // Si no, asumimos que es con códigos &
         return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
     }
+
+    private int getGroupWeight(Player player) {
+        if (luckPerms == null) return 0;
+
+        User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+        if (user != null) {
+            var group = luckPerms.getGroupManager().getGroup(user.getPrimaryGroup());
+            if (group != null && group.getWeight().isPresent()) {
+                return group.getWeight().getAsInt();
+            }
+        }
+        return 0;
+    }
+
 }
