@@ -47,6 +47,7 @@ public class FindCommand implements SimpleCommand {
 
         if (target.isEmpty()) {
             String find_player_not_found = configManager.getMessage("find_player_not_found");
+            find_player_not_found = find_player_not_found.replace("{player}", targetName);
             source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(find_player_not_found));
             return;
         }

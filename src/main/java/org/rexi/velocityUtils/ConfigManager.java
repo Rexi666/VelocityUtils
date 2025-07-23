@@ -52,10 +52,18 @@ public class ConfigManager {
                 ConfigurationNode node = loader.load();
                 config = new Config();
 
-                // Asegurar que la estructura del YAML sea correcta
-                config.setAlertPrefix(node.node("alert", "prefix").getString("&7[&b&lSERVER&7]"));
-
                 // Cargar los mensajes si no existen
+
+                if (node.node("alert", "enabled").empty()) {
+                    node.node("alert", "enabled").set(true);
+                }
+                if (node.node("alert", "prefix").empty()) {
+                    node.node("alert", "prefix").set("&7[&b&lSERVER&7]");
+                }
+
+                if (node.node("motd", "enabled").empty()) {
+                    node.node("motd", "enabled").set(true);
+                }
                 if (node.node("motd", "line1").empty()) {
                     node.node("motd", "line1").set("&aWelcome to this Velocity Server!");
                 }
@@ -63,6 +71,9 @@ public class ConfigManager {
                     node.node("motd", "line2").set("<bold><gradient:yellow:green>Enjoy your stay</gradient></bold>");
                 }
 
+                if (node.node("maintenance", "enabled").empty()) {
+                    node.node("maintenance", "enabled").set(true);
+                }
                 if (node.node("maintenance", "active").empty()) {
                     node.node("maintenance", "active").set(false);
                 }
@@ -76,6 +87,9 @@ public class ConfigManager {
                     node.node("maintenance", "allowed").setList(String.class, List.of("Rexigamer666"));
                 }
 
+                if (node.node("report", "enabled").empty()) {
+                    node.node("report", "enabled").set(true);
+                }
                 if (node.node("report", "teleport_on_click").empty()) {
                     node.node("report", "teleport_on_click").set(true);
                 }
@@ -115,6 +129,9 @@ public class ConfigManager {
       """);
                 }
 
+                if (node.node("staffchat", "enabled").empty()) {
+                    node.node("staffchat", "enabled").set(true);
+                }
                 if (node.node("staffchat", "discord_hook", "enabled").empty()) {
                     node.node("staffchat", "discord_hook", "enabled").set(false);
                 }
@@ -141,6 +158,9 @@ public class ConfigManager {
       """);
                 }
 
+                if (node.node("adminchat", "enabled").empty()) {
+                    node.node("adminchat", "enabled").set(true);
+                }
                 if (node.node("adminchat", "discord_hook", "enabled").empty()) {
                     node.node("adminchat", "discord_hook", "enabled").set(false);
                 }
@@ -249,6 +269,9 @@ public class ConfigManager {
                 if (node.node("stafftime", "discord_hook", "leave", "serverstime").empty()) {
                     node.node("stafftime", "discord_hook", "leave", "serverstime").set("- {server} - {time}");
                 }
+                if (node.node("stafftime", "command", "enabled").empty()) {
+                    node.node("stafftime", "command", "enabled").set(true);
+                }
                 if (node.node("stafftime", "command", "no_type").empty()) {
                     node.node("stafftime", "command", "no_type").setList(String.class, List.of(
                             "&f-----------------------------",
@@ -275,6 +298,9 @@ public class ConfigManager {
                     node.node("stafftime", "command", "month").set("Month");
                 }
 
+                if (node.node("vlist", "enabled").empty()) {
+                    node.node("vlist", "enabled").set(true);
+                }
                 if (node.node("vlist", "default_mode").empty()) {
                     node.node("vlist", "default_mode").set("server");
                 }
@@ -299,6 +325,16 @@ public class ConfigManager {
                     node.node("vlist", "rank", "rankcount").set("&7[&b{rank} &7(&b{count}&7)] - &f{players}");
                 }
 
+                if (node.node("find", "enabled").empty()) {
+                    node.node("find", "enabled").set(true);
+                }
+                if (node.node("goto", "enabled").empty()) {
+                    node.node("goto", "enabled").set(true);
+                }
+                if (node.node("stafflist", "enabled").empty()) {
+                    node.node("stafflist", "enabled").set(true);
+                }
+
                 if (node.node("messages", "no_permission").empty()) {
                     node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
                 }
@@ -309,7 +345,7 @@ public class ConfigManager {
                     node.node("messages", "alert_usage").set("&cUsage: /alert <message>");
                 }
                 if (node.node("messages", "configuration_reloaded").empty()) {
-                    node.node("messages", "configuration_reloaded").set("&aConfiguration reloaded successfully!");
+                    node.node("messages", "configuration_reloaded").set("&aConfiguration reloaded successfully! For some changes to take effect, you may need to restart the proxy.");
                 }
                 if (node.node("messages", "velocityutils_usage").empty()) {
                     node.node("messages", "velocityutils_usage").set("&cUsage: /velocityutils reload");
@@ -451,17 +487,21 @@ public class ConfigManager {
             ConfigurationNode node = loader.createNode();
 
             // 💡 Crear la estructura correctamente sin inline mapping
-            node.node("alert", "prefix").set(config.getAlertPrefix());
+            node.node("alert", "enabled").set(true);
+            node.node("alert", "prefix").set("&7[&b&lSERVER&7]");
 
             // Agregar mensajes predeterminados
+            node.node("motd", "enabled").set(true);
             node.node("motd", "line1").set("&aWelcome to this Velocity Server!");
             node.node("motd", "line2").set("<bold><gradient:yellow:green>Enjoy your stay</gradient></bold>");
 
+            node.node("maintenance", "enabled").set(true);
             node.node("maintenance", "active").set(false);
             node.node("maintenance", "motd", "line1").set("&cServer under maintenance!");
             node.node("maintenance", "motd", "line2").set("<bold><gradient:red:yellow>Try again later</gradient></bold>");
             node.node("maintenance", "allowed").setList(String.class, List.of("Rexigamer666"));
 
+            node.node("report", "enabled").set(true);
             node.node("report", "teleport_on_click").set(true);
             node.node("report", "message").setList(String.class, List.of(
                     "&f-----------------------------",
@@ -483,6 +523,7 @@ public class ConfigManager {
       🌍 **Server:** {server}
       """);
 
+            node.node("staffchat", "enabled").set(true);
             node.node("staffchat", "discord_hook", "enabled").set(false);
             node.node("staffchat", "discord_hook", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");
             node.node("staffchat", "discord_hook", "avatar").set("https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968");
@@ -495,6 +536,7 @@ public class ConfigManager {
       💬 **Message:** {message}
       """);
 
+            node.node("adminchat", "enabled").set(true);
             node.node("adminchat", "discord_hook", "enabled").set(false);
             node.node("adminchat", "discord_hook", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");
             node.node("adminchat", "discord_hook", "avatar").set("https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968");
@@ -543,6 +585,7 @@ public class ConfigManager {
       {serverstime}
       """);
             node.node("stafftime", "discord_hook", "leave", "serverstime").set("- {server} - {time}");
+            node.node("stafftime", "command", "enabled").set(true);
             node.node("stafftime", "command", "no_type").setList(String.class, List.of(
                     "&f-----------------------------",
                     "&eStaff Time from {player}",
@@ -559,6 +602,7 @@ public class ConfigManager {
             node.node("stafftime", "command", "week").set("Week");
             node.node("stafftime", "command", "month").set("Month");
 
+            node.node("vlist", "enabled").set(true);
             node.node("vlist", "default_mode").set("server");
             node.node("vlist", "server", "message").setList(String.class, List.of(
                     "&f-----------------------------",
@@ -573,6 +617,7 @@ public class ConfigManager {
                     "&f-----------------------------"));
             node.node("vlist", "rank", "rankcount").set("&7[&b{rank} &7(&b{count}&7)] - &f{players}");
 
+            node.node("movecommands", "enabled").set(true);
             node.node("movecommands", "lobby", "server").setList(String.class, List.of(
                     "lobby1",
                     "lobby2"));
@@ -581,10 +626,14 @@ public class ConfigManager {
                     "survival"));
             node.node("movecommands", "survival", "message").set("&aYou have been moved to the &dsurvival");
 
+            node.node("find", "enabled").set(true);
+            node.node("goto", "enabled").set(true);
+            node.node("stafflist", "enabled").set(true);
+
             node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
             node.node("messages", "no_console").set("&cOnly players can use this command");
             node.node("messages", "alert_usage").set("&cUsage: /alert <message>");
-            node.node("messages", "configuration_reloaded").set("&aConfiguration reloaded successfully!");
+            node.node("messages", "configuration_reloaded").set("&aConfiguration reloaded successfully! For some changes to take effect, you may need to restart the proxy.");
             node.node("messages", "velocityutils_usage").set("&cUsage: /velocityutils reload");
             node.node("messages", "maintenance_not_on_list").set("&cThe server is under maintenance!");
             node.node("messages", "maintenance_usage").set("&cUsage: /maintenance <on|off> | /maintenance <add|remove> <nick>");
@@ -638,13 +687,6 @@ public class ConfigManager {
 
     public String getAlertPrefix() {
         return config != null ? config.getAlertPrefix() : "&7[&b&lSERVER&7]";
-    }
-
-    public void setAlertPrefix(String prefix) {
-        if (config != null) {
-            config.setAlertPrefix(prefix);
-            saveConfig();
-        }
     }
 
     public String getMessage(String key) {

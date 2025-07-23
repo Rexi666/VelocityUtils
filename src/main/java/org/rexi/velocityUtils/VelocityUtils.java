@@ -156,42 +156,7 @@ public class VelocityUtils {
         server.getEventManager().register(this, new PluginMessageListenerAdminChat(this, server, configManager, adminchatWebhook));
         server.getEventManager().register(this, new StaffConnectionListener(this, staffSessions, configManager, staffJoinWebhook, staffChangeWebhook, staffLeaveWebhook));
 
-        server.getCommandManager().register("alert", new AlertCommand(configManager,server));
-        server.getCommandManager().register(
-                server.getCommandManager().metaBuilder("velocityutils").build(),
-                new VelocityUtilsCommand(configManager, server, this));
-        server.getCommandManager().register(
-                server.getCommandManager().metaBuilder("vu").build(),
-                new VelocityUtilsCommand(configManager, server, this));
-        server.getCommandManager().register(
-                server.getCommandManager().metaBuilder("maintenance").build(),
-                new MaintenanceCommand(configManager, server));
-        server.getCommandManager().register(
-                server.getCommandManager().metaBuilder("report").build(),
-                new ReportCommand(configManager, server, reportWebhook)
-        );
-
-        server.getCommandManager().register(
-                server.getCommandManager().metaBuilder("goto").build(),
-                new GotoCommand(configManager, server));
-        server.getCommandManager().register(
-                server.getCommandManager().metaBuilder("find").build(),
-                new FindCommand(configManager, server));
-        if (this.luckPerms != null) {
-            server.getCommandManager().register("stafflist", new StaffListCommand(configManager, server, luckPerms));
-        } else {
-            server.getCommandManager().register("stafflist", new StaffListCommand(configManager, server, null));
-        }
-        server.getCommandManager().register("staffchat", new StaffChatCommand(this, configManager, server, staffchatWebhook));
-        server.getCommandManager().register("sc", new StaffChatCommand(this, configManager, server, staffchatWebhook));
-        server.getCommandManager().register("adminchat", new AdminChatCommand(this, configManager, server, adminchatWebhook));
-        server.getCommandManager().register("ac", new AdminChatCommand(this, configManager, server, adminchatWebhook));
-        server.getCommandManager().register(
-                server.getCommandManager().metaBuilder("stafftime").build(),
-                new StaffTimeCommand(configManager, server, this));
-        server.getCommandManager().register(
-                server.getCommandManager().metaBuilder("vlist").build(),
-                new VListCommand(configManager, server, luckPerms));
+        registerCommands();
         registerMoveCommands();
 
         System.out.println(Component.text("The plugin has been activated").color(NamedTextColor.GREEN));
@@ -199,12 +164,82 @@ public class VelocityUtils {
     }
 
     public void registerMoveCommands() {
-        ConfigurationNode moveCommandsNode = configManager.getRootNode().node("movecommands");
-        if (!moveCommandsNode.virtual()) {
-            for (ConfigurationNode commandNode : moveCommandsNode.childrenMap().values()) {
-                String commandName = commandNode.key().toString();
-                server.getCommandManager().register(commandName, new MoveCommand(configManager, server, commandName));
+        if (configManager.getBoolean("movecommands.enabled")) {
+            ConfigurationNode moveCommandsNode = configManager.getRootNode().node("movecommands");
+            if (!moveCommandsNode.virtual()) {
+                for (ConfigurationNode commandNode : moveCommandsNode.childrenMap().values()) {
+                    String commandName = commandNode.key().toString();
+                    server.getCommandManager().register(commandName, new MoveCommand(configManager, server, commandName));
+                }
             }
+        }
+    }
+
+    public void registerCommands() {
+        server.getCommandManager().register(
+                server.getCommandManager().metaBuilder("velocityutils").build(),
+                new VelocityUtilsCommand(configManager, server, this));
+
+        server.getCommandManager().register(
+                server.getCommandManager().metaBuilder("vu").build(),
+                new VelocityUtilsCommand(configManager, server, this));
+
+        if (configManager.getBoolean("alert.enabled")) {
+            server.getCommandManager().register("alert", new AlertCommand(configManager,server));
+        }
+
+        if (configManager.getBoolean("maintenance.enabled")) {
+            server.getCommandManager().register(
+                    server.getCommandManager().metaBuilder("maintenance").build(),
+                    new MaintenanceCommand(configManager, server));
+        }
+
+        if (configManager.getBoolean("report.enabled")) {
+            server.getCommandManager().register(
+                    server.getCommandManager().metaBuilder("report").build(),
+                    new ReportCommand(configManager, server, reportWebhook)
+            );
+        }
+
+        if (configManager.getBoolean("goto.enabled")) {
+            server.getCommandManager().register(
+                    server.getCommandManager().metaBuilder("goto").build(),
+                    new GotoCommand(configManager, server));
+        }
+
+        if (configManager.getBoolean("find.enabled")) {
+            server.getCommandManager().register(
+                    server.getCommandManager().metaBuilder("find").build(),
+                    new FindCommand(configManager, server));
+        }
+
+        if (configManager.getBoolean("stafflist.enabled")) {
+            server.getCommandManager().register("stafflist", new StaffListCommand(configManager, server, luckPerms));
+        }
+
+        if (configManager.getBoolean("staffchat.enabled")) {
+            server.getCommandManager().register("staffchat", new StaffChatCommand(this, configManager, server, staffchatWebhook));
+
+            server.getCommandManager().register("sc", new StaffChatCommand(this, configManager, server, staffchatWebhook));
+
+        }
+        if (configManager.getBoolean("adminchat.enabled")) {
+            server.getCommandManager().register("adminchat", new AdminChatCommand(this, configManager, server, adminchatWebhook));
+
+            server.getCommandManager().register("ac", new AdminChatCommand(this, configManager, server, adminchatWebhook));
+
+        }
+
+        if (configManager.getBoolean("stafftime.command.enabled")) {
+            server.getCommandManager().register(
+                    server.getCommandManager().metaBuilder("stafftime").build(),
+                    new StaffTimeCommand(configManager, server, this));
+        }
+
+        if (configManager.getBoolean("vlist.enabled")) {
+            server.getCommandManager().register(
+                    server.getCommandManager().metaBuilder("vlist").build(),
+                    new VListCommand(configManager, server, luckPerms));
         }
     }
 
@@ -214,13 +249,15 @@ public class VelocityUtils {
             Component motd;
             if (configManager.isMaintenanceMode()) {
                 motd = configManager.getMaintenanceMotd();  // Obtén el MotD de mantenimiento
-            } else {
+                ServerPing ping = event.getPing();
+                ServerPing updatePing = ping.asBuilder().description(motd).build();
+                event.setPing(updatePing);
+            } else if (configManager.getBoolean("motd.enabled")) {
                 motd = configManager.getMotd();  // Obtén el MotD normal
+                ServerPing ping = event.getPing();
+                ServerPing updatePing = ping.asBuilder().description(motd).build();
+                event.setPing(updatePing);
             }
-
-            ServerPing ping = event.getPing();
-            ServerPing updatePing = ping.asBuilder().description(motd).build();
-            event.setPing(updatePing);
         } catch (Exception e) {
             logger.error("Error al actualizar el MOTD en ProxyPingEvent", e);
         }

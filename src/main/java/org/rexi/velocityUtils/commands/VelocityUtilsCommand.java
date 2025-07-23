@@ -33,6 +33,7 @@ public class VelocityUtilsCommand implements SimpleCommand {
             if (source.hasPermission("velocityutils.admin") || source instanceof ConsoleCommandSource) {
                 configManager.loadConfig();
                 plugin.registerMoveCommands();
+                plugin.registerCommands();
                 Component motd = configManager.getMotd();
                 String configuration_reloaded = configManager.getMessage("configuration_reloaded");
                 source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(configuration_reloaded));

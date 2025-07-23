@@ -117,24 +117,6 @@ public class MaintenanceCommand implements SimpleCommand {
                     suggestions.add(option);
                 }
             }
-
-            /*if (input.equals("add")) {
-                // Sugerir jugadores que NO están en la lista de permitidos
-                for (Player player : server.getAllPlayers()) {
-                    String name = player.getUsername();
-                    if (!allowedPlayers.contains(name) &&
-                            (name.toLowerCase().startsWith(input))) {
-                        suggestions.add(name);
-                    }
-                }
-            } else if (input.equals("remove")) {
-                // Sugerir jugadores que SÍ están en la lista de permitidos
-                for (String name : allowedPlayers) {
-                    if (name.toLowerCase().startsWith(input)) {
-                        suggestions.add(name);
-                    }
-                }
-            }*/
             return suggestions;
         } else if (args.length == 2) {
             String subCommand = args[0].toLowerCase();
