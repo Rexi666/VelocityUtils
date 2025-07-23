@@ -1,30 +1,26 @@
 # VelocityUtils by Rexi666
 
-**VelocityUtils** is a plugin for Velocity proxy servers that adds essential utilities for both players and server administrators.  
-Its main features include: global alerts, maintenance mode, player reporting system, server location and teleportation commands, and much more.  
-Lightweight, configurable, and easy to use — it's perfect for any network looking to improve server management effortlessly.
+**VelocityUtils** is a plugin designed for **Velocity proxy servers** that adds essential utilities for both players and server administrators. It aims to simplify network management with useful, configurable, and easy-to-use features.
 
 ---
 
-### Dependencies
-- Java JDK 17
-- Luckperms (Optional for the stafflist and vlist)  
-- [StaffChatLink-VelocityUtils](https://github.com/Rexi666/StaffChatLink-VelocityUtils/releases/latest) On the backends, needed if you want to use the StaffChat and AdminChat features. This plugin is not required if you don't want to use the StaffChat and AdminChat features.
+### ✨ Features
+- 📣 **Global Alerts** - send broadcast messages across the entire network with /alert.
+- 🔧 **Maintenance mode** - restrict server access when needed.
+- 📋 **Player Reporting System** - players can report others, and staff receive notifications, including via Discord webhook.
+- 🧭 **Player Location Commands** - find which server a player is on with /find and teleport to them with /goto.
+- 👥 **StaffList** - view online staff and their connection times with /stafflist and /stafftime.
+- 🔐 **StaffChat** and **AdminChat** - private channels for staff communication.
+- 📜 **Dynamic MOTD** - customize your network’s MOTD through the config.
+- 🧑‍🤝‍🧑 **vList** - shows all connected players, filterable by rank if LuckPerms is installed.
+- 🚪 **MoveCommands** - configure shortcuts like /lobby or /survival to move players between servers.
 
-### Features
-- **Broadcast alerts** - Use the command /alert to send a message to all the network. You can change the prefix of the message on the config.
-- **MOTD** - You can change the MOTD of your network in the config. If you make a change with your server online, you can use the command `/vu reload` to reload it.
-- **Maintenance** - You can set your server on maintenance mode, so only the ones who are on the config can access the server.
-- **Report** - User can report players for any reason. Staff can see the reports and tp to the server where the reported is (staff need goto permission for this). Also, you can set up an alert on discord.
-- **Find** - You can see in which server a player is.
-- **GoTo** - You can teleport to the server where a player is.
-- **StaffList** - You can see the staff list of your network.
-- **StaffChat** and **AdminChat** - You can enable a staff chat to communicate with other staff members.
-- **StaffTime** - You can see how long a staff member has been online on the network.
-- **vList** - You can see the list of players in your network. If you filter by rank, you need luckperms installed on your network.
-- **MoveCommands** - You can configure commands for players to move to another server. For example /lobby, /survival, etc
+### ⚙️ Dependencies
+- ☕ Java JDK 17
+- 📚 [Luckperms](https://luckperms.net/download) (optional — required only if you want to display ranks in vList and in StaffList)
+- 🔁 [StaffChatLink-VelocityUtils (backend plugin)](https://github.com/Rexi666/StaffChatLink-VelocityUtils/releases/latest) only needed if you want to use StaffChat and AdminChat features.
 
-### Commands:
+### 🧪 Commands:
 #### Admin commands
 - `/velocityutils reload` | `/vu reload` - Reload the config
 - `/stafftime <jugador> [day|week|month]` - See how long a staff member has been online on the network.
@@ -43,7 +39,7 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 - `/report <user> <reason>` - Report a user to the staff team
 - You can configure a MoveCommand to move players to another server, for example /lobby or /survival
 
-### Permissions:
+### 🔐 Permissions:
 #### Admin permissions
 - `velocityutils.admin` - access to /velocityutils reload and /vu reload
 - `velocityutils.stafftime.exclude` - permission to be excluded from the staff time
@@ -62,4 +58,10 @@ Lightweight, configurable, and easy to use — it's perfect for any network look
 - `velocityutils.vlist` - access to /vlist
 #### User permissions
 - `velocityutils.report.use` - access to /report
-- `velocityutils.movecommand.<command>` - permission to use a MoveCommand, for example `velocityutils.movecommand.lobby` to use the command /lobby. Use `velocityutils.movecommand.*` to give access to all MoveCommands.
+- `velocityutils.movecommand.<command>` - permission to use a MoveCommand, e.g. `velocityutils.movecommand.lobby` to use the command /lobby. Use `velocityutils.movecommand.*` to grant all move commands.
+
+### 📦 Why Choose VelocityUtils?
+- ✅ Lightweight and optimized.
+- ⚙️ Highly configurable.
+- 🧠 Suitable for small to large Velocity networks.
+- 🔗 Discord integration via webhook.
