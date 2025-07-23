@@ -154,7 +154,7 @@ public class VelocityUtils {
         server.getEventManager().register(this, new ChatListener(this, configManager, server, staffchatWebhook, adminchatWebhook));
         server.getEventManager().register(this, new PluginMessageListenerStaffChat(this, server, configManager, staffchatWebhook));
         server.getEventManager().register(this, new PluginMessageListenerAdminChat(this, server, configManager, adminchatWebhook));
-        server.getEventManager().register(this, new StaffConnectionListener(this, staffSessions, configManager, staffJoinWebhook, staffChangeWebhook, staffLeaveWebhook));
+        server.getEventManager().register(this, new StaffConnectionListener(this, staffSessions, configManager, server, luckPerms, staffJoinWebhook, staffChangeWebhook, staffLeaveWebhook));
 
         registerCommands();
         registerMoveCommands();

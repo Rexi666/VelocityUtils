@@ -335,6 +335,19 @@ public class ConfigManager {
                     node.node("stafflist", "enabled").set(true);
                 }
 
+                if (node.node("staffjoin", "enabled").empty()) {
+                    node.node("staffjoin", "enabled").set(true);
+                }
+                if (node.node("staffjoin", "join_message").empty()) {
+                    node.node("staffjoin", "join_message").set("&b&lStaff - &a{rank} {player} has joined the server");
+                }
+                if (node.node("staffjoin", "leave_message").empty()) {
+                    node.node("staffjoin", "leave_message").set("&b&lStaff - &c{rank} {player} has left the server");
+                }
+                if (node.node("staffjoin", "change_message").empty()) {
+                    node.node("staffjoin", "change_message").set("&b&lStaff - &e{rank} {player} has changed the server to &b{server}");
+                }
+
                 if (node.node("messages", "no_permission").empty()) {
                     node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
                 }
@@ -629,6 +642,11 @@ public class ConfigManager {
             node.node("find", "enabled").set(true);
             node.node("goto", "enabled").set(true);
             node.node("stafflist", "enabled").set(true);
+
+            node.node("staffjoin", "enabled").set(true);
+            node.node("staffjoin", "join_message").set("&b&lStaff - &a{rank} {player} has joined the server");
+            node.node("staffjoin", "leave_message").set("&b&lStaff - &c{rank} {player} has left the server");
+            node.node("staffjoin", "change_message").set("&b&lStaff - &e{rank} {player} has changed the server to &b{server}");
 
             node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
             node.node("messages", "no_console").set("&cOnly players can use this command");

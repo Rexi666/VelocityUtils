@@ -1,1 +1,1 @@
-{"id":"velocityutils","name":"VelocityUtils","version":"2.2-SNAPSHOT","authors":["Rexi666"],"dependencies":[{"id":"luckperms","optional":true}],"main":"org.rexi.velocityUtils.VelocityUtils"}
+{"id":"velocityutils","name":"VelocityUtils","version":"2.3-SNAPSHOT","authors":["Rexi666"],"dependencies":[{"id":"luckperms","optional":true}],"main":"org.rexi.velocityUtils.VelocityUtils"}

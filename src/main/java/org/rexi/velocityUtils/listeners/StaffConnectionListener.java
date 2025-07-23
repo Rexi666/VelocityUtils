@@ -4,6 +4,14 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ProxyServer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.cacheddata.CachedMetaData;
+import net.luckperms.api.model.user.User;
 import org.rexi.velocityUtils.*;
 
 import java.sql.SQLException;
@@ -12,6 +20,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import static org.rexi.velocityUtils.DiscordWebhook.getUuidFromName;
 
@@ -20,15 +29,19 @@ public class StaffConnectionListener {
     private final ConfigManager configManager;
     private final VelocityUtils plugin;
     private final Map<UUID, StaffSession> sessions;
+    private final ProxyServer server;
+    private final LuckPerms luckPerms;
     private final DiscordWebhook staffJoinWebhook;
     private final DiscordWebhook staffChangeWebhook;
     private final DiscordWebhook staffLeaveWebhook;
 
-    public StaffConnectionListener(VelocityUtils plugin, Map<UUID, StaffSession> sessions, ConfigManager configManager, DiscordWebhook staffJoinWebhook,
+    public StaffConnectionListener(VelocityUtils plugin, Map<UUID, StaffSession> sessions, ConfigManager configManager, ProxyServer server, LuckPerms luckPerms, DiscordWebhook staffJoinWebhook,
                                    DiscordWebhook staffChangeWebhook, DiscordWebhook staffLeaveWebhook) {
         this.plugin = plugin;
         this.sessions = sessions;
         this.configManager = new ConfigManager();
+        this.server = server;
+        this.luckPerms = luckPerms;
         this.staffJoinWebhook = staffJoinWebhook;
         this.staffChangeWebhook = staffChangeWebhook;
         this.staffLeaveWebhook = staffLeaveWebhook;
@@ -37,14 +50,19 @@ public class StaffConnectionListener {
     @Subscribe
     public void onServerConnected(ServerConnectedEvent event) {
         Player player = event.getPlayer();
+        String newServer = event.getServer().getServerInfo().getName();  // Servidor al que acaba de conectar
+        String previousServer = event.getPreviousServer()
+                .map(srv -> srv.getServerInfo().getName())
+                .orElse("N/A");
+
+        staffJoinMessage(player, newServer, previousServer);
+
         if (isAdmin(player)) {
             return; // No action for admins
         }
         if (isStaff(player)) {
             savePlayerInfo(player);
             StaffSession session = sessions.get(player.getUniqueId());
-
-            String newServer = event.getServer().getServerInfo().getName();  // Servidor al que acaba de conectar
 
             if (session == null) {
                 // Primera vez que detectamos al jugador, creamos sesión con el servidor actual
@@ -62,10 +80,6 @@ public class StaffConnectionListener {
             } else {
                 // Sesión ya existente, hacemos switch de servidor
                 session.switchServer(newServer);
-
-                String previousServer = event.getPreviousServer()
-                        .map(srv -> srv.getServerInfo().getName())
-                        .orElse("N/A");
 
                 String uuid = getUuidFromName(player.getUsername());
                 String avatar = (uuid != null)
@@ -88,6 +102,8 @@ public class StaffConnectionListener {
     @Subscribe
     public void onDisconnect(DisconnectEvent event) {
         Player player = event.getPlayer();
+
+        staffLeaveMessage(player);
         if (isAdmin(player)) {
             return; // No action for admins
         }
@@ -212,6 +228,104 @@ public class StaffConnectionListener {
         }
     }
 
+    public void staffJoinMessage(Player player, String newServer, String previousServer) {
+        if (configManager.getBoolean("staffjoin.enabled")) {
+            if (player.hasPermission("velocityutils.staffjoin.staff")) {
+                String prefixRaw = "";
+                if (luckPerms != null) {
+                    User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+
+                    if (user != null) {
+                        CachedMetaData metaData = user.getCachedData().getMetaData();
+                        prefixRaw = metaData.getPrefix() != null ? metaData.getPrefix() : "";
+                    }
+                }
+
+                Component prefix = deserializePrefix(prefixRaw);
+
+                if (previousServer.equalsIgnoreCase("N/A")) {
+                    String format = configManager.getString("staffjoin.join_message")
+                            .replace("{player}", player.getUsername());
+
+                    Component joinMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(format)
+                            .replaceText(TextReplacementConfig.builder()
+                                    .matchLiteral("{rank}")
+                                    .replacement(prefix)
+                                    .build());
+
+                    server.getAllPlayers().forEach(target -> {
+                        if (target.hasPermission("velocityutils.staffjoin.notify")) {
+                            target.sendMessage(joinMessage);
+                        }
+                    });
+                } else {
+                    String format = configManager.getString("staffjoin.change_message")
+                            .replace("{player}", player.getUsername())
+                            .replace("{server}", newServer);
+
+                    Component changeMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(format)
+                            .replaceText(TextReplacementConfig.builder()
+                                    .matchLiteral("{rank}")
+                                    .replacement(prefix)
+                                    .build());
+
+                    server.getAllPlayers().forEach(target -> {
+                        if (target.hasPermission("velocityutils.staffjoin.notify")) {
+                            target.sendMessage(changeMessage);
+                        }
+                    });
+
+                }
+            }
+        }
+    }
+
+    public void staffLeaveMessage(Player player) {
+        if (configManager.getBoolean("staffjoin.enabled")) {
+            if (player.hasPermission("velocityutils.staffjoin.staff")) {
+                String prefixRaw = "";
+                if (luckPerms != null) {
+                    User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+
+                    if (user != null) {
+                        CachedMetaData metaData = user.getCachedData().getMetaData();
+                        prefixRaw = metaData.getPrefix() != null ? metaData.getPrefix() : "";
+                    }
+                }
+
+                Component prefix = deserializePrefix(prefixRaw);
+
+                String format = configManager.getString("staffjoin.leave_message")
+                        .replace("{player}", player.getUsername());
+
+                Component leaveMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(format)
+                        .replaceText(TextReplacementConfig.builder()
+                                .matchLiteral("{rank}")
+                                .replacement(prefix)
+                                .build());
 
 
+                server.getAllPlayers().forEach(target -> {
+                    if (target.hasPermission("velocityutils.staffjoin.notify")) {
+                        target.sendMessage(leaveMessage);
+                    }
+                });
+            }
+        }
+    }
+
+    private Component deserializePrefix(String input) {
+        // Si contiene <...> asumimos que es MiniMessage
+        if (input.contains("<") && input.contains(">")) {
+            try {
+                return MiniMessage.miniMessage().deserialize(input);
+            } catch (Exception e) {
+                // En caso de error, usa como texto plano
+                return Component.text(input);
+            }
+        }
+
+        // Si no, asumimos que es con códigos &
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
+    }
 }

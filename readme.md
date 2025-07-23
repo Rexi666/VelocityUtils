@@ -54,6 +54,7 @@
 - `velocityutils.admin` - access to /velocityutils reload and /vu reload
 - `velocityutils.stafftime.exclude` - permission to be excluded from the staff time
 - `velocityutils.stafftime.use` - access to /stafftime
+- `velocityutils.staffjoin.notify` - permission to be notified when a staff joins/leaves/changes server
 #### Staff permissions
 - `velocityutils.alert` - access to /alert
 - `velocityutils.maintenance` - access to /maintenance
@@ -66,6 +67,7 @@
 - `velocityutils.adminchat` - access to /adminchat
 - `velocityutils.stafftime.staff` - permission to be listed in the staff time
 - `velocityutils.vlist` - access to /vlist
+- `velocityutils.staffjoin.staff` - permission to notify when join/leave/change server to those with the permission notify
 #### User permissions
 - `velocityutils.report.use` - access to /report
 - `velocityutils.movecommand.<command>` - permission to use a MoveCommand, e.g. `velocityutils.movecommand.lobby` to use the command /lobby. Use `velocityutils.movecommand.*` to grant all move commands.
