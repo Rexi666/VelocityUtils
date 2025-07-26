@@ -17,7 +17,7 @@
 
 ### ⚙️ Dependencies
 - ☕ Java JDK 17
-- 📚 [Luckperms](https://luckperms.net/download) (optional — required only if you want to display ranks in vList and in StaffList)
+- 📚 [Luckperms Velocity](https://luckperms.net/download)
 - 🔁 [StaffChatLink-VelocityUtils (backend plugin)](https://github.com/Rexi666/StaffChatLink-VelocityUtils/releases/latest) only needed if you want to use StaffChat and AdminChat features.
 
 ### 📸 Screenshots
