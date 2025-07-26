@@ -79,6 +79,8 @@
 - 🔗 Discord integration via webhook.
 
 ### 💬 Need Help or Support?
+📖 Wiki: https://rexi666-plugins.gitbook.io/rexi666/velocityutils
+
 Join my Discord server (Spanish/English):
 <p align="center">
   <a href="https://discord.com/invite/a3zkKtrjTr">
