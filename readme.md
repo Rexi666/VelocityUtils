@@ -14,11 +14,13 @@
 - 📜 **Dynamic MOTD** - customize your network’s MOTD through the config.
 - 🧑‍🤝‍🧑 **vList** - shows all connected players, filterable by rank if LuckPerms is installed.
 - 🚪 **MoveCommands** - configure shortcuts like /lobby or /survival to move players between servers.
+- 🧮 PlaceholderAPI Support - includes placeholders for player counters both globally and per server to use in chat, scoreboards, plugins, and other compatible places. (Needs the plugin link installed)
 
 ### ⚙️ Dependencies
 - ☕ Java JDK 17
 - 📚 [Luckperms Velocity](https://luckperms.net/download)
 - 🔁 [StaffChatLink-VelocityUtils (backend plugin)](https://github.com/Rexi666/StaffChatLink-VelocityUtils/releases/latest) only needed if you want to use StaffChat and AdminChat features.
+- 🔁 [PlaceholdersExpansion-VelocityUtils (backend plugin)](https://github.com/Rexi666/PlaceholdersExpansion-VelocityUtils/releases/latest) only needed if you want to use PlaceholderAPI placeholders. + [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) installed on your backends.
 
 ### 📸 Screenshots
 |                                                                                                                  |                         |
