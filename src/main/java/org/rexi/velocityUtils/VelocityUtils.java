@@ -15,10 +15,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.commands.*;
-import org.rexi.velocityUtils.listeners.ChatListener;
-import org.rexi.velocityUtils.listeners.PluginMessageListenerAdminChat;
-import org.rexi.velocityUtils.listeners.PluginMessageListenerStaffChat;
-import org.rexi.velocityUtils.listeners.StaffConnectionListener;
+import org.rexi.velocityUtils.listeners.*;
 import org.slf4j.Logger;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -56,6 +53,7 @@ public class VelocityUtils {
     private final ChannelIdentifier ADMINCHAT_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "adminchat");
     public final Set<UUID> staffChatToggled = ConcurrentHashMap.newKeySet();
     public final Set<UUID> adminChatToggled = ConcurrentHashMap.newKeySet();
+    private final ChannelIdentifier PLACEHOLDER_CHANNEL  = MinecraftChannelIdentifier.create("velocityutils", "placeholders");
 
     private final Map<UUID, StaffSession> staffSessions = new ConcurrentHashMap<>();
 
@@ -77,6 +75,7 @@ public class VelocityUtils {
         }
         server.getChannelRegistrar().register(STAFFCHAT_CHANNEL);
         server.getChannelRegistrar().register(ADMINCHAT_CHANNEL);
+        server.getChannelRegistrar().register(PLACEHOLDER_CHANNEL);
 
         configManager.loadConfig();
 
@@ -152,9 +151,11 @@ public class VelocityUtils {
         }
 
         server.getEventManager().register(this, new ChatListener(this, configManager, server, staffchatWebhook, adminchatWebhook));
+        server.getEventManager().register(this, new StaffConnectionListener(this, staffSessions, configManager, server, luckPerms, staffJoinWebhook, staffChangeWebhook, staffLeaveWebhook, new DateUtils(configManager)));
+
         server.getEventManager().register(this, new PluginMessageListenerStaffChat(this, server, configManager, staffchatWebhook));
         server.getEventManager().register(this, new PluginMessageListenerAdminChat(this, server, configManager, adminchatWebhook));
-        server.getEventManager().register(this, new StaffConnectionListener(this, staffSessions, configManager, server, luckPerms, staffJoinWebhook, staffChangeWebhook, staffLeaveWebhook, new DateUtils(configManager)));
+        server.getEventManager().register(this, new PluginMessageListenerPlaceholders(server));
 
         registerCommands();
         registerMoveCommands();

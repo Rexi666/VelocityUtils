@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'org.rexi'
-version = '2.4-SNAPSHOT'
+version = '2.5'
 
 repositories {
     maven {
