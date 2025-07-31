@@ -154,7 +154,7 @@ public class VelocityUtils {
         server.getEventManager().register(this, new ChatListener(this, configManager, server, staffchatWebhook, adminchatWebhook));
         server.getEventManager().register(this, new PluginMessageListenerStaffChat(this, server, configManager, staffchatWebhook));
         server.getEventManager().register(this, new PluginMessageListenerAdminChat(this, server, configManager, adminchatWebhook));
-        server.getEventManager().register(this, new StaffConnectionListener(this, staffSessions, configManager, server, luckPerms, staffJoinWebhook, staffChangeWebhook, staffLeaveWebhook));
+        server.getEventManager().register(this, new StaffConnectionListener(this, staffSessions, configManager, server, luckPerms, staffJoinWebhook, staffChangeWebhook, staffLeaveWebhook, new DateUtils(configManager)));
 
         registerCommands();
         registerMoveCommands();
@@ -233,7 +233,7 @@ public class VelocityUtils {
         if (configManager.getBoolean("stafftime.command.enabled")) {
             server.getCommandManager().register(
                     server.getCommandManager().metaBuilder("stafftime").build(),
-                    new StaffTimeCommand(configManager, server, this));
+                    new StaffTimeCommand(configManager, server, this, new DateUtils(configManager)));
         }
 
         if (configManager.getBoolean("vlist.enabled")) {

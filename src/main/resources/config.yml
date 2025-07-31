@@ -62,6 +62,7 @@ adminchat:
       🌍 **Server:** {server}
       💬 **Message:** {message}
 stafftime:
+  week_start: "MONDAY"
   discord_hook:
     enabled: false
     join:
@@ -154,7 +155,7 @@ staffjoin:
   enabled: true
   join_message: "&b&lStaff - &a{rank} {player} has joined the server"
   leave_message: "&b&lStaff - &c{rank} {player} has left the server"
-  change_message: "&b&lStaff - &e{rank} {player} has changed the server to &b{server}"
+  change_message: "&b&lStaff - &e{rank} {player} has changed the server &b{from} &e> &b{server}"
 messages:
   no_permission: "&cYou don't have permission to use this command"
   no_console: "&cOnly players can use this command"

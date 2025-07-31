@@ -7,6 +7,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.DateUtils;
 import org.rexi.velocityUtils.StaffSession;
 import org.rexi.velocityUtils.VelocityUtils;
 
@@ -24,11 +25,13 @@ public class StaffTimeCommand implements SimpleCommand {
     private final ConfigManager configManager;
     private final ProxyServer server;
     private final VelocityUtils plugin;
+    private final DateUtils dateUtils;
 
-    public StaffTimeCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin) {
+    public StaffTimeCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin, DateUtils dateUtils) {
         this.configManager = configManager;
         this.server = server;
         this.plugin = plugin;
+        this.dateUtils = dateUtils;
     }
 
     @Override
@@ -145,8 +148,8 @@ public class StaffTimeCommand implements SimpleCommand {
     }
 
     private long getSecondsForWeek(Connection conn, UUID uuid, LocalDate date) throws SQLException {
-        LocalDate startOfWeek = date.with(DayOfWeek.MONDAY);
-        LocalDate endOfWeek = startOfWeek.plusDays(6);
+        LocalDate startOfWeek = dateUtils.getStartOfWeek();
+        LocalDate endOfWeek = dateUtils.getEndOfWeek();
 
         String sql = "SELECT SUM(duration_seconds) AS total FROM staff_time_daily WHERE uuid = ? AND date BETWEEN ? AND ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -160,8 +163,8 @@ public class StaffTimeCommand implements SimpleCommand {
     }
 
     private long getSecondsForMonth(Connection conn, UUID uuid, LocalDate date) throws SQLException {
-        LocalDate firstDay = date.withDayOfMonth(1);
-        LocalDate lastDay = date.withDayOfMonth(date.lengthOfMonth());
+        LocalDate firstDay = dateUtils.getStartOfMonth();
+        LocalDate lastDay = dateUtils.getEndOfMonth();
 
         String sql = "SELECT SUM(duration_seconds) AS total FROM staff_time_daily WHERE uuid = ? AND date BETWEEN ? AND ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {

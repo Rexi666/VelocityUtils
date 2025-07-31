@@ -187,6 +187,9 @@ public class ConfigManager {
       """);
                 }
 
+                if (node.node("stafftime", "week_start").empty()) {
+                    node.node("stafftime", "week_start").set("MONDAY");
+                }
                 if (node.node("stafftime", "discord_hook", "enabled").empty()) {
                     node.node("stafftime", "discord_hook", "enabled").set(false);
                 }
@@ -562,6 +565,7 @@ public class ConfigManager {
       💬 **Message:** {message}
       """);
 
+            node.node("stafftime", "week_start").set("MONDAY");
             node.node("stafftime", "discord_hook", "enabled").set(false);
             node.node("stafftime", "discord_hook", "join", "enabled").set(true);
             node.node("stafftime", "discord_hook", "join", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");

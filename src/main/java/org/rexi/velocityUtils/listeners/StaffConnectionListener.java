@@ -20,7 +20,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 import static org.rexi.velocityUtils.DiscordWebhook.getUuidFromName;
 
@@ -34,17 +33,19 @@ public class StaffConnectionListener {
     private final DiscordWebhook staffJoinWebhook;
     private final DiscordWebhook staffChangeWebhook;
     private final DiscordWebhook staffLeaveWebhook;
+    private final DateUtils dateUtils;
 
     public StaffConnectionListener(VelocityUtils plugin, Map<UUID, StaffSession> sessions, ConfigManager configManager, ProxyServer server, LuckPerms luckPerms, DiscordWebhook staffJoinWebhook,
-                                   DiscordWebhook staffChangeWebhook, DiscordWebhook staffLeaveWebhook) {
+                                   DiscordWebhook staffChangeWebhook, DiscordWebhook staffLeaveWebhook, DateUtils dateUtils) {
         this.plugin = plugin;
         this.sessions = sessions;
-        this.configManager = new ConfigManager();
+        this.configManager = configManager;
         this.server = server;
         this.luckPerms = luckPerms;
         this.staffJoinWebhook = staffJoinWebhook;
         this.staffChangeWebhook = staffChangeWebhook;
         this.staffLeaveWebhook = staffLeaveWebhook;
+        this.dateUtils = dateUtils;
     }
 
     @Subscribe
@@ -117,8 +118,8 @@ public class StaffConnectionListener {
                 saveSessionDurationDaily(player.getUniqueId(), today, sessionDuration);
 
                 Duration daily = getDurationForRange(player.getUniqueId(), today, today);
-                Duration weekly = getDurationForRange(player.getUniqueId(), DateUtils.getStartOfWeek(), DateUtils.getEndOfWeek());
-                Duration monthly = getDurationForRange(player.getUniqueId(), DateUtils.getStartOfMonth(), DateUtils.getEndOfMonth());
+                Duration weekly = getDurationForRange(player.getUniqueId(), dateUtils.getStartOfWeek(), dateUtils.getEndOfWeek());
+                Duration monthly = getDurationForRange(player.getUniqueId(), dateUtils.getStartOfMonth(), dateUtils.getEndOfMonth());
 
                 if (staffLeaveWebhook != null && configManager.getBoolean("stafftime.discord_hook.enabled") && configManager.getBoolean("stafftime.discord_hook.leave.enabled")) {
                     String raw = configManager.getString("stafftime.discord_hook.leave.message");
@@ -261,7 +262,8 @@ public class StaffConnectionListener {
                 } else {
                     String format = configManager.getString("staffjoin.change_message")
                             .replace("{player}", player.getUsername())
-                            .replace("{server}", newServer);
+                            .replace("{server}", newServer)
+                            .replace("{from}", previousServer);
 
                     Component changeMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(format)
                             .replaceText(TextReplacementConfig.builder()
