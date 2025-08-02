@@ -10,7 +10,7 @@
 - 📋 **Player Reporting System** - players can report others, and staff receive notifications, including via Discord webhook.
 - 🧭 **Player Location Commands** - find which server a player is on with /find and teleport to them with /goto.
 - 👥 **StaffList** - view online staff and their connection times with /stafflist and /stafftime.
-- 🔐 **StaffChat** and **AdminChat** - private channels for staff communication.
+- 🔐 **StaffChat** and **AdminChat** - private channels for staff communication. (Needs the plugin link installed)
 - 📜 **Dynamic MOTD** - customize your network’s MOTD through the config.
 - 🧑‍🤝‍🧑 **vList** - shows all connected players, filterable by rank if LuckPerms is installed.
 - 🚪 **MoveCommands** - configure shortcuts like /lobby or /survival to move players between servers.
@@ -19,8 +19,7 @@
 ### ⚙️ Dependencies
 - ☕ Java JDK 17
 - 📚 [Luckperms Velocity](https://luckperms.net/download)
-- 🔁 [StaffChatLink-VelocityUtils (backend plugin)](https://github.com/Rexi666/StaffChatLink-VelocityUtils/releases/latest) only needed if you want to use StaffChat and AdminChat features.
-- 🔁 [PlaceholdersExpansion-VelocityUtils (backend plugin)](https://github.com/Rexi666/PlaceholdersExpansion-VelocityUtils/releases/latest) only needed if you want to use PlaceholderAPI placeholders. + [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) installed on your backends.
+- 🔁 [VelocityUtilsLink (backend plugin)](https://github.com/Rexi666/VelocityUtilsLink/releases/latest) only needed if you want to use StaffChat and AdminChat features or you want to use PlaceholderAPI placeholders.
 
 ### 📸 Screenshots
 |                                                                                                                  |                         |
