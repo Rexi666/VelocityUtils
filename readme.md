@@ -19,7 +19,7 @@
 ### ⚙️ Dependencies
 - ☕ Java JDK 17
 - 📚 [Luckperms Velocity](https://luckperms.net/download)
-- 🔁 [VelocityUtilsLink (backend plugin)](https://github.com/Rexi666/VelocityUtilsLink/releases/latest) only needed if you want to use StaffChat and AdminChat features or you want to use PlaceholderAPI placeholders.
+- 🔁 [VelocityUtilsLink (backend plugin)](https://github.com/Rexi666/VelocityUtilsLink/releases/latest) only needed if you want to use StaffChat and AdminChat features, or you want to use PlaceholderAPI placeholders.
 
 ### 📸 Screenshots
 |                                                                                                                  |                         |
