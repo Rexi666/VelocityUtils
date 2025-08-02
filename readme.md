@@ -14,7 +14,7 @@
 - 📜 **Dynamic MOTD** - customize your network’s MOTD through the config.
 - 🧑‍🤝‍🧑 **vList** - shows all connected players, filterable by rank if LuckPerms is installed.
 - 🚪 **MoveCommands** - configure shortcuts like /lobby or /survival to move players between servers.
-- 🧮 PlaceholderAPI Support - includes placeholders for player counters both globally and per server to use in chat, scoreboards, plugins, and other compatible places. (Needs the plugin link installed)
+- 🧮 **PlaceholderAPI Support** - includes placeholders for player counters both globally and per server to use in chat, scoreboards, plugins, and other compatible places. (Needs the plugin link installed)
 
 ### ⚙️ Dependencies
 - ☕ Java JDK 17
