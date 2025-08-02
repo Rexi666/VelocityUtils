@@ -2,11 +2,14 @@ package org.rexi.velocityUtils;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.connection.LoginEvent;
+import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
+import com.velocitypowered.api.plugin.PluginContainer;
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
@@ -14,6 +17,7 @@ import com.velocitypowered.api.proxy.server.ServerPing;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bstats.velocity.Metrics;
 import org.rexi.velocityUtils.commands.*;
 import org.rexi.velocityUtils.listeners.*;
 import org.slf4j.Logger;
@@ -40,6 +44,7 @@ public class VelocityUtils {
 
     private final ProxyServer server;
     private final ConfigManager configManager;
+    private final PluginContainer plugin;
     private LuckPerms luckPerms = null;
 
     private DiscordWebhook reportWebhook;
@@ -59,12 +64,14 @@ public class VelocityUtils {
 
 
     @Inject
-    public VelocityUtils(ProxyServer server) {
+    public VelocityUtils(ProxyServer server, PluginContainer plugin) {
         this.server = server;
+        this.plugin = plugin;
         this.configManager = new ConfigManager();
     }
 
     @Inject private Logger logger;
+    @Inject private Metrics.Factory metricsFactory;
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
@@ -80,6 +87,8 @@ public class VelocityUtils {
         configManager.loadConfig();
 
         createTables();
+
+        new UpdateChecker(server, plugin, configManager, BuildConstants.VERSION, "https://raw.githubusercontent.com/Rexi666/VelocityUtils/main/latest-version.txt").checkForUpdates();
 
         try {
             this.luckPerms = LuckPermsProvider.get();
@@ -159,6 +168,8 @@ public class VelocityUtils {
 
         registerCommands();
         registerMoveCommands();
+
+        Metrics metrics = metricsFactory.make(this, 26742);
 
         System.out.println(Component.text("The plugin has been activated").color(NamedTextColor.GREEN));
         System.out.println(Component.text("Thank you for using Rexi666 plugins").color(NamedTextColor.BLUE));
@@ -273,6 +284,14 @@ public class VelocityUtils {
                 String under_maintenance = configManager.getMessage("maintenance_not_on_list");
                 event.setResult(LoginEvent.ComponentResult.denied(LegacyComponentSerializer.legacyAmpersand().deserialize(under_maintenance)));
             }
+        }
+    }
+
+    @Subscribe
+    public void PostLogin(PostLoginEvent event) {
+        Player player = event.getPlayer();
+        if (player.hasPermission("velocityutils.admin")) {
+            new UpdateChecker(server, plugin, configManager, BuildConstants.VERSION, "https://raw.githubusercontent.com/Rexi666/VelocityUtils/main/latest-version.txt").checkForUpdatesPlayer(player);
         }
     }
 

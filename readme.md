@@ -52,7 +52,7 @@
 
 ### 🔐 Permissions:
 #### Admin permissions
-- `velocityutils.admin` - access to /velocityutils reload and /vu reload
+- `velocityutils.admin` - access to /velocityutils reload and /vu reload. Notifications on new plugin updates.
 - `velocityutils.stafftime.exclude` - permission to be excluded from the staff time
 - `velocityutils.stafftime.use` - access to /stafftime
 - `velocityutils.staffjoin.notify` - permission to be notified when a staff joins/leaves/changes server

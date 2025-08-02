@@ -357,6 +357,9 @@ public class ConfigManager {
                 if (node.node("messages", "no_console").empty()) {
                     node.node("messages", "no_console").set("&cOnly players can use this command");
                 }
+                if (node.node("messages", "new_version_available").empty()) {
+                    node.node("messages", "new_version_available").set("&cA new version of VelocityUtils is available (&b{version}&c)! &e{url}");
+                }
                 if (node.node("messages", "alert_usage").empty()) {
                     node.node("messages", "alert_usage").set("&cUsage: /alert <message>");
                 }
@@ -654,6 +657,7 @@ public class ConfigManager {
 
             node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
             node.node("messages", "no_console").set("&cOnly players can use this command");
+            node.node("messages", "new_version_available").set("&cA new version of VelocityUtils is available (&b{version}&c)! &e{url}");
             node.node("messages", "alert_usage").set("&cUsage: /alert <message>");
             node.node("messages", "configuration_reloaded").set("&aConfiguration reloaded successfully! For some changes to take effect, you may need to restart the proxy.");
             node.node("messages", "velocityutils_usage").set("&cUsage: /velocityutils reload");

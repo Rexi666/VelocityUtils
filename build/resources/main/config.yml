@@ -159,6 +159,7 @@ staffjoin:
 messages:
   no_permission: "&cYou don't have permission to use this command"
   no_console: "&cOnly players can use this command"
+  new_version_available: "&cA new version of VelocityUtils is available (&b{version}&c)! &e{url}"
   alert_usage: "&cUsage: /alert <message>"
   configuration_reloaded: "&aConfiguration reloaded successfully! For some changes to take effect, you may need to restart the proxy."
   velocityutils_usage: "&cUsage: /velocityutils reload"

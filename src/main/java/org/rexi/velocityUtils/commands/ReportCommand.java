@@ -137,7 +137,7 @@ public class ReportCommand implements SimpleCommand {
                     Component tpLine = legacy(parsed)
                             .clickEvent(ClickEvent.runCommand("/goto " + targetName))
                             .hoverEvent(HoverEvent.showText(
-                                    LegacyComponentSerializer.legacyAmpersand().deserialize(report_hover)));;
+                                    LegacyComponentSerializer.legacyAmpersand().deserialize(report_hover)));
                     online.sendMessage(tpLine);
                 } else {
                     online.sendMessage(legacy(parsed));
