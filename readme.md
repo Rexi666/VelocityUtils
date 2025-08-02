@@ -73,7 +73,7 @@
 - `velocityutils.report.use` - access to /report
 - `velocityutils.movecommand.<command>` - permission to use a MoveCommand, e.g. `velocityutils.movecommand.lobby` to use the command /lobby. Use `velocityutils.movecommand.*` to grant all move commands.
 
-### Placeholders:
+### ✏️ Placeholders:
 [VelocityUtilsLink (backend plugin)](https://github.com/Rexi666/VelocityUtilsLink/releases/latest) + [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) needed to be installed on the backends to use these placeholders.
 - `%velocityutils_globalplayers%` - Total number of players across the network.
 - `%velocityutils_players_<server>%` - Number of players on a specific server.
