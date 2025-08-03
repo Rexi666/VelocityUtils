@@ -99,6 +99,7 @@ public class ConfigManager {
                             "&eNew Report from {player}!",
                             "&fReported: &c{reported}",
                             "&fReason: &b{reason}",
+                            "&fServer: &b{server}",
                             "&eClick to teleport",
                             "&f-----------------------------"));
                 }
@@ -124,6 +125,47 @@ public class ConfigManager {
                     node.node("report", "discord_hook", "message").set(String.class, """
       📢 **New Report from {reporter}**
       👤 **Reported:** {reported}
+      📄 **Reason:** {reason}
+      🌍 **Server:** {server}
+      """);
+                }
+
+                if (node.node("helpop", "enabled").empty()) {
+                    node.node("helpop", "enabled").set(true);
+                }
+                if (node.node("helpop", "teleport_on_click").empty()) {
+                    node.node("helpop", "teleport_on_click").set(true);
+                }
+                if (node.node("helpop", "message").empty()) {
+                    node.node("helpop", "message").setList(String.class, List.of(
+                            "&f-----------------------------",
+                            "&eNew Help Request from {player}!",
+                            "&fReason: &b{reason}",
+                            "&fServer: &b{server}",
+                            "&eClick to teleport",
+                            "&f-----------------------------"));
+                }
+                if (node.node("helpop", "discord_hook", "enabled").empty()) {
+                    node.node("helpop", "discord_hook", "enabled").set(false);
+                }
+                if (node.node("helpop", "discord_hook", "url").empty()) {
+                    node.node("helpop", "discord_hook", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");
+                }
+                if (node.node("helpop", "discord_hook", "avatar").empty()) {
+                    node.node("helpop", "discord_hook", "avatar").set("https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968");
+                }
+                if (node.node("helpop", "discord_hook", "username").empty()) {
+                    node.node("helpop", "discord_hook", "username").set("VelocityUtils");
+                }
+                if (node.node("helpop", "discord_hook", "color_rgb").empty()) {
+                    node.node("helpop", "discord_hook", "color_rgb").set("227,230,14");
+                }
+                if (node.node("helpop", "discord_hook", "title").empty()) {
+                    node.node("helpop", "discord_hook", "title").set("\uD83D\uDCE2Help Request\uD83D\uDCE2");
+                }
+                if (node.node("helpop", "discord_hook", "message").empty()) {
+                    node.node("helpop", "discord_hook", "message").set(String.class, """
+      📢 **New Help Request from {player}**
       📄 **Reason:** {reason}
       🌍 **Server:** {server}
       """);
@@ -411,6 +453,18 @@ public class ConfigManager {
                 if (node.node("messages", "report_webhook_error").empty()) {
                     node.node("messages", "report_webhook_error").set("&cError trying to send discord report webhook");
                 }
+                if (node.node("messages", "helpop_usage").empty()) {
+                    node.node("messages", "helpop_usage").set("&cUsage: /helpop <reason>");
+                }
+                if (node.node("messages", "helpop_cooldown").empty()) {
+                    node.node("messages", "helpop_cooldown").set("&cYou have {time}s before using /helpop again");
+                }
+                if (node.node("messages", "helpop_hover").empty()) {
+                    node.node("messages", "helpop_hover").set("&bClick to teleport");
+                }
+                if (node.node("messages", "helpop_sent").empty()) {
+                    node.node("messages", "helpop_sent").set("&aYour help request was sent");
+                }
                 if (node.node("messages", "goto_usage").empty()) {
                     node.node("messages", "goto_usage").set("&cUsage: /goto <player>");
                 }
@@ -527,6 +581,7 @@ public class ConfigManager {
                     "&eNew Report from {player}!",
                     "&fReported: &c{reported}",
                     "&fReason: &b{reason}",
+                    "&fServer: &b{server}",
                     "&eClick to teleport",
                     "&f-----------------------------"));
             node.node("report", "discord_hook", "enabled").set(false);
@@ -538,6 +593,27 @@ public class ConfigManager {
             node.node("report", "discord_hook", "message").set(String.class, """
       📢 **New Report from {reporter}**
       👤 **Reported:** {reported}
+      📄 **Reason:** {reason}
+      🌍 **Server:** {server}
+      """);
+
+            node.node("helpop", "enabled").set(true);
+            node.node("helpop", "teleport_on_click").set(true);
+            node.node("helpop", "message").setList(String.class, List.of(
+                    "&f-----------------------------",
+                    "&eNew Help Request from {player}!",
+                    "&fReason: &b{reason}",
+                    "&fServer: &b{server}",
+                    "&eClick to teleport",
+                    "&f-----------------------------"));
+            node.node("helpop", "discord_hook", "enabled").set(false);
+            node.node("helpop", "discord_hook", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");
+            node.node("helpop", "discord_hook", "avatar").set("https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968");
+            node.node("helpop", "discord_hook", "username").set("VelocityUtils");
+            node.node("helpop", "discord_hook", "color_rgb").set("227,230,14");
+            node.node("helpop", "discord_hook", "title").set("\uD83D\uDCE2Help Request\uD83D\uDCE2");
+            node.node("helpop", "discord_hook", "message").set(String.class, """
+      📢 **New Help Request from {player}**
       📄 **Reason:** {reason}
       🌍 **Server:** {server}
       """);
@@ -675,6 +751,10 @@ public class ConfigManager {
             node.node("messages", "report_hover").set("&bClick to teleport");
             node.node("messages", "report_cooldown").set("&cYou have {time}s before using /report again");
             node.node("messages", "report_webhook_error").set("&cError trying to send discord report webhook");
+            node.node("messages", "helpop_usage").set("&cUsage: /helpop <reason>");
+            node.node("messages", "helpop_cooldown").set("&cYou have {time}s before using /helpop again");
+            node.node("messages", "helpop_hover").set("&bClick to teleport");
+            node.node("messages", "helpop_sent").set("&aYour help request was sent");
             node.node("messages", "goto_usage").set("&cUsage: /goto <player>");
             node.node("messages", "goto_player_not_found").set("&cPlayer {player} not found");
             node.node("messages", "goto_server_not_found").set("&cServer could not be found");

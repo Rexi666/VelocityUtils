@@ -48,6 +48,7 @@ public class VelocityUtils {
     private LuckPerms luckPerms = null;
 
     private DiscordWebhook reportWebhook;
+    private DiscordWebhook helpopWebhook;
     private DiscordWebhook staffchatWebhook;
     private DiscordWebhook adminchatWebhook;
     private DiscordWebhook staffJoinWebhook;
@@ -106,6 +107,16 @@ public class VelocityUtils {
                 reportWebhook.setUsername(configManager.getString("report.discord_hook.username"));
                 reportWebhook.setTitle(configManager.getString("report.discord_hook.title"));
                 reportWebhook.setColorRGB(configManager.getString("report.discord_hook.color_rgb"));
+            }
+        }
+        if (configManager.getBoolean("helpop.discord_hook.enabled")) {
+            String helpopWebhookUrl = configManager.getString("helpop.discord_hook.url");
+            if (helpopWebhookUrl != null && helpopWebhookUrl.startsWith("http")) {
+                this.helpopWebhook = new DiscordWebhook(helpopWebhookUrl, configManager);
+                helpopWebhook.setAvatarUrl(configManager.getString("helpop.discord_hook.avatar"));
+                helpopWebhook.setUsername(configManager.getString("helpop.discord_hook.username"));
+                helpopWebhook.setTitle(configManager.getString("helpop.discord_hook.title"));
+                helpopWebhook.setColorRGB(configManager.getString("helpop.discord_hook.color_rgb"));
             }
         }
         if (configManager.getBoolean("staffchat.discord_hook.enabled")) {
@@ -252,6 +263,13 @@ public class VelocityUtils {
             server.getCommandManager().register(
                     server.getCommandManager().metaBuilder("vlist").build(),
                     new VListCommand(configManager, server, luckPerms));
+        }
+
+        if (configManager.getBoolean("helpop.enabled")) {
+            server.getCommandManager().register(
+                    server.getCommandManager().metaBuilder("helpop").build(),
+                    new HelpopCommand(configManager, server, helpopWebhook)
+            );
         }
     }
 

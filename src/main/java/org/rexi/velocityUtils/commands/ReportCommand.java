@@ -71,7 +71,7 @@ public class ReportCommand implements SimpleCommand {
 
         Player target = targetOpt.get();
         String reporterName = (source instanceof Player p) ? p.getUsername() : "Console";
-        String serverName = target.getCurrentServer().map(s -> s.getServerInfo().getName()).orElse("unknown");
+        String serverName = target.getCurrentServer().map(s -> s.getServerInfo().getName()).orElse(configManager.getMessage("server_unknown"));
 
         /* ──────────── 4. Cooldown ──────────── */
 
@@ -102,6 +102,7 @@ public class ReportCommand implements SimpleCommand {
                     "&eNew Report from {player}!",
                     "&fReported: &c{reported}",
                     "&fReason: &b{reason}",
+                    "&fServer: &b{server}",
                     "&eClick to teleport",
                     "&f-----------------------------"
             );
@@ -130,7 +131,8 @@ public class ReportCommand implements SimpleCommand {
                 String parsed = raw
                         .replace("{player}", reporterName)
                         .replace("{reported}", target.getUsername())
-                        .replace("{reason}", reason);
+                        .replace("{reason}", reason)
+                        .replace("{server}", serverName);
 
                 if (configManager.getBoolean("report.teleport_on_click")) {
                     String report_hover = configManager.getMessage("report_hover");

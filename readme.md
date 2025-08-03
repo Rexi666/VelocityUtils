@@ -7,7 +7,7 @@
 ### ✨ Features
 - 📣 **Global Alerts** - send broadcast messages across the entire network with /alert.
 - 🔧 **Maintenance mode** - restrict server access when needed.
-- 📋 **Player Reporting System** - players can report others, and staff receive notifications, including via Discord webhook.
+- 📬 **Player Support System** – Players can use /report to report other players, or /helpop to request staff assistance. Staff members with permission receive in-game notifications (with clickable teleport buttons), and optionally via a Discord webhook.
 - 🧭 **Player Location Commands** - find which server a player is on with /find and teleport to them with /goto.
 - 👥 **StaffList** - view online staff and their connection times with /stafflist and /stafftime.
 - 🔐 **StaffChat** and **AdminChat** - private channels for staff communication. (Needs the plugin link installed)
@@ -62,6 +62,7 @@
 - `velocityutils.find` - access to /find
 - `velocityutils.goto` - access to /goto
 - `velocityutils.report.see` - access to see reports
+- `velocityutils.helpop.see` - access to see helpops
 - `velocityutils.stafflist.use` - access to /stafflist
 - `velocityutils.stafflist.staff` - permission to be listed in the staff list
 - `velocityutils.staffchat` - access to /staffchat
@@ -71,6 +72,7 @@
 - `velocityutils.staffjoin.staff` - permission to notify when join/leave/change server to those with the permission notify
 #### User permissions
 - `velocityutils.report.use` - access to /report
+- `velocityutils.helpop.use` - access to /helpop
 - `velocityutils.movecommand.<command>` - permission to use a MoveCommand, e.g. `velocityutils.movecommand.lobby` to use the command /lobby. Use `velocityutils.movecommand.*` to grant all move commands.
 
 ### ✏️ Placeholders:
