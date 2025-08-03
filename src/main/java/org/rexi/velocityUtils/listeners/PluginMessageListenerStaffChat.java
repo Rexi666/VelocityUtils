@@ -6,7 +6,12 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.cacheddata.CachedMetaData;
+import net.luckperms.api.model.user.User;
 import org.rexi.velocityUtils.ConfigManager;
 import org.rexi.velocityUtils.DiscordWebhook;
 import org.rexi.velocityUtils.VelocityUtils;
@@ -20,13 +25,15 @@ public class PluginMessageListenerStaffChat {
     private final ProxyServer server;
     private final ConfigManager configManager;
     private final DiscordWebhook staffchatWebhook;
+    private final LuckPerms luckPerms;
     private final MinecraftChannelIdentifier channel = MinecraftChannelIdentifier.create("velocityutils", "staffchat");
 
-    public PluginMessageListenerStaffChat(VelocityUtils plugin, ProxyServer server, ConfigManager configManager, DiscordWebhook staffchatWebhook) {
+    public PluginMessageListenerStaffChat(VelocityUtils plugin, ProxyServer server, ConfigManager configManager, DiscordWebhook staffchatWebhook, LuckPerms luckPerms) {
         this.plugin = plugin;
         this.server = server;
         this.configManager = configManager;
         this.staffchatWebhook = staffchatWebhook;
+        this.luckPerms = luckPerms;
     }
 
     @Subscribe
@@ -62,12 +69,28 @@ public class PluginMessageListenerStaffChat {
 
                 String serverName = serverConn.getServerInfo().getName();
 
+                String prefixRaw = "";
+                if (luckPerms != null) {
+                    User user = luckPerms.getUserManager().getUser(uuid);
+
+                    if (user != null) {
+                        CachedMetaData metaData = user.getCachedData().getMetaData();
+                        prefixRaw = metaData.getPrefix() != null ? metaData.getPrefix() : "";
+                    }
+                }
+
+                Component prefixComponent = LegacyComponentSerializer.legacyAmpersand().deserialize(prefixRaw);
+
                 String format = configManager.getMessage("staffchat_format")
                         .replace("{player}", username)
                         .replace("{message}", message)
                         .replace("{server}", serverName);
 
-                Component staffMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(format);
+                Component staffMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(format)
+                        .replaceText(TextReplacementConfig.builder()
+                                .matchLiteral("{prefix}")
+                                .replacement(prefixComponent)
+                                .build());
 
                 server.getAllPlayers().forEach(target -> {
                     if (target.hasPermission("velocityutils.staffchat")) {
@@ -91,5 +114,20 @@ public class PluginMessageListenerStaffChat {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private Component deserializePrefix(String input) {
+        // Si contiene <...> asumimos que es MiniMessage
+        if (input.contains("<") && input.contains(">")) {
+            try {
+                return MiniMessage.miniMessage().deserialize(input);
+            } catch (Exception e) {
+                // En caso de error, usa como texto plano
+                return Component.text(input);
+            }
+        }
+
+        // Si no, asumimos que es con códigos &
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
     }
 }

@@ -454,7 +454,7 @@ public class ConfigManager {
                     node.node("messages", "staffchat_enabled").set("&eStaff chat &aenabled");
                 }
                 if (node.node("messages", "staffchat_format").empty()) {
-                    node.node("messages", "staffchat_format").set("&8[&bStaffChat&8] &7{server} - &b{player}&7: &f{message}");
+                    node.node("messages", "staffchat_format").set("&8[&bStaffChat&8] &7{server} - {prefix} &b{player}&7: &f{message}");
                 }
 
                 if (node.node("messages", "adminchat_disabled").empty()) {
@@ -464,7 +464,7 @@ public class ConfigManager {
                     node.node("messages", "adminchat_enabled").set("&eAdmin chat &aenabled");
                 }
                 if (node.node("messages", "adminchat_format").empty()) {
-                    node.node("messages", "adminchat_format").set("&8[&dAdminChat&8] &7{server} - &d{player}&7: &f{message}");
+                    node.node("messages", "adminchat_format").set("&8[&dAdminChat&8] &7{server} - {prefix} &d{player}&7: &f{message}");
                 }
                 if (node.node("messages", "stafftime_usage").empty()) {
                     node.node("messages", "stafftime_usage").set("&cUsage: /stafftime <player> [day|week|month]");
@@ -689,10 +689,10 @@ public class ConfigManager {
             node.node("messages", "stafflist_staff").set("{prefix} &f{player} &7- &b{server}");
             node.node("messages", "staffchat_disabled").set("&eStaff chat &cdisabled");
             node.node("messages", "staffchat_enabled").set("&eStaff chat &aenabled");
-            node.node("messages", "staffchat_format").set("&8[&bStaffChat&8] &7{server} - &b{player}&7: &f{message}");
+            node.node("messages", "staffchat_format").set("&8[&bStaffChat&8] &7{server} - {prefix} &b{player}&7: &f{message}");
             node.node("messages", "adminchat_disabled").set("&eAdmin chat &cdisabled");
             node.node("messages", "adminchat_enabled").set("&eAdmin chat &aenabled");
-            node.node("messages", "adminchat_format").set("&8[&dAdminChat&8] &7{server} - &d{player}&7: &f{message}");
+            node.node("messages", "adminchat_format").set("&8[&dAdminChat&8] &7{server} - {prefix} &d{player}&7: &f{message}");
             node.node("messages", "stafftime_usage").set("&cUsage: /stafftime <player> [day|week|month]");
             node.node("messages", "stafftime_not_found").set("&cPlayer {player} not found on the database.");
             node.node("messages", "stafftime_invalid_type").set("&cInvalid type. Use day, week or month");

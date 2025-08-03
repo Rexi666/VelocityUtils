@@ -31,6 +31,6 @@ public class ChatListener {
 
         // Eliminar de ambos chats por si acaso
         plugin.staffChatToggled.remove(player.getUniqueId());
-        //AdminChatCommand.removeFromAdminChat(player.getUniqueId());
+        plugin.adminChatToggled.remove(player.getUniqueId());
     }
 }

@@ -162,8 +162,8 @@ public class VelocityUtils {
         server.getEventManager().register(this, new ChatListener(this, configManager, server, staffchatWebhook, adminchatWebhook));
         server.getEventManager().register(this, new StaffConnectionListener(this, staffSessions, configManager, server, luckPerms, staffJoinWebhook, staffChangeWebhook, staffLeaveWebhook, new DateUtils(configManager)));
 
-        server.getEventManager().register(this, new PluginMessageListenerStaffChat(this, server, configManager, staffchatWebhook));
-        server.getEventManager().register(this, new PluginMessageListenerAdminChat(this, server, configManager, adminchatWebhook));
+        server.getEventManager().register(this, new PluginMessageListenerStaffChat(this, server, configManager, staffchatWebhook, luckPerms));
+        server.getEventManager().register(this, new PluginMessageListenerAdminChat(this, server, configManager, adminchatWebhook, luckPerms));
         server.getEventManager().register(this, new PluginMessageListenerPlaceholders(server));
 
         registerCommands();
@@ -230,15 +230,15 @@ public class VelocityUtils {
         }
 
         if (configManager.getBoolean("staffchat.enabled")) {
-            server.getCommandManager().register("staffchat", new StaffChatCommand(this, configManager, server, staffchatWebhook));
+            server.getCommandManager().register("staffchat", new StaffChatCommand(this, configManager, server, staffchatWebhook, luckPerms));
 
-            server.getCommandManager().register("sc", new StaffChatCommand(this, configManager, server, staffchatWebhook));
+            server.getCommandManager().register("sc", new StaffChatCommand(this, configManager, server, staffchatWebhook, luckPerms));
 
         }
         if (configManager.getBoolean("adminchat.enabled")) {
-            server.getCommandManager().register("adminchat", new AdminChatCommand(this, configManager, server, adminchatWebhook));
+            server.getCommandManager().register("adminchat", new AdminChatCommand(this, configManager, server, adminchatWebhook, luckPerms));
 
-            server.getCommandManager().register("ac", new AdminChatCommand(this, configManager, server, adminchatWebhook));
+            server.getCommandManager().register("ac", new AdminChatCommand(this, configManager, server, adminchatWebhook, luckPerms));
 
         }
 

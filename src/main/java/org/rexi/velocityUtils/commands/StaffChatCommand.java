@@ -5,8 +5,13 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.cacheddata.CachedMetaData;
+import net.luckperms.api.model.user.User;
 import org.rexi.velocityUtils.ConfigManager;
 import org.rexi.velocityUtils.DiscordWebhook;
 import org.rexi.velocityUtils.VelocityUtils;
@@ -22,12 +27,14 @@ public class StaffChatCommand implements SimpleCommand {
     private final ConfigManager configManager;
     private final DiscordWebhook staffchatWebhook;
     private final VelocityUtils plugin;
+    private final LuckPerms luckPerms;
 
-    public StaffChatCommand(VelocityUtils plugin, ConfigManager configManager, ProxyServer server, DiscordWebhook staffchatWebhook) {
+    public StaffChatCommand(VelocityUtils plugin, ConfigManager configManager, ProxyServer server, DiscordWebhook staffchatWebhook, LuckPerms luckPerms) {
         this.plugin = plugin;
         this.server = server;
         this.configManager = configManager;
         this.staffchatWebhook = staffchatWebhook;
+        this.luckPerms = luckPerms;
     }
 
     @Override
@@ -58,12 +65,29 @@ public class StaffChatCommand implements SimpleCommand {
                     .map(s -> s.getServerInfo().getName())
                     .orElse(configManager.getMessage("server_unknown"));
 
-            String format = configManager.getMessage("staffchat_format")
+            String prefixRaw = "";
+            if (luckPerms != null) {
+                User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+
+                if (user != null) {
+                    CachedMetaData metaData = user.getCachedData().getMetaData();
+                    prefixRaw = metaData.getPrefix() != null ? metaData.getPrefix() : "";
+                }
+            }
+
+            // Obtener el prefix como Component
+            Component prefixComponent = deserializePrefix(prefixRaw);
+
+            String rawFormat = configManager.getMessage("staffchat_format")
                     .replace("{player}", player.getUsername())
                     .replace("{message}", message)
                     .replace("{server}", serverName);
 
-            Component staffMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(format);
+            Component staffMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(rawFormat)
+                    .replaceText(TextReplacementConfig.builder()
+                            .matchLiteral("{prefix}")
+                            .replacement(prefixComponent)
+                            .build());
 
             server.getAllPlayers().forEach(target -> {
                 if (target.hasPermission("velocityutils.staffchat")) {
@@ -98,5 +122,20 @@ public class StaffChatCommand implements SimpleCommand {
             String staffchat_enabled = configManager.getMessage("staffchat_enabled");
             player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(staffchat_enabled));
         }
+    }
+
+    private Component deserializePrefix(String input) {
+        // Si contiene <...> asumimos que es MiniMessage
+        if (input.contains("<") && input.contains(">")) {
+            try {
+                return MiniMessage.miniMessage().deserialize(input);
+            } catch (Exception e) {
+                // En caso de error, usa como texto plano
+                return Component.text(input);
+            }
+        }
+
+        // Si no, asumimos que es con códigos &
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
     }
 }

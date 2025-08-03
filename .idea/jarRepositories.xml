@@ -31,5 +31,10 @@
       <option name="name" value="luckperms" />
       <option name="url" value="https://repo.lucko.me/" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="https://repo.bstats.org" />
+    </remote-repository>
   </component>
 </project>
