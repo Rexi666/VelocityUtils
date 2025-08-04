@@ -582,7 +582,7 @@ public class ConfigManager {
                     node.node("messages", "messagescommands_no_message_console").set("&cThe messagecommand message is empty: {command}");
                 }
                 if (node.node("messages", "messagescommands_no_action_or_hover_console").empty()) {
-                    node.node("messages", "messagescommands_no_action_or_hover_console").set("&cThe messagecommand {command} has link set to true, but no link or hover set");
+                    node.node("messages", "messagescommands_no_action_or_hover_console").set("&cThe messagecommand {command} has action set to true, but no action or hover set");
                 }
                 if (node.node("messages", "messagescommands_error_player").empty()) {
                     node.node("messages", "messagescommands_error_player").set("&cThat messagecommand doesnt work as intended, contact an administrator");
@@ -850,7 +850,7 @@ public class ConfigManager {
             node.node("messages", "movecommands_server_not_found").set("&cThat server is not available at this moment.");
             node.node("messages", "movecommands_already_connected").set("&cYou are already connected to that server");
             node.node("messages", "messagescommands_no_message_console").set("&cThe messagecommand message is empty: {command}");
-            node.node("messages", "messagescommands_no_action_or_hover_console").set("&cThe messagecommand {command} has link set to true, but no link or hover set");
+            node.node("messages", "messagescommands_no_action_or_hover_console").set("&cThe messagecommand {command} has action set to true, but no action or hover set");
             node.node("messages", "messagescommands_error_player").set("&cThat messagecommand doesnt work as intended, contact an administrator");
 
             loader.save(node);
