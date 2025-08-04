@@ -98,6 +98,8 @@ public class PluginMessageListenerStaffChat {
                     }
                 });
 
+                server.getConsoleCommandSource().sendMessage(staffMessage);
+
                 if (staffchatWebhook != null && configManager.getBoolean("staffchat.discord_hook.enabled")) {
                     String raw = configManager.getString("staffchat.discord_hook.message");
                     String msgToSend = raw

@@ -95,6 +95,8 @@ public class StaffChatCommand implements SimpleCommand {
                 }
             });
 
+            server.getConsoleCommandSource().sendMessage(staffMessage);
+
             String uuidStr = getUuidFromName(player.getUsername());
             String avatar = (uuidStr != null)
                     ? "https://minotar.net/helm/" + uuidStr + "/64.png"

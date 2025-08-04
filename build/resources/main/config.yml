@@ -256,5 +256,5 @@ messages:
   movecommands_server_not_found: "&cThat server is not available at this moment."
   movecommands_already_connected: "&cYou are already connected to that server"
   messagescommands_no_message_console: "&cThe messagecommand message is empty: {command}"
-  messagescommands_no_action_or_hover_console: "&cThe messagecommand {command} has link set to true, but no link or hover set"
+  messagescommands_no_action_or_hover_console: "&cThe messagecommand {command} has action set to true, but no action or hover set"
   messagescommands_error_player: "&cThat messagecommand doesnt work as intended, contact an administrator"

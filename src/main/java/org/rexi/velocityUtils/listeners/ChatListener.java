@@ -10,19 +10,10 @@ import org.rexi.velocityUtils.VelocityUtils;
 
 public class ChatListener {
 
-    private final ProxyServer server;
-    private final ConfigManager configManager;
-    private final DiscordWebhook staffchatWebhook;
-    private final DiscordWebhook adminchatWebhook;
     private final VelocityUtils plugin;
 
-    public ChatListener(VelocityUtils plugin, ConfigManager configManager, ProxyServer server,
-                        DiscordWebhook staffchatWebhook, DiscordWebhook adminchatWebhook) {
+    public ChatListener(VelocityUtils plugin) {
         this.plugin = plugin;
-        this.server = server;
-        this.configManager = new ConfigManager();
-        this.staffchatWebhook = staffchatWebhook;
-        this.adminchatWebhook = adminchatWebhook;
     }
 
     @Subscribe

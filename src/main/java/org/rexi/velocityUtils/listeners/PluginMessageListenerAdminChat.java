@@ -98,6 +98,8 @@ public class PluginMessageListenerAdminChat {
                     }
                 });
 
+                server.getConsoleCommandSource().sendMessage(adminMessage);
+
                 if (adminchatWebhook != null && configManager.getBoolean("adminchat.discord_hook.enabled")) {
                     String raw = configManager.getString("adminchat.discord_hook.message");
                     String msgToSend = raw

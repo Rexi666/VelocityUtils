@@ -59,7 +59,8 @@ public class VelocityUtils {
     private final ChannelIdentifier ADMINCHAT_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "adminchat");
     public final Set<UUID> staffChatToggled = ConcurrentHashMap.newKeySet();
     public final Set<UUID> adminChatToggled = ConcurrentHashMap.newKeySet();
-    private final ChannelIdentifier PLACEHOLDER_CHANNEL  = MinecraftChannelIdentifier.create("velocityutils", "placeholders");
+    private final ChannelIdentifier PLACEHOLDER_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "placeholders");
+    private final ChannelIdentifier ALERT_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "alerts");
 
     private final Map<UUID, StaffSession> staffSessions = new ConcurrentHashMap<>();
 
@@ -84,6 +85,7 @@ public class VelocityUtils {
         server.getChannelRegistrar().register(STAFFCHAT_CHANNEL);
         server.getChannelRegistrar().register(ADMINCHAT_CHANNEL);
         server.getChannelRegistrar().register(PLACEHOLDER_CHANNEL);
+        server.getChannelRegistrar().register(ALERT_CHANNEL);
 
         configManager.loadConfig();
 
@@ -99,6 +101,50 @@ public class VelocityUtils {
             logger.warn("[VelocityUtils] LuckPerms not detected.");
         }
 
+        loadDiscordHooks();
+
+        server.getEventManager().register(this, new ChatListener(this));
+        server.getEventManager().register(this, new StaffConnectionListener(this, staffSessions, configManager, server, luckPerms, staffJoinWebhook, staffChangeWebhook, staffLeaveWebhook, new DateUtils(configManager)));
+
+        server.getEventManager().register(this, new PluginMessageListenerStaffChat(this, server, configManager, staffchatWebhook, luckPerms));
+        server.getEventManager().register(this, new PluginMessageListenerAdminChat(this, server, configManager, adminchatWebhook, luckPerms));
+        server.getEventManager().register(this, new PluginMessageListenerPlaceholders(server));
+        server.getEventManager().register(this, new PluginMessageListenerAlerts(server, configManager));
+
+        registerCommands();
+        registerMoveCommands();
+        registerMessagesCommands();
+
+        Metrics metrics = metricsFactory.make(this, 26742);
+
+        System.out.println(Component.text("The plugin has been activated").color(NamedTextColor.GREEN));
+        System.out.println(Component.text("Thank you for using Rexi666 plugins").color(NamedTextColor.BLUE));
+    }
+
+    public void registerMoveCommands() {
+        if (configManager.getBoolean("movecommands.enabled")) {
+            ConfigurationNode moveCommandsNode = configManager.getRootNode().node("movecommands");
+            if (!moveCommandsNode.virtual()) {
+                for (ConfigurationNode commandNode : moveCommandsNode.childrenMap().values()) {
+                    String commandName = commandNode.key().toString();
+                    server.getCommandManager().register(commandName, new MoveCommand(configManager, server, commandName));
+                }
+            }
+        }
+    }
+    public void registerMessagesCommands() {
+        if (configManager.getBoolean("messagescommands.enabled")) {
+            ConfigurationNode messagesCommandsNode = configManager.getRootNode().node("messagescommands");
+            if (!messagesCommandsNode.virtual()) {
+                for (ConfigurationNode commandNode : messagesCommandsNode.childrenMap().values()) {
+                    String commandName = commandNode.key().toString();
+                    server.getCommandManager().register(commandName, new MessagesCommand(configManager, server, commandName));
+                }
+            }
+        }
+    }
+
+    public void loadDiscordHooks() {
         if (configManager.getBoolean("report.discord_hook.enabled")) {
             String reportWebhookUrl = configManager.getString("report.discord_hook.url");
             if (reportWebhookUrl != null && reportWebhookUrl.startsWith("http")) {
@@ -167,45 +213,6 @@ public class VelocityUtils {
                 staffLeaveWebhook.setUsername(configManager.getString("stafftime.discord_hook.leave.username"));
                 staffLeaveWebhook.setTitle(configManager.getString("stafftime.discord_hook.leave.title"));
                 staffLeaveWebhook.setColorRGB(configManager.getString("stafftime.discord_hook.leave.color_rgb"));
-            }
-        }
-
-        server.getEventManager().register(this, new ChatListener(this, configManager, server, staffchatWebhook, adminchatWebhook));
-        server.getEventManager().register(this, new StaffConnectionListener(this, staffSessions, configManager, server, luckPerms, staffJoinWebhook, staffChangeWebhook, staffLeaveWebhook, new DateUtils(configManager)));
-
-        server.getEventManager().register(this, new PluginMessageListenerStaffChat(this, server, configManager, staffchatWebhook, luckPerms));
-        server.getEventManager().register(this, new PluginMessageListenerAdminChat(this, server, configManager, adminchatWebhook, luckPerms));
-        server.getEventManager().register(this, new PluginMessageListenerPlaceholders(server));
-
-        registerCommands();
-        registerMoveCommands();
-        registerMessagesCommands();
-
-        Metrics metrics = metricsFactory.make(this, 26742);
-
-        System.out.println(Component.text("The plugin has been activated").color(NamedTextColor.GREEN));
-        System.out.println(Component.text("Thank you for using Rexi666 plugins").color(NamedTextColor.BLUE));
-    }
-
-    public void registerMoveCommands() {
-        if (configManager.getBoolean("movecommands.enabled")) {
-            ConfigurationNode moveCommandsNode = configManager.getRootNode().node("movecommands");
-            if (!moveCommandsNode.virtual()) {
-                for (ConfigurationNode commandNode : moveCommandsNode.childrenMap().values()) {
-                    String commandName = commandNode.key().toString();
-                    server.getCommandManager().register(commandName, new MoveCommand(configManager, server, commandName));
-                }
-            }
-        }
-    }
-    public void registerMessagesCommands() {
-        if (configManager.getBoolean("messagescommands.enabled")) {
-            ConfigurationNode messagesCommandsNode = configManager.getRootNode().node("messagescommands");
-            if (!messagesCommandsNode.virtual()) {
-                for (ConfigurationNode commandNode : messagesCommandsNode.childrenMap().values()) {
-                    String commandName = commandNode.key().toString();
-                    server.getCommandManager().register(commandName, new MessagesCommand(configManager, server, commandName));
-                }
             }
         }
     }
