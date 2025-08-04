@@ -34,6 +34,7 @@ public class VelocityUtilsCommand implements SimpleCommand {
                 configManager.loadConfig();
                 plugin.registerMoveCommands();
                 plugin.registerCommands();
+                plugin.registerMessagesCommands();
                 Component motd = configManager.getMotd();
                 String configuration_reloaded = configManager.getMessage("configuration_reloaded");
                 source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(configuration_reloaded));

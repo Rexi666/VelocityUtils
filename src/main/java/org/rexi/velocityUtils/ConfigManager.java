@@ -541,6 +541,15 @@ public class ConfigManager {
                 if (node.node("messages", "movecommands_already_connected").empty()) {
                     node.node("messages", "movecommands_already_connected").set("&cYou are already connected to that server");
                 }
+                if (node.node("messages", "messagescommands_no_message_console").empty()) {
+                    node.node("messages", "messagescommands_no_message_console").set("&cThe messagecommand message is empty: {command}");
+                }
+                if (node.node("messages", "messagescommands_no_link_or_hover_console").empty()) {
+                    node.node("messages", "messagescommands_no_link_or_hover_console").set("&cThe messagecommand {command} has link set to true, but no link or hover set");
+                }
+                if (node.node("messages", "messagescommands_error_player").empty()) {
+                    node.node("messages", "messagescommands_error_player").set("&cThat messagecommand doesnt work as intended, contact an administrator");
+                }
 
                 // Guardar en caso de que se hayan agregado valores predeterminados
                 loader.save(node);
@@ -722,6 +731,16 @@ public class ConfigManager {
                     "survival"));
             node.node("movecommands", "survival", "message").set("&aYou have been moved to the &dsurvival");
 
+            node.node("messagescommands", "enabled").set(true);
+            node.node("messagescommands", "discord", "message").setList(String.class, List.of(
+                    "&f-----------------------------",
+                    "&fJoin ur &9discord",
+                    "&9https://discord.com/invite/a3zkKtrjTr",
+                    "&f-----------------------------"));
+            node.node("messagescommands", "discord", "open_link").set(true);
+            node.node("messagescommands", "discord", "link").set("https://discord.com/invite/a3zkKtrjTr");
+            node.node("messagescommands", "discord", "hover").set("&9Click to join ur discord");
+
             node.node("find", "enabled").set(true);
             node.node("goto", "enabled").set(true);
             node.node("stafflist", "enabled").set(true);
@@ -780,6 +799,9 @@ public class ConfigManager {
             node.node("messages", "movecommands_no_servers").set("&cThere are no servers configured for this command");
             node.node("messages", "movecommands_server_not_found").set("&cThat server is not available at this moment.");
             node.node("messages", "movecommands_already_connected").set("&cYou are already connected to that server");
+            node.node("messages", "messagescommands_no_message_console").set("&cThe messagecommand message is empty: {command}");
+            node.node("messages", "messagescommands_no_link_or_hover_console").set("&cThe messagecommand {command} has link set to true, but no link or hover set");
+            node.node("messages", "messagescommands_error_player").set("&cThat messagecommand doesnt work as intended, contact an administrator");
 
             loader.save(node);
         } catch (SerializationException e) {

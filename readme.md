@@ -74,6 +74,7 @@
 - `velocityutils.report.use` - access to /report
 - `velocityutils.helpop.use` - access to /helpop
 - `velocityutils.movecommand.<command>` - permission to use a MoveCommand, e.g. `velocityutils.movecommand.lobby` to use the command /lobby. Use `velocityutils.movecommand.*` to grant all move commands.
+- `velocityutils.messagescommand.<command>` - permission to use a MessagesCommand, e.g. `velocityutils.messagescommand.discord` to use the command /discord. Use `velocityutils.messagescommand.*` to grant all messages commands.
 
 ### ✏️ Placeholders:
 [VelocityUtilsLink (backend plugin)](https://github.com/Rexi666/VelocityUtilsLink/releases/latest) + [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) needed to be installed on the backends to use these placeholders.

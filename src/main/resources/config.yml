@@ -167,6 +167,17 @@ movecommands:
     server:
       - survival
     message: "&aYou have been moved to the &dsurvival"
+messagescommands:
+  enabled: true
+  discord:
+    message:
+      - "&f-----------------------------"
+      - "&fJoin ur &9discord"
+      - "&9https://discord.com/invite/a3zkKtrjTr"
+      - "&f-----------------------------"
+    open_link: true
+    link: https://discord.com/invite/a3zkKtrjTr
+    hover: "&9Click to join ur discord"
 find:
   enabled: true
 goto:
@@ -228,3 +239,6 @@ messages:
   movecommands_no_servers: "&cThere are no servers configured for this command"
   movecommands_server_not_found: "&cThat server is not available at this moment."
   movecommands_already_connected: "&cYou are already connected to that server"
+  messagescommands_no_message_console: "&cThe messagecommand message is empty: {command}"
+  messagescommands_no_link_or_hover_console: "&cThe messagecommand {command} has link set to true, but no link or hover set"
+  messagescommands_error_player: "&cThat messagecommand doesnt work as intended, contact an administrator"

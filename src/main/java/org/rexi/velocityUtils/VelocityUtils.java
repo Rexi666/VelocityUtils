@@ -179,6 +179,7 @@ public class VelocityUtils {
 
         registerCommands();
         registerMoveCommands();
+        registerMessagesCommands();
 
         Metrics metrics = metricsFactory.make(this, 26742);
 
@@ -193,6 +194,17 @@ public class VelocityUtils {
                 for (ConfigurationNode commandNode : moveCommandsNode.childrenMap().values()) {
                     String commandName = commandNode.key().toString();
                     server.getCommandManager().register(commandName, new MoveCommand(configManager, server, commandName));
+                }
+            }
+        }
+    }
+    public void registerMessagesCommands() {
+        if (configManager.getBoolean("messagescommands.enabled")) {
+            ConfigurationNode messagesCommandsNode = configManager.getRootNode().node("messagescommands");
+            if (!messagesCommandsNode.virtual()) {
+                for (ConfigurationNode commandNode : messagesCommandsNode.childrenMap().values()) {
+                    String commandName = commandNode.key().toString();
+                    server.getCommandManager().register(commandName, new MessagesCommand(configManager, server, commandName));
                 }
             }
         }
