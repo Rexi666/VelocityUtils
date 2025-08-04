@@ -544,8 +544,8 @@ public class ConfigManager {
                 if (node.node("messages", "messagescommands_no_message_console").empty()) {
                     node.node("messages", "messagescommands_no_message_console").set("&cThe messagecommand message is empty: {command}");
                 }
-                if (node.node("messages", "messagescommands_no_link_or_hover_console").empty()) {
-                    node.node("messages", "messagescommands_no_link_or_hover_console").set("&cThe messagecommand {command} has link set to true, but no link or hover set");
+                if (node.node("messages", "messagescommands_no_action_or_hover_console").empty()) {
+                    node.node("messages", "messagescommands_no_action_or_hover_console").set("&cThe messagecommand {command} has link set to true, but no link or hover set");
                 }
                 if (node.node("messages", "messagescommands_error_player").empty()) {
                     node.node("messages", "messagescommands_error_player").set("&cThat messagecommand doesnt work as intended, contact an administrator");
@@ -737,9 +737,22 @@ public class ConfigManager {
                     "&fJoin ur &9discord",
                     "&9https://discord.com/invite/a3zkKtrjTr",
                     "&f-----------------------------"));
-            node.node("messagescommands", "discord", "open_link").set(true);
-            node.node("messagescommands", "discord", "link").set("https://discord.com/invite/a3zkKtrjTr");
+            node.node("messagescommands", "discord", "click_action").set("OPEN_URL");
+            node.node("messagescommands", "discord", "action").set("https://discord.com/invite/a3zkKtrjTr");
             node.node("messagescommands", "discord", "hover").set("&9Click to join ur discord");
+            node.node("messagescommands", "newgamemode", "message").setList(String.class, List.of(
+                    "&f-----------------------------",
+                    "&6New Game Mode realeased",
+                    "&#c3d600&lJ&#c6c900&lO&#cabd00&lI&#cdb000&lN &#d1a400&lT&#d49700&lH&#d78a00&lE&#db7e00&lN&#de7100&lE&#e26500&lW &#e55800&lS&#e94c00&lU&#ec3f00&lR&#ef3200&lV&#f32600&lI&#f61900&lV&#fa0d00&lA&#fd0000&lL",
+                    "&f-----------------------------"));
+            node.node("messagescommands", "newgamemode", "click_action").set("RUN_COMMAND");
+            node.node("messagescommands", "newgamemode", "action").set("/survival");
+            node.node("messagescommands", "newgamemode", "hover").set("&6Click to join ur new survival");
+            node.node("messagescommands", "rules", "message").setList(String.class, List.of(
+                    "&f-----------------------------",
+                    "&6Remember to read all the server rules",
+                    "&f-----------------------------"));
+            node.node("messagescommands", "rules", "click_action").set("NONE");
 
             node.node("find", "enabled").set(true);
             node.node("goto", "enabled").set(true);
@@ -800,7 +813,7 @@ public class ConfigManager {
             node.node("messages", "movecommands_server_not_found").set("&cThat server is not available at this moment.");
             node.node("messages", "movecommands_already_connected").set("&cYou are already connected to that server");
             node.node("messages", "messagescommands_no_message_console").set("&cThe messagecommand message is empty: {command}");
-            node.node("messages", "messagescommands_no_link_or_hover_console").set("&cThe messagecommand {command} has link set to true, but no link or hover set");
+            node.node("messages", "messagescommands_no_action_or_hover_console").set("&cThe messagecommand {command} has link set to true, but no link or hover set");
             node.node("messages", "messagescommands_error_player").set("&cThat messagecommand doesnt work as intended, contact an administrator");
 
             loader.save(node);

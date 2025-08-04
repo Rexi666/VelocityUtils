@@ -48,27 +48,37 @@ public class MessagesCommand implements SimpleCommand {
             return;
         }
 
-        String link = configManager.getString("messagescommands." + commandName + ".link");
+        String action = configManager.getString("messagescommands." + commandName + ".action");
         String hover = configManager.getString("messagescommands." + commandName + ".hover");
-        boolean openLink = configManager.getBoolean("messagescommands." + commandName + ".open_link");
+        String click_action = configManager.getString("messagescommands." + commandName + ".click_action");
 
-        if (openLink) {
-            if (link == null || link.isEmpty() || hover == null || hover.isEmpty()) {
-                server.getConsoleCommandSource().sendMessage(legacy(configManager.getMessage("messagescommands_no_link_or_hover_console")));
+        if (click_action == null ||
+                (!click_action.equalsIgnoreCase("OPEN_URL") && !click_action.equalsIgnoreCase("RUN_COMMAND"))) {
+            click_action = "NONE";
+        }
+
+        if (click_action.equalsIgnoreCase("OPEN_URL") || click_action.equalsIgnoreCase("RUN_COMMAND")) {
+            if (action == null || action.isEmpty() || hover == null || hover.isEmpty()) {
+                server.getConsoleCommandSource().sendMessage(legacy(configManager.getMessage("messagescommands_no_action_or_hover_console")));
                 player.sendMessage(legacy(configManager.getMessage("messagescommands_error_player")));
                 return;
             }
         }
 
         for (String line : message) {
-            if (openLink) {
-                Component messageLine = legacy(line)
-                        .clickEvent(ClickEvent.openUrl(link))
+            Component messageLine = legacy(line);
+
+            if (click_action.equalsIgnoreCase("OPEN_URL")) {
+                messageLine = messageLine
+                        .clickEvent(ClickEvent.openUrl(action))
                         .hoverEvent(HoverEvent.showText(legacy(hover)));
-                player.sendMessage(messageLine);
-            } else {
-                player.sendMessage(legacy(line));
+            } else if (click_action.equalsIgnoreCase("RUN_COMMAND")) {
+                messageLine = messageLine
+                        .clickEvent(ClickEvent.runCommand(action))
+                        .hoverEvent(HoverEvent.showText(legacy(hover)));
             }
+
+            player.sendMessage(messageLine);
         }
 
     }

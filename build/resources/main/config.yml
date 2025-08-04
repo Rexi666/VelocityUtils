@@ -175,9 +175,25 @@ messagescommands:
       - "&fJoin ur &9discord"
       - "&9https://discord.com/invite/a3zkKtrjTr"
       - "&f-----------------------------"
-    open_link: true
-    link: https://discord.com/invite/a3zkKtrjTr
+    click_action: "OPEN_URL"
+    action: https://discord.com/invite/a3zkKtrjTr
     hover: "&9Click to join ur discord"
+  survival:
+    message:
+      - '&f-----------------------------'
+      - '&6New Game Mode realeased'
+      - '&#c3d600&lJ&#c6c900&lO&#cabd00&lI&#cdb000&lN &#d1a400&lT&#d49700&lH&#d78a00&lE
+              &#db7e00&lN&#de7100&lE&#e26500&lW &#e55800&lS&#e94c00&lU&#ec3f00&lR&#ef3200&lV&#f32600&lI&#f61900&lV&#fa0d00&lA&#fd0000&lL'
+      - '&f-----------------------------'
+    click_action: "RUN_COMMAND"
+    action: "/survival"
+    hover: "&6Click to join ur new survival"
+  rules:
+    message:
+      - '&f-----------------------------'
+      - '&6Remember to read all the server rules'
+      - '&f-----------------------------'
+    click_action: "NONE"
 find:
   enabled: true
 goto:
@@ -240,5 +256,5 @@ messages:
   movecommands_server_not_found: "&cThat server is not available at this moment."
   movecommands_already_connected: "&cYou are already connected to that server"
   messagescommands_no_message_console: "&cThe messagecommand message is empty: {command}"
-  messagescommands_no_link_or_hover_console: "&cThe messagecommand {command} has link set to true, but no link or hover set"
+  messagescommands_no_action_or_hover_console: "&cThe messagecommand {command} has link set to true, but no link or hover set"
   messagescommands_error_player: "&cThat messagecommand doesnt work as intended, contact an administrator"
