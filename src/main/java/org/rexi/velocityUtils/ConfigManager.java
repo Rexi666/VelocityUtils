@@ -369,6 +369,43 @@ public class ConfigManager {
                 if (node.node("vlist", "rank", "rankcount").empty()) {
                     node.node("vlist", "rank", "rankcount").set("&7[&b{rank} &7(&b{count}&7)] - &f{players}");
                 }
+                if (node.node("movecommands").empty()) {
+                    node.node("movecommands", "enabled").set(true);
+                    node.node("movecommands", "lobby", "server").setList(String.class, List.of(
+                            "lobby1",
+                            "lobby2"));
+                    node.node("movecommands", "lobby", "message").set("&aYou have been moved to a &blobby");
+                    node.node("movecommands", "survival", "server").setList(String.class, List.of(
+                            "survival"));
+                    node.node("movecommands", "survival", "message").set("&aYou have been moved to the &dsurvival");
+
+                }
+                if (node.node("messagescommands").empty()) {
+                    node.node("messagescommands", "enabled").set(true);
+                    node.node("messagescommands", "discord", "message").setList(String.class, List.of(
+                            "&f-----------------------------",
+                            "&fJoin ur &9discord",
+                            "&9https://discord.com/invite/a3zkKtrjTr",
+                            "&f-----------------------------"));
+                    node.node("messagescommands", "discord", "click_action").set("OPEN_URL");
+                    node.node("messagescommands", "discord", "action").set("https://discord.com/invite/a3zkKtrjTr");
+                    node.node("messagescommands", "discord", "hover").set("&9Click to join ur discord");
+
+                    node.node("messagescommands", "newgamemode", "message").setList(String.class, List.of(
+                            "&f-----------------------------",
+                            "&6New Game Mode realeased",
+                            "&#c3d600&lJ&#c6c900&lO&#cabd00&lI&#cdb000&lN &#d1a400&lT&#d49700&lH&#d78a00&lE&#db7e00&lN&#de7100&lE&#e26500&lW &#e55800&lS&#e94c00&lU&#ec3f00&lR&#ef3200&lV&#f32600&lI&#f61900&lV&#fa0d00&lA&#fd0000&lL",
+                            "&f-----------------------------"));
+                    node.node("messagescommands", "newgamemode", "click_action").set("RUN_COMMAND");
+                    node.node("messagescommands", "newgamemode", "action").set("/survival");
+                    node.node("messagescommands", "newgamemode", "hover").set("&6Click to join ur new survival");
+
+                    node.node("messagescommands", "rules", "message").setList(String.class, List.of(
+                            "&f-----------------------------",
+                            "&6Remember to read all the server rules",
+                            "&f-----------------------------"));
+                    node.node("messagescommands", "rules", "click_action").set("NONE");
+                }
 
                 if (node.node("find", "enabled").empty()) {
                     node.node("find", "enabled").set(true);

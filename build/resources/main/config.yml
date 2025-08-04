@@ -178,7 +178,7 @@ messagescommands:
     click_action: "OPEN_URL"
     action: https://discord.com/invite/a3zkKtrjTr
     hover: "&9Click to join ur discord"
-  survival:
+  newgamemode:
     message:
       - '&f-----------------------------'
       - '&6New Game Mode realeased'
