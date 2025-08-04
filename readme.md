@@ -5,15 +5,16 @@
 ---
 
 ### ✨ Features
-- 📣 **Global Alerts** - send broadcast messages across the entire network with /alert.
+- 📣 **Global Alerts** - send broadcast messages across the entire network with `/alert`.
 - 🔧 **Maintenance mode** - restrict server access when needed.
-- 📬 **Player Support System** – Players can use /report to report other players, or /helpop to request staff assistance. Staff members with permission receive in-game notifications (with clickable teleport buttons), and optionally via a Discord webhook.
-- 🧭 **Player Location Commands** - find which server a player is on with /find and teleport to them with /goto.
-- 👥 **StaffList** - view online staff and their connection times with /stafflist and /stafftime.
+- 📬 **Player Support System** – Players can use `/report` to report other players, or `/helpop` to request staff assistance. Staff members with permission receive in-game notifications (with clickable teleport buttons), and optionally via a Discord webhook.
+- 🧭 **Player Location Commands** - find which server a player is on with `/find` and teleport to them with `/goto`.
+- 👥 **StaffList** - view online staff and their connection times with `/stafflist` and `/stafftime`.
 - 🔐 **StaffChat** and **AdminChat** - private channels for staff communication. (Needs the plugin link installed)
 - 📜 **Dynamic MOTD** - customize your network’s MOTD through the config.
 - 🧑‍🤝‍🧑 **vList** - shows all connected players, filterable by rank if LuckPerms is installed.
-- 🚪 **MoveCommands** - configure shortcuts like /lobby or /survival to move players between servers.
+- 🚪 **MoveCommands** - configure shortcuts like `/lobby` or `/survival` to move players between servers.
+- 💬 **MessageCommands** - create shortcut commands like `/discord` or `/rules` to send predefined messages when executed.
 - 🧮 **PlaceholderAPI Support** - includes placeholders for player counters both globally and per server to use in chat, scoreboards, plugins, and other compatible places. (Needs the plugin link installed)
 
 ### ⚙️ Dependencies
