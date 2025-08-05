@@ -20,7 +20,7 @@
 ### ⚙️ Dependencies
 - ☕ Java JDK 17
 - 📚 [Luckperms Velocity](https://luckperms.net/download)
-- 🔁 [VelocityUtilsLink (backend plugin)](https://github.com/Rexi666/VelocityUtilsLink/releases/latest) only needed if you want to use StaffChat and AdminChat features, or you want to use PlaceholderAPI placeholders.
+- 🔁 [VelocityUtilsLink (backend plugin)](https://www.spigotmc.org/resources/velocityutilslink.127649/) only needed if you want to use StaffChat and AdminChat features, or you want to use PlaceholderAPI placeholders.
 
 ### 📸 Screenshots
 |                                                                                                                  |                         |
@@ -78,7 +78,7 @@
 - `velocityutils.messagescommand.<command>` - permission to use a MessagesCommand, e.g. `velocityutils.messagescommand.discord` to use the command /discord. Use `velocityutils.messagescommand.*` to grant all messages commands.
 
 ### ✏️ Placeholders:
-[VelocityUtilsLink (backend plugin)](https://github.com/Rexi666/VelocityUtilsLink/releases/latest) + [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) needed to be installed on the backends to use these placeholders.
+[VelocityUtilsLink (backend plugin)](https://www.spigotmc.org/resources/velocityutilslink.127649/) + [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) needed to be installed on the backends to use these placeholders.
 - `%velocityutils_globalplayers%` - Total number of players across the network.
 - `%velocityutils_players_<server>%` - Number of players on a specific server.
 
