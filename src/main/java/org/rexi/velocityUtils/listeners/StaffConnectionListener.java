@@ -30,21 +30,16 @@ public class StaffConnectionListener {
     private final Map<UUID, StaffSession> sessions;
     private final ProxyServer server;
     private final LuckPerms luckPerms;
-    private final DiscordWebhook staffJoinWebhook;
-    private final DiscordWebhook staffChangeWebhook;
-    private final DiscordWebhook staffLeaveWebhook;
+    private final DiscordWebhook webhook;
     private final DateUtils dateUtils;
 
-    public StaffConnectionListener(VelocityUtils plugin, Map<UUID, StaffSession> sessions, ConfigManager configManager, ProxyServer server, LuckPerms luckPerms, DiscordWebhook staffJoinWebhook,
-                                   DiscordWebhook staffChangeWebhook, DiscordWebhook staffLeaveWebhook, DateUtils dateUtils) {
+    public StaffConnectionListener(VelocityUtils plugin, Map<UUID, StaffSession> sessions, ConfigManager configManager, ProxyServer server, LuckPerms luckPerms, DiscordWebhook webhook, DateUtils dateUtils) {
         this.plugin = plugin;
         this.sessions = sessions;
         this.configManager = configManager;
         this.server = server;
         this.luckPerms = luckPerms;
-        this.staffJoinWebhook = staffJoinWebhook;
-        this.staffChangeWebhook = staffChangeWebhook;
-        this.staffLeaveWebhook = staffLeaveWebhook;
+        this.webhook = webhook;
         this.dateUtils = dateUtils;
     }
 
@@ -69,30 +64,22 @@ public class StaffConnectionListener {
                 // Primera vez que detectamos al jugador, creamos sesión con el servidor actual
                 sessions.put(player.getUniqueId(), new StaffSession(Instant.now(), newServer));
 
-                String uuid = getUuidFromName(player.getUsername());
-                String avatar = (uuid != null)
-                        ? "https://minotar.net/helm/" + uuid + "/64.png"
-                        : "https://i.pinimg.com/564x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg";
-                if (staffJoinWebhook != null && configManager.getBoolean("stafftime.discord_hook.enabled") && configManager.getBoolean("stafftime.discord_hook.join.enabled")) {
+                if (configManager.getBoolean("stafftime.discord_hook.enabled") && configManager.getBoolean("stafftime.discord_hook.join.enabled")) {
                     String raw = configManager.getString("stafftime.discord_hook.join.message");
                     String msg = raw.replace("{player}", player.getUsername());
-                    staffJoinWebhook.send(msg, avatar);
+                    sendJoinWebhook(player.getUsername(), msg);
                 }
             } else {
                 // Sesión ya existente, hacemos switch de servidor
                 session.switchServer(newServer);
 
-                String uuid = getUuidFromName(player.getUsername());
-                String avatar = (uuid != null)
-                        ? "https://minotar.net/helm/" + uuid + "/64.png"
-                        : "https://i.pinimg.com/564x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg";
-                if (staffChangeWebhook != null && configManager.getBoolean("stafftime.discord_hook.enabled") && configManager.getBoolean("stafftime.discord_hook.change.enabled")) {
+                if (configManager.getBoolean("stafftime.discord_hook.enabled") && configManager.getBoolean("stafftime.discord_hook.change.enabled")) {
                     String raw = configManager.getString("stafftime.discord_hook.change.message");
                     String msg = raw
                             .replace("{player}", player.getUsername())
                             .replace("{from}", previousServer)
                             .replace("{to}", newServer);
-                    staffChangeWebhook.send(msg, avatar);
+                    sendChangeWebhook(player.getUsername(), msg);
                 }
             }
         }
@@ -121,7 +108,7 @@ public class StaffConnectionListener {
                 Duration weekly = getDurationForRange(player.getUniqueId(), dateUtils.getStartOfWeek(), dateUtils.getEndOfWeek());
                 Duration monthly = getDurationForRange(player.getUniqueId(), dateUtils.getStartOfMonth(), dateUtils.getEndOfMonth());
 
-                if (staffLeaveWebhook != null && configManager.getBoolean("stafftime.discord_hook.enabled") && configManager.getBoolean("stafftime.discord_hook.leave.enabled")) {
+                if (configManager.getBoolean("stafftime.discord_hook.enabled") && configManager.getBoolean("stafftime.discord_hook.leave.enabled")) {
                     String raw = configManager.getString("stafftime.discord_hook.leave.message");
                     String serverTimeFormat = configManager.getString("stafftime.discord_hook.leave.serverstime");
 
@@ -133,11 +120,6 @@ public class StaffConnectionListener {
                         serverTimes.append(formatted).append("\n");
                     });
 
-                    String uuid = getUuidFromName(player.getUsername());
-                    String avatar = (uuid != null)
-                            ? "https://minotar.net/helm/" + uuid + "/64.png"
-                            : "https://i.pinimg.com/564x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg";
-
                     String msg = raw
                             .replace("{player}", player.getUsername())
                             .replace("{time}", formatDuration(session.getTotalTime()))
@@ -145,7 +127,7 @@ public class StaffConnectionListener {
                             .replace("{time_weekly}", formatDuration(weekly))
                             .replace("{time_monthly}", formatDuration(monthly))
                             .replace("{serverstime}", serverTimes.toString().trim());
-                    staffLeaveWebhook.send(msg, avatar);
+                    sendLeaveWebhook(player.getUsername(), msg);
                 }
             }
         }
@@ -358,5 +340,36 @@ public class StaffConnectionListener {
         }
 
         return primaryGroupName;
+    }
+
+    private void sendJoinWebhook(String playerName, String message) {
+        String webhookUrl = configManager.getString("stafftime.discord_hook.join.url");
+        String avatarUrl = configManager.getString("stafftime.discord_hook.join.avatar");
+        String username = configManager.getString("stafftime.discord_hook.join.username");
+        String title = configManager.getString("stafftime.discord_hook.join.title");
+
+        String color = configManager.getString("stafftime.discord_hook.join.color_rgb");
+        String thumbnailUrl = webhook.getPlayerAvatar(playerName);
+        webhook.send(message, webhookUrl, avatarUrl, username, color, thumbnailUrl, title);
+    }
+    private void sendChangeWebhook(String playerName, String message) {
+        String webhookUrl = configManager.getString("stafftime.discord_hook.change.url");
+        String avatarUrl = configManager.getString("stafftime.discord_hook.change.avatar");
+        String username = configManager.getString("stafftime.discord_hook.change.username");
+        String title = configManager.getString("stafftime.discord_hook.change.title");
+
+        String color = configManager.getString("stafftime.discord_hook.change.color_rgb");
+        String thumbnailUrl = webhook.getPlayerAvatar(playerName);
+        webhook.send(message, webhookUrl, avatarUrl, username, color, thumbnailUrl, title);
+    }
+    private void sendLeaveWebhook(String playerName, String message) {
+        String webhookUrl = configManager.getString("stafftime.discord_hook.leave.url");
+        String avatarUrl = configManager.getString("stafftime.discord_hook.leave.avatar");
+        String username = configManager.getString("stafftime.discord_hook.leave.username");
+        String title = configManager.getString("stafftime.discord_hook.leave.title");
+
+        String color = configManager.getString("stafftime.discord_hook.leave.color_rgb");
+        String thumbnailUrl = webhook.getPlayerAvatar(playerName);
+        webhook.send(message, webhookUrl, avatarUrl, username, color, thumbnailUrl, title);
     }
 }

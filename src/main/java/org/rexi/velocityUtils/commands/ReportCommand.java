@@ -14,22 +14,20 @@ import org.rexi.velocityUtils.DiscordWebhook;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.rexi.velocityUtils.DiscordWebhook.getUuidFromName;
-
 public class ReportCommand implements SimpleCommand {
 
     private final ConfigManager configManager;
     private final ProxyServer server;
-    private final DiscordWebhook reportWebhook;
+    private final DiscordWebhook webhook;
 
     // Mapa para cooldowns: UUID -> timestamp del último uso
     private final Map<UUID, Long> cooldowns = new HashMap<>();
     private static final long COOLDOWN_MILLIS = 30 * 1000;
 
-    public ReportCommand(ConfigManager configManager, ProxyServer server, DiscordWebhook reportWebhook) {
+    public ReportCommand(ConfigManager configManager, ProxyServer server, DiscordWebhook webhook) {
         this.configManager = configManager;
         this.server = server;
-        this.reportWebhook = reportWebhook;
+        this.webhook = webhook;
     }
 
     @Override
@@ -108,19 +106,14 @@ public class ReportCommand implements SimpleCommand {
             );
         }
 
-        String uuid = getUuidFromName(target.getUsername());
-        String avatar = (uuid != null)
-                ? "https://minotar.net/helm/" + uuid + "/64.png"
-                : "https://i.pinimg.com/564x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg";
-
-        if (reportWebhook != null && configManager.getBoolean("report.discord_hook.enabled")) {
+        if (configManager.getBoolean("report.discord_hook.enabled")) {
             String raw = configManager.getString("report.discord_hook.message");
             String msg = raw
                     .replace("{reported}", target.getUsername())
                     .replace("{reporter}", reporterName)
                     .replace("{reason}", reason)
                     .replace("{server}", serverName);
-            reportWebhook.send(msg, avatar);
+            sendReportWebhook(target.getUsername(), msg);
         }
 
         /* ──────────── 6. Enviar a moderadores ──────────── */
@@ -178,5 +171,16 @@ public class ReportCommand implements SimpleCommand {
         }
 
         return List.of();
+    }
+
+    private void sendReportWebhook(String playerName, String message) {
+        String webhookUrl = configManager.getString("report.discord_hook.url");
+        String avatarUrl = configManager.getString("report.discord_hook.avatar");
+        String username = configManager.getString("report.discord_hook.username");
+        String title = configManager.getString("report.discord_hook.title");
+
+        String color = configManager.getString("report.discord_hook.color_rgb");
+        String thumbnailUrl = webhook.getPlayerAvatar(playerName);
+        webhook.send(message, webhookUrl, avatarUrl, username, color, thumbnailUrl, title);
     }
 }

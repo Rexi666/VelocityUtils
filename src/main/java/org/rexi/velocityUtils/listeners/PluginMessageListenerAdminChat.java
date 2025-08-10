@@ -10,7 +10,6 @@ import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
-import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.model.user.User;
 import org.rexi.velocityUtils.ConfigManager;
 import org.rexi.velocityUtils.DiscordWebhook;
@@ -24,15 +23,15 @@ public class PluginMessageListenerAdminChat {
     private final VelocityUtils plugin;
     private final ProxyServer server;
     private final ConfigManager configManager;
-    private final DiscordWebhook adminchatWebhook;
+    private final DiscordWebhook webhook;
     private final LuckPerms luckPerms;
     private final MinecraftChannelIdentifier channel = MinecraftChannelIdentifier.create("velocityutils", "adminchat");
 
-    public PluginMessageListenerAdminChat(VelocityUtils plugin, ProxyServer server, ConfigManager configManager, DiscordWebhook adminchatWebhook, LuckPerms luckPerms) {
+    public PluginMessageListenerAdminChat(VelocityUtils plugin, ProxyServer server, ConfigManager configManager, DiscordWebhook webhook, LuckPerms luckPerms) {
         this.plugin = plugin;
         this.server = server;
         this.configManager = configManager;
-        this.adminchatWebhook = adminchatWebhook;
+        this.webhook = webhook;
         this.luckPerms = luckPerms;
     }
 
@@ -92,16 +91,14 @@ public class PluginMessageListenerAdminChat {
 
                 server.getConsoleCommandSource().sendMessage(adminMessage);
 
-                if (adminchatWebhook != null && configManager.getBoolean("adminchat.discord_hook.enabled")) {
+                if (configManager.getBoolean("adminchat.discord_hook.enabled")) {
                     String raw = configManager.getString("adminchat.discord_hook.message");
                     String msgToSend = raw
                             .replace("{player}", username)
                             .replace("{message}", message)
                             .replace("{server}", serverName);
 
-                    String uuidStr = uuid.toString().replace("-", "");
-                    String avatar = "https://minotar.net/helm/" + uuidStr + "/64.png";
-                    adminchatWebhook.send(msgToSend, avatar);
+                    sendAdminChatWebhook(username, msgToSend);
                 }
             }
 
@@ -149,5 +146,16 @@ public class PluginMessageListenerAdminChat {
         }
 
         return primaryGroupName;
+    }
+
+    private void sendAdminChatWebhook(String playerName, String message) {
+        String webhookUrl = configManager.getString("adminchat.discord_hook.url");
+        String avatarUrl = configManager.getString("adminchat.discord_hook.avatar");
+        String username = configManager.getString("adminchat.discord_hook.username");
+        String title = configManager.getString("adminchat.discord_hook.title");
+
+        String color = configManager.getString("adminchat.discord_hook.color_rgb");
+        String thumbnailUrl = webhook.getPlayerAvatar(playerName);
+        webhook.send(message, webhookUrl, avatarUrl, username, color, thumbnailUrl, title);
     }
 }

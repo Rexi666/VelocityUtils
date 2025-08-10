@@ -12,43 +12,14 @@ public class DiscordWebhook {
 
     private final ConfigManager configManager;
 
-    private final String webhookUrl;
-    private String avatarUrl;
-    private String username;
-    private String title;
-    private int[] colorRGB = new int[]{240, 43, 20};
-
-    public DiscordWebhook(String webhookUrl, ConfigManager configManager) {
-        this.webhookUrl = webhookUrl;
+    public DiscordWebhook(ConfigManager configManager) {
         this.configManager = configManager;
     }
 
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
-    }
+    int[] colorRGBfinal = new int[]{240, 43, 20};
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setColorRGB(String rgb) {
-        try {
-            String[] parts = rgb.split(",");
-            if (parts.length == 3) {
-                colorRGB = new int[]{
-                        Integer.parseInt(parts[0].trim()),
-                        Integer.parseInt(parts[1].trim()),
-                        Integer.parseInt(parts[2].trim())
-                };
-            }
-        } catch (Exception ignored) {}
-    }
-
-    public void send(String content, String thumbnailUrl) {
+    public void send(String content, String webhookUrl, String avatarUrl, String username, String colorRGB, String thumbnailUrl, String title) {
+        setColorRGB(colorRGB);
         try {
             URL url = new URL(webhookUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -57,7 +28,7 @@ public class DiscordWebhook {
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setDoOutput(true);
 
-            int color = (colorRGB[0] << 16) + (colorRGB[1] << 8) + colorRGB[2];
+            int color = (colorRGBfinal[0] << 16) + (colorRGBfinal[1] << 8) + colorRGBfinal[2];
 
             String payload = """
             {
@@ -139,4 +110,24 @@ public class DiscordWebhook {
         return null;
     }
 
+    public String getPlayerAvatar(String playerName) {
+        String uuid = getUuidFromName(playerName);
+        String avatar = (uuid != null)
+                ? "https://minotar.net/helm/" + uuid + "/64.png"
+                : "https://i.pinimg.com/564x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg";
+        return avatar;
+    }
+
+    public void setColorRGB(String color) {
+        try {
+            String[] parts = color.split(",");
+            if (parts.length == 3) {
+                colorRGBfinal = new int[]{
+                        Integer.parseInt(parts[0].trim()),
+                        Integer.parseInt(parts[1].trim()),
+                        Integer.parseInt(parts[2].trim())
+                };
+            }
+        } catch (Exception ignored) {}
+    }
 }

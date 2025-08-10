@@ -47,13 +47,7 @@ public class VelocityUtils {
     private final PluginContainer plugin;
     private LuckPerms luckPerms = null;
 
-    private DiscordWebhook reportWebhook;
-    private DiscordWebhook helpopWebhook;
-    private DiscordWebhook staffchatWebhook;
-    private DiscordWebhook adminchatWebhook;
-    private DiscordWebhook staffJoinWebhook;
-    private DiscordWebhook staffChangeWebhook;
-    private DiscordWebhook staffLeaveWebhook;
+    private DiscordWebhook webhook;
 
     private final ChannelIdentifier STAFFCHAT_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "staffchat");
     private final ChannelIdentifier ADMINCHAT_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "adminchat");
@@ -71,6 +65,7 @@ public class VelocityUtils {
         this.server = server;
         this.plugin = plugin;
         this.configManager = new ConfigManager();
+        this.webhook = new DiscordWebhook(configManager);
     }
 
     @Inject private Logger logger;
@@ -102,13 +97,11 @@ public class VelocityUtils {
             logger.warn("[VelocityUtils] LuckPerms not detected.");
         }
 
-        loadDiscordHooks();
-
         server.getEventManager().register(this, new ChatListener(this));
-        server.getEventManager().register(this, new StaffConnectionListener(this, staffSessions, configManager, server, luckPerms, staffJoinWebhook, staffChangeWebhook, staffLeaveWebhook, new DateUtils(configManager)));
+        server.getEventManager().register(this, new StaffConnectionListener(this, staffSessions, configManager, server, luckPerms, webhook, new DateUtils(configManager)));
 
-        server.getEventManager().register(this, new PluginMessageListenerStaffChat(this, server, configManager, staffchatWebhook, luckPerms));
-        server.getEventManager().register(this, new PluginMessageListenerAdminChat(this, server, configManager, adminchatWebhook, luckPerms));
+        server.getEventManager().register(this, new PluginMessageListenerStaffChat(this, server, configManager, webhook, luckPerms));
+        server.getEventManager().register(this, new PluginMessageListenerAdminChat(this, server, configManager, webhook, luckPerms));
         server.getEventManager().register(this, new PluginMessageListenerPlaceholders(server));
         server.getEventManager().register(this, new PluginMessageListenerAlerts(server, configManager));
 
@@ -145,79 +138,6 @@ public class VelocityUtils {
         }
     }
 
-    public void loadDiscordHooks() {
-        if (configManager.getBoolean("report.discord_hook.enabled")) {
-            String reportWebhookUrl = configManager.getString("report.discord_hook.url");
-            if (reportWebhookUrl != null && reportWebhookUrl.startsWith("http")) {
-                this.reportWebhook = new DiscordWebhook(reportWebhookUrl, configManager);
-                reportWebhook.setAvatarUrl(configManager.getString("report.discord_hook.avatar"));
-                reportWebhook.setUsername(configManager.getString("report.discord_hook.username"));
-                reportWebhook.setTitle(configManager.getString("report.discord_hook.title"));
-                reportWebhook.setColorRGB(configManager.getString("report.discord_hook.color_rgb"));
-            }
-        }
-        if (configManager.getBoolean("helpop.discord_hook.enabled")) {
-            String helpopWebhookUrl = configManager.getString("helpop.discord_hook.url");
-            if (helpopWebhookUrl != null && helpopWebhookUrl.startsWith("http")) {
-                this.helpopWebhook = new DiscordWebhook(helpopWebhookUrl, configManager);
-                helpopWebhook.setAvatarUrl(configManager.getString("helpop.discord_hook.avatar"));
-                helpopWebhook.setUsername(configManager.getString("helpop.discord_hook.username"));
-                helpopWebhook.setTitle(configManager.getString("helpop.discord_hook.title"));
-                helpopWebhook.setColorRGB(configManager.getString("helpop.discord_hook.color_rgb"));
-            }
-        }
-        if (configManager.getBoolean("staffchat.discord_hook.enabled")) {
-            String staffchatWebhookUrl = configManager.getString("staffchat.discord_hook.url");
-            if (staffchatWebhookUrl != null && staffchatWebhookUrl.startsWith("http")) {
-                this.staffchatWebhook = new DiscordWebhook(staffchatWebhookUrl, configManager);
-                staffchatWebhook.setAvatarUrl(configManager.getString("staffchat.discord_hook.avatar"));
-                staffchatWebhook.setUsername(configManager.getString("staffchat.discord_hook.username"));
-                staffchatWebhook.setTitle(configManager.getString("staffchat.discord_hook.title"));
-                staffchatWebhook.setColorRGB(configManager.getString("staffchat.discord_hook.color_rgb"));
-            }
-        }
-        if (configManager.getBoolean("adminchat.discord_hook.enabled")) {
-            String adminchatWebhookUrl = configManager.getString("adminchat.discord_hook.url");
-            if (adminchatWebhookUrl != null && adminchatWebhookUrl.startsWith("http")) {
-                this.adminchatWebhook = new DiscordWebhook(adminchatWebhookUrl, configManager);
-                adminchatWebhook.setAvatarUrl(configManager.getString("adminchat.discord_hook.avatar"));
-                adminchatWebhook.setUsername(configManager.getString("adminchat.discord_hook.username"));
-                adminchatWebhook.setTitle(configManager.getString("adminchat.discord_hook.title"));
-                adminchatWebhook.setColorRGB(configManager.getString("adminchat.discord_hook.color_rgb"));
-            }
-        }
-        if (configManager.getBoolean("stafftime.discord_hook.enabled") && configManager.getBoolean("stafftime.discord_hook.join.enabled")) {
-            String staffJoinWebhookUrl = configManager.getString("stafftime.discord_hook.join.url");
-            if (staffJoinWebhookUrl != null && staffJoinWebhookUrl.startsWith("http")) {
-                this.staffJoinWebhook = new DiscordWebhook(staffJoinWebhookUrl, configManager);
-                staffJoinWebhook.setAvatarUrl(configManager.getString("stafftime.discord_hook.join.avatar"));
-                staffJoinWebhook.setUsername(configManager.getString("stafftime.discord_hook.join.username"));
-                staffJoinWebhook.setTitle(configManager.getString("stafftime.discord_hook.join.title"));
-                staffJoinWebhook.setColorRGB(configManager.getString("stafftime.discord_hook.join.color_rgb"));
-            }
-        }
-        if (configManager.getBoolean("stafftime.discord_hook.enabled") && configManager.getBoolean("stafftime.discord_hook.change.enabled")) {
-            String staffChangeWebhookUrl = configManager.getString("stafftime.discord_hook.change.url");
-            if (staffChangeWebhookUrl != null && staffChangeWebhookUrl.startsWith("http")) {
-                this.staffChangeWebhook = new DiscordWebhook(staffChangeWebhookUrl, configManager);
-                staffChangeWebhook.setAvatarUrl(configManager.getString("stafftime.discord_hook.change.avatar"));
-                staffChangeWebhook.setUsername(configManager.getString("stafftime.discord_hook.change.username"));
-                staffChangeWebhook.setTitle(configManager.getString("stafftime.discord_hook.change.title"));
-                staffChangeWebhook.setColorRGB(configManager.getString("stafftime.discord_hook.change.color_rgb"));
-            }
-        }
-        if (configManager.getBoolean("stafftime.discord_hook.enabled") && configManager.getBoolean("stafftime.discord_hook.leave.enabled")) {
-            String staffLeaveWebhookUrl = configManager.getString("stafftime.discord_hook.leave.url");
-            if (staffLeaveWebhookUrl != null && staffLeaveWebhookUrl.startsWith("http")) {
-                this.staffLeaveWebhook = new DiscordWebhook(staffLeaveWebhookUrl, configManager);
-                staffLeaveWebhook.setAvatarUrl(configManager.getString("stafftime.discord_hook.leave.avatar"));
-                staffLeaveWebhook.setUsername(configManager.getString("stafftime.discord_hook.leave.username"));
-                staffLeaveWebhook.setTitle(configManager.getString("stafftime.discord_hook.leave.title"));
-                staffLeaveWebhook.setColorRGB(configManager.getString("stafftime.discord_hook.leave.color_rgb"));
-            }
-        }
-    }
-
     public void registerCommands() {
         server.getCommandManager().register(
                 server.getCommandManager().metaBuilder("velocityutils").build(),
@@ -240,7 +160,7 @@ public class VelocityUtils {
         if (configManager.getBoolean("report.enabled")) {
             server.getCommandManager().register(
                     server.getCommandManager().metaBuilder("report").build(),
-                    new ReportCommand(configManager, server, reportWebhook)
+                    new ReportCommand(configManager, server, webhook)
             );
         }
 
@@ -261,15 +181,15 @@ public class VelocityUtils {
         }
 
         if (configManager.getBoolean("staffchat.enabled")) {
-            server.getCommandManager().register("staffchat", new StaffChatCommand(this, configManager, server, staffchatWebhook, luckPerms));
+            server.getCommandManager().register("staffchat", new StaffChatCommand(this, configManager, server, webhook, luckPerms));
 
-            server.getCommandManager().register("sc", new StaffChatCommand(this, configManager, server, staffchatWebhook, luckPerms));
+            server.getCommandManager().register("sc", new StaffChatCommand(this, configManager, server, webhook, luckPerms));
 
         }
         if (configManager.getBoolean("adminchat.enabled")) {
-            server.getCommandManager().register("adminchat", new AdminChatCommand(this, configManager, server, adminchatWebhook, luckPerms));
+            server.getCommandManager().register("adminchat", new AdminChatCommand(this, configManager, server, webhook, luckPerms));
 
-            server.getCommandManager().register("ac", new AdminChatCommand(this, configManager, server, adminchatWebhook, luckPerms));
+            server.getCommandManager().register("ac", new AdminChatCommand(this, configManager, server, webhook, luckPerms));
 
         }
 
@@ -288,7 +208,7 @@ public class VelocityUtils {
         if (configManager.getBoolean("helpop.enabled")) {
             server.getCommandManager().register(
                     server.getCommandManager().metaBuilder("helpop").build(),
-                    new HelpopCommand(configManager, server, helpopWebhook)
+                    new HelpopCommand(configManager, server, webhook)
             );
         }
 

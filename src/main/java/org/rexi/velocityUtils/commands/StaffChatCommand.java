@@ -10,7 +10,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
-import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.model.user.User;
 import org.rexi.velocityUtils.ConfigManager;
 import org.rexi.velocityUtils.DiscordWebhook;
@@ -19,21 +18,19 @@ import org.rexi.velocityUtils.VelocityUtils;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.rexi.velocityUtils.DiscordWebhook.getUuidFromName;
-
 public class StaffChatCommand implements SimpleCommand {
 
     private final ProxyServer server;
     private final ConfigManager configManager;
-    private final DiscordWebhook staffchatWebhook;
+    private final DiscordWebhook webhook;
     private final VelocityUtils plugin;
     private final LuckPerms luckPerms;
 
-    public StaffChatCommand(VelocityUtils plugin, ConfigManager configManager, ProxyServer server, DiscordWebhook staffchatWebhook, LuckPerms luckPerms) {
+    public StaffChatCommand(VelocityUtils plugin, ConfigManager configManager, ProxyServer server, DiscordWebhook webhook, LuckPerms luckPerms) {
         this.plugin = plugin;
         this.server = server;
         this.configManager = configManager;
-        this.staffchatWebhook = staffchatWebhook;
+        this.webhook = webhook;
         this.luckPerms = luckPerms;
     }
 
@@ -89,18 +86,13 @@ public class StaffChatCommand implements SimpleCommand {
 
             server.getConsoleCommandSource().sendMessage(staffMessage);
 
-            String uuidStr = getUuidFromName(player.getUsername());
-            String avatar = (uuidStr != null)
-                    ? "https://minotar.net/helm/" + uuidStr + "/64.png"
-                    : "https://i.pinimg.com/564x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg";
-
-            if (staffchatWebhook != null && configManager.getBoolean("staffchat.discord_hook.enabled")) {
+            if (configManager.getBoolean("staffchat.discord_hook.enabled")) {
                 String raw = configManager.getString("staffchat.discord_hook.message");
                 String msg = raw
                         .replace("{player}", player.getUsername())
                         .replace("{message}", message)
                         .replace("{server}", serverName);
-                staffchatWebhook.send(msg, avatar);
+                sendStaffChatWebhook(player.getUsername(), msg);
             }
 
             return;
@@ -157,5 +149,16 @@ public class StaffChatCommand implements SimpleCommand {
         }
 
         return primaryGroupName;
+    }
+
+    private void sendStaffChatWebhook(String playerName, String message) {
+        String webhookUrl = configManager.getString("staffchat.discord_hook.url");
+        String avatarUrl = configManager.getString("staffchat.discord_hook.avatar");
+        String username = configManager.getString("staffchat.discord_hook.username");
+        String title = configManager.getString("staffchat.discord_hook.title");
+
+        String color = configManager.getString("staffchat.discord_hook.color_rgb");
+        String thumbnailUrl = webhook.getPlayerAvatar(playerName);
+        webhook.send(message, webhookUrl, avatarUrl, username, color, thumbnailUrl, title);
     }
 }

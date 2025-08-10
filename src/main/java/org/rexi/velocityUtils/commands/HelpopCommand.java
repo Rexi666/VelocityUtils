@@ -17,15 +17,15 @@ public class HelpopCommand implements SimpleCommand {
 
     private final ConfigManager configManager;
     private final ProxyServer server;
-    private final DiscordWebhook helpopWebhook;
+    private final DiscordWebhook webhook;
 
     private final Map<UUID, Long> cooldowns = new HashMap<>();
     private static final long COOLDOWN_MILLIS = 30 * 1000;
 
-    public HelpopCommand (ConfigManager configManager, ProxyServer server, DiscordWebhook helpopWebhook) {
+    public HelpopCommand (ConfigManager configManager, ProxyServer server, DiscordWebhook webhook) {
         this.configManager = configManager;
         this.server = server;
-        this.helpopWebhook = helpopWebhook;
+        this.webhook = webhook;
     }
 
     @Override
@@ -92,17 +92,13 @@ public class HelpopCommand implements SimpleCommand {
             );
         }
 
-        String avatar = (uuid != null)
-                ? "https://minotar.net/helm/" + uuid + "/64.png"
-                : "https://i.pinimg.com/564x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg";
-
-        if (helpopWebhook != null && configManager.getBoolean("helpop.discord_hook.enabled")) {
+        if (configManager.getBoolean("helpop.discord_hook.enabled")) {
             String raw = configManager.getString("helpop.discord_hook.message");
             String msg = raw
                     .replace("{player}", reportername)
                     .replace("{reason}", reason)
                     .replace("{server}", serverName);
-            helpopWebhook.send(msg, avatar);
+            sendHelpopWebhook(reportername, msg);
         }
 
         /* ──────────── 6. Enviar a moderadores ──────────── */
@@ -136,5 +132,16 @@ public class HelpopCommand implements SimpleCommand {
     /* Utilidad para traducir códigos & */
     private Component legacy(String s) {
         return LegacyComponentSerializer.legacyAmpersand().deserialize(s);
+    }
+
+    private void sendHelpopWebhook(String playerName, String message) {
+        String webhookUrl = configManager.getString("helpop.discord_hook.url");
+        String avatarUrl = configManager.getString("helpop.discord_hook.avatar");
+        String username = configManager.getString("helpop.discord_hook.username");
+        String title = configManager.getString("helpop.discord_hook.title");
+
+        String color = configManager.getString("helpop.discord_hook.color_rgb");
+        String thumbnailUrl = webhook.getPlayerAvatar(playerName);
+        webhook.send(message, webhookUrl, avatarUrl, username, color, thumbnailUrl, title);
     }
 }

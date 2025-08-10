@@ -2,7 +2,6 @@ package org.rexi.velocityUtils.listeners;
 
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
-import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
@@ -11,7 +10,6 @@ import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
-import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.model.user.User;
 import org.rexi.velocityUtils.ConfigManager;
 import org.rexi.velocityUtils.DiscordWebhook;
@@ -25,15 +23,15 @@ public class PluginMessageListenerStaffChat {
     private final VelocityUtils plugin;
     private final ProxyServer server;
     private final ConfigManager configManager;
-    private final DiscordWebhook staffchatWebhook;
+    private final DiscordWebhook webhook;
     private final LuckPerms luckPerms;
     private final MinecraftChannelIdentifier channel = MinecraftChannelIdentifier.create("velocityutils", "staffchat");
 
-    public PluginMessageListenerStaffChat(VelocityUtils plugin, ProxyServer server, ConfigManager configManager, DiscordWebhook staffchatWebhook, LuckPerms luckPerms) {
+    public PluginMessageListenerStaffChat(VelocityUtils plugin, ProxyServer server, ConfigManager configManager, DiscordWebhook webhook, LuckPerms luckPerms) {
         this.plugin = plugin;
         this.server = server;
         this.configManager = configManager;
-        this.staffchatWebhook = staffchatWebhook;
+        this.webhook = webhook;
         this.luckPerms = luckPerms;
     }
 
@@ -93,16 +91,14 @@ public class PluginMessageListenerStaffChat {
 
                 server.getConsoleCommandSource().sendMessage(staffMessage);
 
-                if (staffchatWebhook != null && configManager.getBoolean("staffchat.discord_hook.enabled")) {
+                if (configManager.getBoolean("staffchat.discord_hook.enabled")) {
                     String raw = configManager.getString("staffchat.discord_hook.message");
                     String msgToSend = raw
                             .replace("{player}", username)
                             .replace("{message}", message)
                             .replace("{server}", serverName);
 
-                    String uuidStr = uuid.toString().replace("-", "");
-                    String avatar = "https://minotar.net/helm/" + uuidStr + "/64.png";
-                    staffchatWebhook.send(msgToSend, avatar);
+                    sendStaffChatWebhook(username, msgToSend);
                 }
             }
 
@@ -150,5 +146,16 @@ public class PluginMessageListenerStaffChat {
         }
 
         return primaryGroupName;
+    }
+
+    private void sendStaffChatWebhook(String playerName, String message) {
+        String webhookUrl = configManager.getString("staffchat.discord_hook.url");
+        String avatarUrl = configManager.getString("staffchat.discord_hook.avatar");
+        String username = configManager.getString("staffchat.discord_hook.username");
+        String title = configManager.getString("staffchat.discord_hook.title");
+
+        String color = configManager.getString("staffchat.discord_hook.color_rgb");
+        String thumbnailUrl = webhook.getPlayerAvatar(playerName);
+        webhook.send(message, webhookUrl, avatarUrl, username, color, thumbnailUrl, title);
     }
 }
