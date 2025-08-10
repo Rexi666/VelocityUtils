@@ -290,6 +290,13 @@ public class VelocityUtils {
                     new HelpopCommand(configManager, server, helpopWebhook)
             );
         }
+
+        if (configManager.getBoolean("stream.enabled")) {
+            server.getCommandManager().register(
+                    server.getCommandManager().metaBuilder("stream").build(),
+                    new StreamCommand(configManager, server, luckPerms)
+            );
+        }
     }
 
     @Subscribe

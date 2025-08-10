@@ -430,6 +430,30 @@ public class ConfigManager {
                     node.node("staffjoin", "change_message").set("&b&lStaff - &e{rank} {player} has changed the server to &b{server}");
                 }
 
+                if (node.node("stream", "enabled").empty()) {
+                    node.node("stream", "enabled").set(true);
+                }
+                if (node.node("stream", "message").empty()) {
+                    node.node("stream", "message").set("&7[&d&lSTREAM&7] {rank} &b{player} &fis now streaming &b{url}");
+                }
+                if (node.node("stream", "hover_enabled").empty()) {
+                    node.node("stream", "hover_enabled").set(true);
+                }
+                if (node.node("stream", "hover").empty()) {
+                    node.node("stream", "hover").set("&bClick to watch the stream");
+                }
+                if (node.node("stream", "cooldown_seconds").empty()) {
+                    node.node("stream", "cooldown_seconds").set(300);
+                }
+                if (node.node("stream", "whitelist").empty()) {
+                    node.node("stream", "whitelist").set(true);
+                }
+                if (node.node("stream", "whitelist_links").empty()) {
+                    node.node("stream", "whitelist_links").setList(String.class, List.of(
+                            "https://www.twitch.tv/",
+                            "https://www.youtube.com/"));
+                }
+
                 if (node.node("messages", "no_permission").empty()) {
                     node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
                 }
@@ -586,6 +610,15 @@ public class ConfigManager {
                 }
                 if (node.node("messages", "messagescommands_error_player").empty()) {
                     node.node("messages", "messagescommands_error_player").set("&cThat messagecommand doesnt work as intended, contact an administrator");
+                }
+                if (node.node("messages", "stream_usage").empty()) {
+                    node.node("messages", "stream_usage").set("&cUsage: /stream <url>");
+                }
+                if (node.node("messages", "stream_invalid_url").empty()) {
+                    node.node("messages", "stream_invalid_url").set("&cThats not a valid stream url");
+                }
+                if (node.node("messages", "stream_cooldown").empty()) {
+                    node.node("messages", "stream_cooldown").set("&cYou have to wait {cooldown} before using /stream again");
                 }
 
                 // Guardar en caso de que se hayan agregado valores predeterminados
@@ -800,6 +833,17 @@ public class ConfigManager {
             node.node("staffjoin", "leave_message").set("&b&lStaff - &c{rank} {player} has left the server");
             node.node("staffjoin", "change_message").set("&b&lStaff - &e{rank} {player} has changed the server to &b{server}");
 
+
+            node.node("stream", "enabled").set(true);
+            node.node("stream", "message").set("&7[&d&lSTREAM&7] {rank} &b{player} &fis now streaming &b{url}");
+            node.node("stream", "hover_enabled").set(true);
+            node.node("stream", "hover").set("&bClick to watch the stream");
+            node.node("stream", "cooldown_seconds").set(300);
+            node.node("stream", "whitelist").set(true);
+            node.node("stream", "whitelist_links").setList(String.class, List.of(
+                    "https://www.twitch.tv/",
+                    "https://www.youtube.com/"));
+
             node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
             node.node("messages", "no_console").set("&cOnly players can use this command");
             node.node("messages", "new_version_available").set("&cA new version of VelocityUtils is available (&b{version}&c)! &e{url}");
@@ -852,6 +896,9 @@ public class ConfigManager {
             node.node("messages", "messagescommands_no_message_console").set("&cThe messagecommand message is empty: {command}");
             node.node("messages", "messagescommands_no_action_or_hover_console").set("&cThe messagecommand {command} has action set to true, but no action or hover set");
             node.node("messages", "messagescommands_error_player").set("&cThat messagecommand doesnt work as intended, contact an administrator");
+            node.node("messages", "stream_usage").set("&cUsage: /stream <url>");
+            node.node("messages", "stream_invalid_url").set("&cThats not a valid stream url");
+            node.node("messages", "stream_cooldown").set("&cYou have to wait {cooldown} before using /stream again");
 
             loader.save(node);
         } catch (SerializationException e) {
@@ -874,6 +921,21 @@ public class ConfigManager {
         } catch (IOException e) {
             e.printStackTrace();
             return "&cError loading message: " + key;
+        }
+    }
+
+    public int getInt(String key) {
+        try {
+            ConfigurationNode node = loader.load();
+            String[] parts = key.split("\\.");
+            for (String part : parts) {
+                node = node.node(part);
+            }
+            int result = node.getInt();
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return 0;
         }
     }
 

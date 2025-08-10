@@ -9,7 +9,6 @@ import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
-import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.model.user.User;
 import org.rexi.velocityUtils.ConfigManager;
 
@@ -127,23 +126,29 @@ public class VListCommand implements SimpleCommand {
     }
 
     private String obtenerRango(Player player) {
-        if (luckPerms == null) return "Default";
+        if (luckPerms == null) return "";
 
         User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-        if (user != null) {
-            String primaryGroupName = user.getPrimaryGroup();
-            var group = luckPerms.getGroupManager().getGroup(primaryGroupName);
+        if (user == null) return "";
 
-            if (group != null) {
-                String groupPrefix = group.getCachedData().getMetaData().getPrefix();
-                if (groupPrefix != null && !groupPrefix.isEmpty()) {
-                    return groupPrefix;
-                }
-                return primaryGroupName; // Si el grupo no tiene prefix, devolvemos el nombre del grupo
-            }
-            return primaryGroupName; // Si no encuentra el grupo, devolvemos el nombre
+        // Primero intentamos obtener el prefix del propio usuario (o el que LuckPerms determine como prioritario)
+        String prefix = user.getCachedData().getMetaData().getPrefix();
+        if (prefix != null && !prefix.isEmpty()) {
+            return prefix;
         }
-        return "Default";
+
+        // Si no tiene prefix propio, usamos el del grupo principal
+        String primaryGroupName = user.getPrimaryGroup();
+        var group = luckPerms.getGroupManager().getGroup(primaryGroupName);
+        if (group != null) {
+            String groupPrefix = group.getCachedData().getMetaData().getPrefix();
+            if (groupPrefix != null && !groupPrefix.isEmpty()) {
+                return groupPrefix;
+            }
+            return primaryGroupName;
+        }
+
+        return primaryGroupName;
     }
 
     private int obtenerWeightRango(Player player) {

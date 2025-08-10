@@ -65,15 +65,7 @@ public class StaffChatCommand implements SimpleCommand {
                     .map(s -> s.getServerInfo().getName())
                     .orElse(configManager.getMessage("server_unknown"));
 
-            String prefixRaw = "";
-            if (luckPerms != null) {
-                User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-
-                if (user != null) {
-                    CachedMetaData metaData = user.getCachedData().getMetaData();
-                    prefixRaw = metaData.getPrefix() != null ? metaData.getPrefix() : "";
-                }
-            }
+            String prefixRaw = obtenerRango(player);
 
             // Obtener el prefix como Component
             Component prefixComponent = deserializePrefix(prefixRaw);
@@ -139,5 +131,31 @@ public class StaffChatCommand implements SimpleCommand {
 
         // Si no, asumimos que es con códigos &
         return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
+    }
+
+    private String obtenerRango(Player player) {
+        if (luckPerms == null) return "";
+
+        User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+        if (user == null) return "";
+
+        // Primero intentamos obtener el prefix del propio usuario (o el que LuckPerms determine como prioritario)
+        String prefix = user.getCachedData().getMetaData().getPrefix();
+        if (prefix != null && !prefix.isEmpty()) {
+            return prefix;
+        }
+
+        // Si no tiene prefix propio, usamos el del grupo principal
+        String primaryGroupName = user.getPrimaryGroup();
+        var group = luckPerms.getGroupManager().getGroup(primaryGroupName);
+        if (group != null) {
+            String groupPrefix = group.getCachedData().getMetaData().getPrefix();
+            if (groupPrefix != null && !groupPrefix.isEmpty()) {
+                return groupPrefix;
+            }
+            return primaryGroupName;
+        }
+
+        return primaryGroupName;
     }
 }

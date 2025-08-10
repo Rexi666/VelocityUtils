@@ -69,17 +69,9 @@ public class PluginMessageListenerAdminChat {
 
                 String serverName = serverConn.getServerInfo().getName();
 
-                String prefixRaw = "";
-                if (luckPerms != null) {
-                    User user = luckPerms.getUserManager().getUser(uuid);
+                String prefixRaw = obtenerRangoFromUUID(uuid);
 
-                    if (user != null) {
-                        CachedMetaData metaData = user.getCachedData().getMetaData();
-                        prefixRaw = metaData.getPrefix() != null ? metaData.getPrefix() : "";
-                    }
-                }
-
-                Component prefixComponent = LegacyComponentSerializer.legacyAmpersand().deserialize(prefixRaw);
+                Component prefixComponent = deserializePrefix(prefixRaw);
 
                 String format = configManager.getMessage("adminchat_format")
                         .replace("{player}", username)
@@ -131,5 +123,31 @@ public class PluginMessageListenerAdminChat {
 
         // Si no, asumimos que es con códigos &
         return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
+    }
+
+    private String obtenerRangoFromUUID(UUID uuid) {
+        if (luckPerms == null) return "";
+
+        User user = luckPerms.getUserManager().getUser(uuid);
+        if (user == null) return "";
+
+        // Primero intentamos obtener el prefix del propio usuario (o el que LuckPerms determine como prioritario)
+        String prefix = user.getCachedData().getMetaData().getPrefix();
+        if (prefix != null && !prefix.isEmpty()) {
+            return prefix;
+        }
+
+        // Si no tiene prefix propio, usamos el del grupo principal
+        String primaryGroupName = user.getPrimaryGroup();
+        var group = luckPerms.getGroupManager().getGroup(primaryGroupName);
+        if (group != null) {
+            String groupPrefix = group.getCachedData().getMetaData().getPrefix();
+            if (groupPrefix != null && !groupPrefix.isEmpty()) {
+                return groupPrefix;
+            }
+            return primaryGroupName;
+        }
+
+        return primaryGroupName;
     }
 }

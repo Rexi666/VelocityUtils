@@ -50,6 +50,7 @@
 #### User commands
 - `/report <user> <reason>` - Report a user to the staff team
 - You can configure a MoveCommand to move players to another server, for example /lobby or /survival
+- `/stream <url>` - Send a message to the entire network with a link to your stream
 
 ### 🔐 Permissions:
 #### Admin permissions
@@ -76,6 +77,7 @@
 - `velocityutils.helpop.use` - access to /helpop
 - `velocityutils.movecommand.<command>` - permission to use a MoveCommand, e.g. `velocityutils.movecommand.lobby` to use the command /lobby. Use `velocityutils.movecommand.*` to grant all move commands.
 - `velocityutils.messagescommand.<command>` - permission to use a MessagesCommand, e.g. `velocityutils.messagescommand.discord` to use the command /discord. Use `velocityutils.messagescommand.*` to grant all messages commands.
+- `velocityutils.stream` - permission to use the /stream command.
 
 ### ✏️ Placeholders:
 [VelocityUtilsLink (backend plugin)](https://www.spigotmc.org/resources/velocityutilslink.127649/) + [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) needed to be installed on the backends to use these placeholders.

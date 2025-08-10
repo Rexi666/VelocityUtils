@@ -205,6 +205,16 @@ staffjoin:
   join_message: "&b&lStaff - &a{rank} {player} has joined the server"
   leave_message: "&b&lStaff - &c{rank} {player} has left the server"
   change_message: "&b&lStaff - &e{rank} {player} has changed the server &b{from} &e> &b{server}"
+stream:
+  enabled: true
+  message: "&7[&d&lSTREAM&7] {rank} &b{player} &fis now streaming &b{url}"
+  hover_enabled: true
+  hover: "&bClick to watch the stream"
+  cooldown_seconds: 300
+  whitelist: true
+  whitelist_links:
+    - "https://www.twitch.tv/"
+    - "https://www.youtube.com/"
 messages:
   no_permission: "&cYou don't have permission to use this command"
   no_console: "&cOnly players can use this command"
@@ -258,3 +268,6 @@ messages:
   messagescommands_no_message_console: "&cThe messagecommand message is empty: {command}"
   messagescommands_no_action_or_hover_console: "&cThe messagecommand {command} has action set to true, but no action or hover set"
   messagescommands_error_player: "&cThat messagecommand doesnt work as intended, contact an administrator"
+  stream_usage: "&cUsage: /stream <url>"
+  stream_invalid_url: "&cThats not a valid stream url"
+  stream_cooldown: "&cYou have to wait {cooldown} before using /stream again"
