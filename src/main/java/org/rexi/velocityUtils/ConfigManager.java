@@ -393,7 +393,7 @@ public class ConfigManager {
 
                     node.node("messagescommands", "newgamemode", "message").setList(String.class, List.of(
                             "&f-----------------------------",
-                            "&6New Game Mode realeased",
+                            "&6New Game Mode released",
                             "&#c3d600&lJ&#c6c900&lO&#cabd00&lI&#cdb000&lN &#d1a400&lT&#d49700&lH&#d78a00&lE&#db7e00&lN&#de7100&lE&#e26500&lW &#e55800&lS&#e94c00&lU&#ec3f00&lR&#ef3200&lV&#f32600&lI&#f61900&lV&#fa0d00&lA&#fd0000&lL",
                             "&f-----------------------------"));
                     node.node("messagescommands", "newgamemode", "click_action").set("RUN_COMMAND");
@@ -812,7 +812,7 @@ public class ConfigManager {
             node.node("messagescommands", "discord", "hover").set("&9Click to join ur discord");
             node.node("messagescommands", "newgamemode", "message").setList(String.class, List.of(
                     "&f-----------------------------",
-                    "&6New Game Mode realeased",
+                    "&6New Game Mode released",
                     "&#c3d600&lJ&#c6c900&lO&#cabd00&lI&#cdb000&lN &#d1a400&lT&#d49700&lH&#d78a00&lE&#db7e00&lN&#de7100&lE&#e26500&lW &#e55800&lS&#e94c00&lU&#ec3f00&lR&#ef3200&lV&#f32600&lI&#f61900&lV&#fa0d00&lA&#fd0000&lL",
                     "&f-----------------------------"));
             node.node("messagescommands", "newgamemode", "click_action").set("RUN_COMMAND");
