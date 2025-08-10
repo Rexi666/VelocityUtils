@@ -5,7 +5,7 @@
 ---
 
 ### ✨ Features
-- 📣 **Global Alerts** - send broadcast messages across the entire network with `/alert`.
+- 📣 **Global Alerts** - send broadcast messages across the entire network with `/alert`. And let your influencers share their streams with `/stream` across the network.
 - 🔧 **Maintenance mode** - restrict server access when needed.
 - 📬 **Player Support System** – Players can use `/report` to report other players, or `/helpop` to request staff assistance. Staff members with permission receive in-game notifications (with clickable teleport buttons), and optionally via a Discord webhook.
 - 🧭 **Player Location Commands** - find which server a player is on with `/find` and teleport to them with `/goto`.
