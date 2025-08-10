@@ -64,6 +64,7 @@ public class VelocityUtils {
 
     private final Map<UUID, StaffSession> staffSessions = new ConcurrentHashMap<>();
 
+    boolean isMySQL = false;
 
     @Inject
     public VelocityUtils(ProxyServer server, PluginContainer plugin) {
@@ -348,21 +349,49 @@ public class VelocityUtils {
     }
 
     private void createTables() {
-        String staffTimeTable = """
+        String dbType = configManager.getString("database.type").toLowerCase();
+
+        if (!dbType.equalsIgnoreCase("mysql")) {
+            dbType = "sqlite";
+        }
+
+        String staffTimeTable;
+        String playerInfoTable;
+
+        if (dbType.equals("mysql")) {
+            staffTimeTable = """
+        CREATE TABLE IF NOT EXISTS staff_time_daily (
+            uuid VARCHAR(36) NOT NULL,
+            date DATE NOT NULL,
+            duration_seconds INT NOT NULL,
+            PRIMARY KEY (uuid, date)
+        );
+        """;
+
+            playerInfoTable = """
+        CREATE TABLE IF NOT EXISTS player_info (
+            uuid VARCHAR(36) PRIMARY KEY,
+            name VARCHAR(16) NOT NULL
+        );
+        """;
+        } else {
+            staffTimeTable = """
         CREATE TABLE IF NOT EXISTS staff_time_daily (
             uuid TEXT NOT NULL,
-            date TEXT NOT NULL, -- Guardamos fecha en formato ISO yyyy-MM-dd
+            date TEXT NOT NULL,
             duration_seconds INTEGER NOT NULL,
             PRIMARY KEY (uuid, date)
         );
         """;
 
-        String playerInfoTable = """
-    CREATE TABLE IF NOT EXISTS player_info (
-        uuid TEXT PRIMARY KEY,
-        name TEXT NOT NULL
-    );
-    """;
+            playerInfoTable = """
+        CREATE TABLE IF NOT EXISTS player_info (
+            uuid TEXT PRIMARY KEY,
+            name TEXT NOT NULL
+        );
+        """;
+        }
+
         try (var conn = getConnection();
              var stmt = conn.createStatement()) {
             stmt.execute(staffTimeTable);
@@ -373,12 +402,46 @@ public class VelocityUtils {
     }
 
     public Connection getConnection() throws SQLException {
-        // Cambia esta ruta si quieres que la base esté en otro sitio
-        return DriverManager.getConnection("jdbc:sqlite:plugins/VelocityUtils/stafftime.db");
+        String dbType = configManager.getString("database.type").toLowerCase();
+
+        if (!dbType.equalsIgnoreCase("mysql")) {
+            dbType = "sqlite";
+        } else {
+            isMySQL = true;
+        }
+
+        if (dbType.equals("mysql")) {
+            String host = configManager.getString("database.mysql.host");
+            int port = configManager.getInt("database.mysql.port");
+            String database = configManager.getString("database.mysql.database");
+            String username = configManager.getString("database.mysql.username");
+            String password = configManager.getString("database.mysql.password");
+
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver"); // Cargar driver MySQL
+            } catch (ClassNotFoundException e) {
+                throw new SQLException("MySQL driver not found", e);
+            }
+
+            String url = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=false&autoReconnect=true&characterEncoding=utf8";
+            return DriverManager.getConnection(url, username, password);
+        } else {
+            try {
+                Class.forName("org.sqlite.JDBC"); // Cargar driver SQLite
+            } catch (ClassNotFoundException e) {
+                throw new SQLException("SQLite driver not found", e);
+            }
+
+            return DriverManager.getConnection("jdbc:sqlite:plugins/VelocityUtils/stafftime.db");
+        }
     }
 
     public Map<UUID, StaffSession> getStaffSessions() {
         return staffSessions;
+    }
+
+    public boolean isUsingMySQL() {
+        return isMySQL;
     }
 
 }

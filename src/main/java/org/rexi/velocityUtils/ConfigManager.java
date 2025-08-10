@@ -52,7 +52,26 @@ public class ConfigManager {
                 ConfigurationNode node = loader.load();
                 config = new Config();
 
-                // Cargar los mensajes si no existen
+                // Cargar las configs si no existen
+
+                if (node.node("database", "type").empty()) {
+                    node.node("database", "type").set("sqlite");
+                }
+                if (node.node("database", "mysql", "host").empty()) {
+                    node.node("database", "mysql", "host").set("localhost");
+                }
+                if (node.node("database", "mysql", "port").empty()) {
+                    node.node("database", "mysql", "port").set(3306);
+                }
+                if (node.node("database", "mysql", "database").empty()) {
+                    node.node("database", "mysql", "database").set("velocityutils");
+                }
+                if (node.node("database", "mysql", "username").empty()) {
+                    node.node("database", "mysql", "username").set("root");
+                }
+                if (node.node("database", "mysql", "password").empty()) {
+                    node.node("database", "mysql", "password").set("");
+                }
 
                 if (node.node("alert", "enabled").empty()) {
                     node.node("alert", "enabled").set(true);
@@ -639,6 +658,13 @@ public class ConfigManager {
             ConfigurationNode node = loader.createNode();
 
             // 💡 Crear la estructura correctamente sin inline mapping
+            node.node("database", "type").set("sqlite");
+            node.node("database", "mysql", "host").set("localhost");
+            node.node("database", "mysql", "port").set(3306);
+            node.node("database", "mysql", "database").set("velocityutils");
+            node.node("database", "mysql", "username").set("root");
+            node.node("database", "mysql", "password").set("");
+
             node.node("alert", "enabled").set(true);
             node.node("alert", "prefix").set("&7[&b&lSERVER&7]");
 

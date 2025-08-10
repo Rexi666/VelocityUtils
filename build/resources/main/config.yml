@@ -1,3 +1,12 @@
+database:
+  type: sqlite
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "velocityutils"
+    username: "root"
+    password: ""
+
 alert:
   enabled: true
   prefix: "&7[&b&lSERVER&7]"
@@ -181,7 +190,7 @@ messagescommands:
   newgamemode:
     message:
       - '&f-----------------------------'
-      - '&6New Game Mode realeased'
+      - '&6New Game Mode released'
       - '&#c3d600&lJ&#c6c900&lO&#cabd00&lI&#cdb000&lN &#d1a400&lT&#d49700&lH&#d78a00&lE
               &#db7e00&lN&#de7100&lE&#e26500&lW &#e55800&lS&#e94c00&lU&#ec3f00&lR&#ef3200&lV&#f32600&lI&#f61900&lV&#fa0d00&lA&#fd0000&lL'
       - '&f-----------------------------'

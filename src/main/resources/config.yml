@@ -1,3 +1,12 @@
+database:
+  type: sqlite
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "velocityutils"
+    username: "root"
+    password: ""
+
 alert:
   enabled: true
   prefix: "&7[&b&lSERVER&7]"

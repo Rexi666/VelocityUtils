@@ -173,12 +173,22 @@ public class StaffConnectionListener {
     }
 
     public void saveSessionDurationDaily(UUID uuid, LocalDate date, Duration duration) {
-        String sql = """
-        INSERT INTO staff_time_daily (uuid, date, duration_seconds)
-        VALUES (?, ?, ?)
-        ON CONFLICT(uuid, date) DO UPDATE SET
-        duration_seconds = duration_seconds + excluded.duration_seconds;
-        """;
+        String sql;
+        if (plugin.isUsingMySQL()) {
+            sql = """
+            INSERT INTO staff_time_daily (uuid, date, duration_seconds)
+            VALUES (?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+            duration_seconds = duration_seconds + VALUES(duration_seconds);
+            """;
+        } else {
+            sql = """
+            INSERT INTO staff_time_daily (uuid, date, duration_seconds)
+            VALUES (?, ?, ?)
+            ON CONFLICT(uuid, date) DO UPDATE SET
+            duration_seconds = duration_seconds + excluded.duration_seconds;
+            """;
+        }
         try (var conn = plugin.getConnection();
              var pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, uuid.toString());
@@ -213,11 +223,20 @@ public class StaffConnectionListener {
     }
 
     private void savePlayerInfo(Player player) {
-        String sql = """
-    INSERT INTO player_info (uuid, name)
-    VALUES (?, ?)
-    ON CONFLICT(uuid) DO UPDATE SET name = excluded.name;
-    """;
+        String sql;
+        if (plugin.isUsingMySQL()) {
+            sql = """
+            INSERT INTO player_info (uuid, name)
+            VALUES (?, ?)
+            ON DUPLICATE KEY UPDATE name = VALUES(name);
+            """;
+        } else {
+            sql = """
+            INSERT INTO player_info (uuid, name)
+            VALUES (?, ?)
+            ON CONFLICT(uuid) DO UPDATE SET name = excluded.name;
+            """;
+        }
 
         try (var conn = plugin.getConnection();
              var pstmt = conn.prepareStatement(sql)) {
