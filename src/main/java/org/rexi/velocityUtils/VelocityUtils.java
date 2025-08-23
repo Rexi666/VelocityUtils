@@ -25,6 +25,7 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import org.spongepowered.configurate.ConfigurationNode;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -346,13 +347,25 @@ public class VelocityUtils {
             String url = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=false&autoReconnect=true&characterEncoding=utf8";
             return DriverManager.getConnection(url, username, password);
         } else {
+
+            File oldDb = new File("plugins/VelocityUtils/stafftime.db");
+            File finalDb = new File("plugins/VelocityUtils/data.db");
+            if (oldDb.exists() && !finalDb.exists()) {
+                if (oldDb.renameTo(finalDb)) {
+                    logger.info("[VelocityUtils] Renaming database to data.db");
+                } else {
+                    logger.warn("[VelocityUtils] stafftime.db couldnt be renamed");
+                    finalDb = oldDb;
+                }
+            }
+
             try {
                 Class.forName("org.sqlite.JDBC"); // Cargar driver SQLite
             } catch (ClassNotFoundException e) {
                 throw new SQLException("SQLite driver not found", e);
             }
 
-            return DriverManager.getConnection("jdbc:sqlite:plugins/VelocityUtils/stafftime.db");
+            return DriverManager.getConnection("jdbc:sqlite:" + finalDb.getPath());
         }
     }
 
