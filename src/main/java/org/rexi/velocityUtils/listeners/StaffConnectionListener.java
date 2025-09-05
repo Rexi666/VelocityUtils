@@ -10,7 +10,6 @@ import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
-import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.model.user.User;
 import org.rexi.velocityUtils.*;
 
@@ -20,8 +19,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
-
-import static org.rexi.velocityUtils.DiscordWebhook.getUuidFromName;
 
 public class StaffConnectionListener {
 
@@ -52,12 +49,12 @@ public class StaffConnectionListener {
                 .orElse("N/A");
 
         staffJoinMessage(player, newServer, previousServer);
+        savePlayerInfo(player);
 
         if (isAdmin(player)) {
             return; // No action for admins
         }
         if (isStaff(player)) {
-            savePlayerInfo(player);
             StaffSession session = sessions.get(player.getUniqueId());
 
             if (session == null) {
@@ -90,6 +87,7 @@ public class StaffConnectionListener {
     @Subscribe
     public void onDisconnect(DisconnectEvent event) {
         Player player = event.getPlayer();
+        savePlayerInfo(player);
 
         staffLeaveMessage(player);
         if (isAdmin(player)) {
@@ -151,7 +149,13 @@ public class StaffConnectionListener {
         long hours = duration.toHours();
         long minutes = duration.toMinutesPart();
         long seconds = duration.toSecondsPart();
-        return String.format("%02dh %02dm %02ds", hours, minutes, seconds);
+
+        String hour_simbol = configManager.getMessage("hour_simbol");
+        String minute_simbol = configManager.getMessage("minute_simbol");
+        String second_simbol = configManager.getMessage("second_simbol");
+
+
+        return String.format("%02d"+ hour_simbol + " %02d" + minute_simbol + " %02d" + second_simbol, hours, minutes, seconds);
     }
 
     public void saveSessionDurationDaily(UUID uuid, LocalDate date, Duration duration) {
@@ -208,16 +212,18 @@ public class StaffConnectionListener {
         String sql;
         if (plugin.isUsingMySQL()) {
             sql = """
-            INSERT INTO player_info (uuid, name)
-            VALUES (?, ?)
-            ON DUPLICATE KEY UPDATE name = VALUES(name);
-            """;
+        INSERT INTO player_info (uuid, name, last_join)
+        VALUES (?, ?, NOW())
+        ON DUPLICATE KEY UPDATE name = VALUES(name),
+            last_join = VALUES(last_join);
+        """;
         } else {
             sql = """
-            INSERT INTO player_info (uuid, name)
-            VALUES (?, ?)
-            ON CONFLICT(uuid) DO UPDATE SET name = excluded.name;
-            """;
+        INSERT INTO player_info (uuid, name, last_join)
+        VALUES (?, ?, datetime('now'))
+        ON CONFLICT(uuid) DO UPDATE SET name = excluded.name,
+                last_join = excluded.last_join;
+        """;
         }
 
         try (var conn = plugin.getConnection();

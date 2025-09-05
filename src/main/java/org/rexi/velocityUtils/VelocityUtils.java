@@ -174,7 +174,7 @@ public class VelocityUtils {
         if (configManager.getBoolean("find.enabled")) {
             server.getCommandManager().register(
                     server.getCommandManager().metaBuilder("find").build(),
-                    new FindCommand(configManager, server));
+                    new FindCommand(configManager, server, this));
         }
 
         if (configManager.getBoolean("stafflist.enabled")) {
@@ -292,7 +292,8 @@ public class VelocityUtils {
             playerInfoTable = """
         CREATE TABLE IF NOT EXISTS player_info (
             uuid VARCHAR(36) PRIMARY KEY,
-            name VARCHAR(16) NOT NULL
+            name VARCHAR(16) NOT NULL,
+            last_join TIMESTAMP
         );
         """;
         } else {
@@ -308,7 +309,8 @@ public class VelocityUtils {
             playerInfoTable = """
         CREATE TABLE IF NOT EXISTS player_info (
             uuid TEXT PRIMARY KEY,
-            name TEXT NOT NULL
+            name TEXT NOT NULL,
+            last_join TEXT
         );
         """;
         }
@@ -317,6 +319,16 @@ public class VelocityUtils {
              var stmt = conn.createStatement()) {
             stmt.execute(staffTimeTable);
             stmt.execute(playerInfoTable);
+
+            try {
+                if (dbType.equals("mysql")) {
+                    stmt.execute("ALTER TABLE player_info ADD COLUMN IF NOT EXISTS last_join TIMESTAMP");
+                } else {
+                    stmt.execute("ALTER TABLE player_info ADD COLUMN last_join TEXT");
+                }
+            } catch (SQLException ignore) {
+                // si ya existe, SQLite lanza error → lo ignoramos
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

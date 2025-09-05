@@ -566,11 +566,17 @@ public class ConfigManager {
                 if (node.node("messages", "find_player_not_found").empty()) {
                     node.node("messages", "find_player_not_found").set("&cPlayer {player} not found");
                 }
-                if (node.node("messages", "server_unknown").empty()) {
-                    node.node("messages", "server_unknown").set("Unknown");
-                }
                 if (node.node("messages", "find_where").empty()) {
                     node.node("messages", "find_where").set("&b{player} &eis on &b{server}");
+                }
+                if (node.node("messages", "find_last_seen").empty()) {
+                    node.node("messages", "find_last_seen").set("&e{player} &cis not connected. Last seen: &e{time} ago");
+                }
+                if (node.node("messages", "find_less_minute").empty()) {
+                    node.node("messages", "find_less_minute").set("Less than 1 minute");
+                }
+                if (node.node("messages", "server_unknown").empty()) {
+                    node.node("messages", "server_unknown").set("Unknown");
                 }
                 if (node.node("messages", "stafflist_no_staff").empty()) {
                     node.node("messages", "stafflist_no_staff").set("&cThere are no staff online");
@@ -638,6 +644,18 @@ public class ConfigManager {
                 }
                 if (node.node("messages", "stream_cooldown").empty()) {
                     node.node("messages", "stream_cooldown").set("&cYou have to wait {cooldown} before using /stream again");
+                }
+                if (node.node("messages", "day_simbol").empty()) {
+                    node.node("messages", "day_simbol").set("d");
+                }
+                if (node.node("messages", "hour_simbol").empty()) {
+                    node.node("messages", "hour_simbol").set("h");
+                }
+                if (node.node("messages", "minute_simbol").empty()) {
+                    node.node("messages", "minute_simbol").set("m");
+                }
+                if (node.node("messages", "second_simbol").empty()) {
+                    node.node("messages", "second_simbol").set("s");
                 }
 
                 // Guardar en caso de que se hayan agregado valores predeterminados
@@ -901,8 +919,10 @@ public class ConfigManager {
             node.node("messages", "goto_connecting").set("&aConnecting with {player} server");
             node.node("messages", "find_usage").set("&cUsage: /find <player>");
             node.node("messages", "find_player_not_found").set("&cPlayer {player} not found");
-            node.node("messages", "server_unknown").set("Unknown");
             node.node("messages", "find_where").set("&b{player} &eis on &b{server}");
+            node.node("messages", "find_last_seen").set("&e{player} &cis not connected. Last seen: &e{time} ago");
+            node.node("messages", "find_less_minute").set("Less than 1 minute");
+            node.node("messages", "server_unknown").set("Unknown");
             node.node("messages", "stafflist_no_staff").set("&cThere are no staff online");
             node.node("messages", "stafflist_header").set("&b&lStaff List");
             node.node("messages", "stafflist_staff").set("{prefix} &f{player} &7- &b{server}");
@@ -925,6 +945,10 @@ public class ConfigManager {
             node.node("messages", "stream_usage").set("&cUsage: /stream <url>");
             node.node("messages", "stream_invalid_url").set("&cThats not a valid stream url");
             node.node("messages", "stream_cooldown").set("&cYou have to wait {cooldown} before using /stream again");
+            node.node("messages", "day_simbol").set("d");
+            node.node("messages", "hour_simbol").set("h");
+            node.node("messages", "minute_simbol").set("m");
+            node.node("messages", "second_simbol").set("s");
 
             loader.save(node);
         } catch (SerializationException e) {

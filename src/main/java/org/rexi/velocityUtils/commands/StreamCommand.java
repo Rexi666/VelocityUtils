@@ -13,6 +13,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
 import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.utils.DefaultFontInfo;
 
 import java.util.HashMap;
 import java.util.List;
@@ -57,11 +58,14 @@ public class StreamCommand implements SimpleCommand {
             long minutes = remaining / 60;
             long seconds = remaining % 60;
 
+            String minute_simbol = configManager.getMessage("minute_simbol");
+            String second_simbol = configManager.getMessage("second_simbol");
+
             String cooldownFormatted;
             if (minutes > 0) {
-                cooldownFormatted = minutes + "m " + seconds + "s";
+                cooldownFormatted = minutes + minute_simbol + " " + seconds + second_simbol;
             } else {
-                cooldownFormatted = seconds + "s";
+                cooldownFormatted = seconds + second_simbol;
             }
 
             player.sendMessage(legacy(configManager.getMessage("stream_cooldown")
@@ -96,8 +100,13 @@ public class StreamCommand implements SimpleCommand {
         }
     }
 
+    private static final LegacyComponentSerializer LEGACY_HEX_SERIALIZER = LegacyComponentSerializer.builder()
+            .character('&')
+            .hexColors() // Habilita el soporte de hex
+            .useUnusualXRepeatedCharacterHexFormat() // Soporta &x&r&r&g&g&b&b
+            .build();
     private Component legacy(String s) {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(s);
+        return LEGACY_HEX_SERIALIZER.deserialize(s);
     }
 
     private void sendMessage(Player player, String url) {
@@ -106,7 +115,13 @@ public class StreamCommand implements SimpleCommand {
         String semiformated = configManager.getString("stream.message")
                 .replace("{player}", player.getUsername())
                 .replace("{url}", url);
-        Component semibasemessage = LegacyComponentSerializer.legacyAmpersand().deserialize(semiformated);
+
+        List<String> messageList = configManager.getStringList("stream.messagelist");
+        boolean list = false;
+        if (!messageList.isEmpty()) {
+            list = true;
+        }
+        Component semibasemessage = legacy(semiformated);
 
         Component baseMessage = semibasemessage.replaceText(TextReplacementConfig.builder()
                 .matchLiteral("{rank}")
@@ -114,18 +129,50 @@ public class StreamCommand implements SimpleCommand {
                 .build());
 
         Component finalMessage;
-        if (configManager.getBoolean("stream.hover_enabled")) {
+        boolean hoverEnabled = configManager.getBoolean("stream.hover_enabled");
+        if (hoverEnabled) {
             String hover = configManager.getString("stream.hover");
             finalMessage = baseMessage
                     .clickEvent(ClickEvent.openUrl(url))
                     .hoverEvent(HoverEvent.showText(
-                            LegacyComponentSerializer.legacyAmpersand().deserialize(hover)));
+                            legacy(hover)));
         } else {
             finalMessage = baseMessage.clickEvent(ClickEvent.openUrl(url));
         }
 
-        for (Player onlinePlayer : server.getAllPlayers()) {
-            onlinePlayer.sendMessage(finalMessage);
+        if (list) {
+            String hover = configManager.getString("stream.hover");
+            for (String line : messageList) {
+                line = line
+                        .replace("{player}", player.getUsername())
+                        .replace("{url}", url);
+                if (line.startsWith("[center]")) {
+                    line = line.replace("[center]", "");
+                    line = getCenteredMessage(line);
+                }
+                Component semiLine = legacy(line);
+                Component baseLine = semiLine.replaceText(TextReplacementConfig.builder()
+                        .matchLiteral("{rank}")
+                        .replacement(prefix)
+                        .build());
+
+                Component finalLine;
+                if (hoverEnabled) {
+                    finalLine = baseLine
+                            .clickEvent(ClickEvent.openUrl(url))
+                            .hoverEvent(HoverEvent.showText(
+                                    legacy(hover)));
+                } else {
+                    finalLine = baseLine.clickEvent(ClickEvent.openUrl(url));
+                }
+                for (Player onlinePlayer : server.getAllPlayers()) {
+                    onlinePlayer.sendMessage(finalLine);
+                }
+            }
+        } else {
+            for (Player onlinePlayer : server.getAllPlayers()) {
+                onlinePlayer.sendMessage(finalMessage);
+            }
         }
     }
 
@@ -168,5 +215,40 @@ public class StreamCommand implements SimpleCommand {
 
         // Si no, asumimos que es con códigos &
         return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
+    }
+
+    public static String getCenteredMessage(String message){
+        int CENTER_PX = 154;
+        int messagePxSize = 0;
+        boolean previousCode = false;
+        boolean isBold = false;
+
+        for(char c : message.toCharArray()){
+            if(c == '§'){
+                previousCode = true;
+                continue;
+            }else if(previousCode == true){
+                previousCode = false;
+                if(c == 'l' || c == 'L'){
+                    isBold = true;
+                    continue;
+                } else isBold = false;
+            }else{
+                DefaultFontInfo dFI = DefaultFontInfo.getDefaultFontInfo(c);
+                messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
+                messagePxSize++;
+            }
+        }
+
+        int halvedMessageSize = messagePxSize / 2;
+        int toCompensate = CENTER_PX - halvedMessageSize;
+        int spaceLength = DefaultFontInfo.SPACE.getLength() + 1;
+        int compensated = 0;
+        StringBuilder sb = new StringBuilder();
+        while(compensated < toCompensate){
+            sb.append(" ");
+            compensated += spaceLength;
+        }
+        return (sb.toString() + message);
     }
 }

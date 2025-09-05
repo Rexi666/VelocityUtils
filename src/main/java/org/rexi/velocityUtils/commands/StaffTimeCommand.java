@@ -181,7 +181,12 @@ public class StaffTimeCommand implements SimpleCommand {
         long h = seconds / 3600;
         long m = (seconds % 3600) / 60;
         long s = seconds % 60;
-        return String.format("%02dh %02dm %02ds", h, m, s);
+
+        String hour_simbol = configManager.getMessage("hour_simbol");
+        String minute_simbol = configManager.getMessage("minute_simbol");
+        String second_simbol = configManager.getMessage("second_simbol");
+
+        return String.format("%02d"+ hour_simbol + " %02d" + minute_simbol + " %02d" + second_simbol, h, m, s);
     }
 
     private Component legacy(String s) {

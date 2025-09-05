@@ -224,6 +224,7 @@ stream:
   whitelist_links:
     - "https://www.twitch.tv/"
     - "https://www.youtube.com/"
+    - "https://www.kick.com/"
 messages:
   no_permission: "&cYou don't have permission to use this command"
   no_console: "&cOnly players can use this command"
@@ -257,6 +258,8 @@ messages:
   find_usage: "&cUsage: /find <player>"
   find_player_not_found: "&cPlayer {player} not found"
   find_where: "&b{player} &eis on &b{server}"
+  find_last_seen: "&e{player} &cis not connected. Last seen: &e{time} ago"
+  find_less_minute: "Less than 1 minute"
   server_unknown: "Unknown"
   stafflist_no_staff: "&cThere are no staff online"
   stafflist_header: "&b&lStaff List"
@@ -280,3 +283,7 @@ messages:
   stream_usage: "&cUsage: /stream <url>"
   stream_invalid_url: "&cThats not a valid stream url"
   stream_cooldown: "&cYou have to wait {cooldown} before using /stream again"
+  day_simbol: "d"
+  hour_simbol: "h"
+  minute_simbol: "m"
+  second_simbol: "s"
