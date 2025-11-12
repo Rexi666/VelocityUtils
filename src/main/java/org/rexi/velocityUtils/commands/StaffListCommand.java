@@ -38,12 +38,7 @@ public class StaffListCommand implements SimpleCommand {
             return;
         }
 
-        List<Player> staffOnline = server.getAllPlayers().stream()
-                .filter(p -> p.hasPermission("velocityutils.stafflist.staff"))
-                .sorted((p1, p2) -> Integer.compare(
-                        getGroupWeight(p2), getGroupWeight(p1)
-                ))
-                .collect(Collectors.toList());
+        List<Player> staffOnline = getStaffOnline();
 
         if (staffOnline.isEmpty()) {
             source.sendMessage(deserializeLegacy(configManager.getMessage("stafflist_no_staff")));
@@ -80,7 +75,7 @@ public class StaffListCommand implements SimpleCommand {
         return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
     }
 
-    private Component deserializePrefix(String input) {
+    public Component deserializePrefix(String input) {
         // Si contiene <...> asumimos que es MiniMessage
         if (input.contains("<") && input.contains(">")) {
             try {
@@ -95,7 +90,16 @@ public class StaffListCommand implements SimpleCommand {
         return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
     }
 
-    private int getGroupWeight(Player player) {
+    public List<Player> getStaffOnline() {
+        return server.getAllPlayers().stream()
+                .filter(p -> p.hasPermission("velocityutils.stafflist.staff"))
+                .sorted((p1, p2) -> Integer.compare(
+                        getGroupWeight(p2), getGroupWeight(p1)
+                ))
+                .collect(Collectors.toList());
+    }
+
+    public int getGroupWeight(Player player) {
         if (luckPerms == null) return 0;
 
         User user = luckPerms.getUserManager().getUser(player.getUniqueId());
@@ -132,6 +136,15 @@ public class StaffListCommand implements SimpleCommand {
         }
 
         return primaryGroupName;
+    }
+
+    public String obtenerRangoPrincipal(Player player) {
+        if (luckPerms == null) return "";
+
+        User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+        if (user == null) return "";
+
+        return user.getPrimaryGroup();
     }
 
 }

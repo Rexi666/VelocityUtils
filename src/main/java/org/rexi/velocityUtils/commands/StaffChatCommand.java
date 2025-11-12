@@ -151,7 +151,7 @@ public class StaffChatCommand implements SimpleCommand {
         return primaryGroupName;
     }
 
-    private void sendStaffChatWebhook(String playerName, String message) {
+    public void sendStaffChatWebhook(String playerName, String message) {
         String webhookUrl = configManager.getString("staffchat.discord_hook.url");
         String avatarUrl = configManager.getString("staffchat.discord_hook.avatar");
         String username = configManager.getString("staffchat.discord_hook.username");

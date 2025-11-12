@@ -152,7 +152,7 @@ public class AdminChatCommand implements SimpleCommand {
         return primaryGroupName;
     }
 
-    private void sendAdminChatWebhook(String playerName, String message) {
+    public void sendAdminChatWebhook(String playerName, String message) {
         String webhookUrl = configManager.getString("adminchat.discord_hook.url");
         String avatarUrl = configManager.getString("adminchat.discord_hook.avatar");
         String username = configManager.getString("adminchat.discord_hook.username");

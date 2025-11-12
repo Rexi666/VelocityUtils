@@ -10,7 +10,8 @@ public final class VelocityUtilsProvider {
     }
 
     public static void register(VelocityUtilsAPI instance) {
-        if (api != null) throw new IllegalStateException("API ya registrada");
+        if (api != null) throw new IllegalStateException("API was already registered!");
         api = instance;
+        System.out.println("VelocityUtils API registered");
     }
 }

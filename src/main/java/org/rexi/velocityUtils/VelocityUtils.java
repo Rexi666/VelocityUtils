@@ -116,11 +116,11 @@ public class VelocityUtils {
 
         Metrics metrics = metricsFactory.make(this, 26742);
 
-        this.api = new VelocityUtilsAPIImpl(this, server, configManager);
+        this.api = new VelocityUtilsAPIImpl(this, server, configManager, luckPerms, webhook);
         VelocityUtilsProvider.register(this.api);
 
-        System.out.println(Component.text("The plugin has been activated").color(NamedTextColor.GREEN));
-        System.out.println(Component.text("Thank you for using Rexi666 plugins").color(NamedTextColor.BLUE));
+        server.sendMessage(Component.text("The plugin has been activated").color(NamedTextColor.GREEN));
+        server.sendMessage(Component.text("Thank you for using Rexi666 plugins").color(NamedTextColor.BLUE));
     }
 
     public VelocityUtilsAPI getAPI() {
