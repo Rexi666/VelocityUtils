@@ -39,6 +39,10 @@ public class AlertCommand implements SimpleCommand {
 
         // Obtiene el mensaje y el prefijo
         String message = String.join(" ", invocation.arguments());
+        sendAlert(message);
+    }
+
+    public void sendAlert(String message) {
         String alertPrefix = configManager.getString("alert.prefix");
 
         // Convierte el mensaje a un formato de Adventure Text

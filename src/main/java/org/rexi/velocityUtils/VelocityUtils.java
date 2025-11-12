@@ -18,6 +18,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bstats.velocity.Metrics;
+import org.rexi.velocityUtils.api.VelocityUtilsAPI;
+import org.rexi.velocityUtils.api.VelocityUtilsAPIImpl;
+import org.rexi.velocityUtils.api.VelocityUtilsProvider;
 import org.rexi.velocityUtils.commands.*;
 import org.rexi.velocityUtils.listeners.*;
 import org.slf4j.Logger;
@@ -47,6 +50,7 @@ public class VelocityUtils {
     private final ConfigManager configManager;
     private final PluginContainer plugin;
     private LuckPerms luckPerms = null;
+    private VelocityUtilsAPI api;
 
     private DiscordWebhook webhook;
 
@@ -112,8 +116,15 @@ public class VelocityUtils {
 
         Metrics metrics = metricsFactory.make(this, 26742);
 
+        this.api = new VelocityUtilsAPIImpl(this, server, configManager);
+        VelocityUtilsProvider.register(this.api);
+
         System.out.println(Component.text("The plugin has been activated").color(NamedTextColor.GREEN));
         System.out.println(Component.text("Thank you for using Rexi666 plugins").color(NamedTextColor.BLUE));
+    }
+
+    public VelocityUtilsAPI getAPI() {
+        return api;
     }
 
     public void registerMoveCommands() {
