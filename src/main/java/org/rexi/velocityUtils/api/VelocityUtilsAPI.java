@@ -16,10 +16,10 @@ public interface VelocityUtilsAPI {
     /**
      * Obtain a list of staff members online.
      *
-     * @return A map containing Staff names, and another map with their rank and server.
+     * @return A map containing Staff names, and an Array with the rank (0) and server (1).
      *          If no online staff, returns an empty map.
      */
-    Map<String, Map<String, String>> getStaffList();
+    Map<String, String[]> getStaffList();
 
     /**
      * Obtain a list of every player online.

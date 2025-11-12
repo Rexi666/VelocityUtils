@@ -37,14 +37,14 @@ public class VelocityUtilsAPIImpl implements VelocityUtilsAPI {
         new AlertCommand(configManager, server).sendAlert(message);
     }
 
-    public Map<String, Map<String, String>> getStaffList() {
+    public Map<String, String[]> getStaffList() {
         StaffListCommand staffListCommand = new StaffListCommand(configManager, server, luckperms);
         List<Player> staff = staffListCommand.getStaffOnline();
         if (staff.isEmpty()) {
             return Map.of();
         }
 
-        Map<String, Map<String, String>> staffList = new java.util.HashMap<>(); // Player name, Prefix, Server
+        Map<String, String[]> staffList = new HashMap<>(); // Player name, Prefix, Server
 
         for (Player player : staff) {
             String rank = staffListCommand.obtenerRangoPrincipal(player);
@@ -53,7 +53,7 @@ public class VelocityUtilsAPIImpl implements VelocityUtilsAPI {
                     .map(s -> s.getServerInfo().getName())
                     .orElse(configManager.getMessage("server_unknown"));
 
-            staffList.put(player.getUsername(), Map.of(rank, serverName));
+            staffList.put(player.getUsername(), new String[]{rank, serverName});
         }
         return staffList;
     }
