@@ -472,6 +472,9 @@ public class ConfigManager {
                             "https://www.twitch.tv/",
                             "https://www.youtube.com/"));
                 }
+                if (node.node("serverexecute", "enabled").empty()) {
+                    node.node("serverexecute", "enabled").set(true);
+                }
 
                 if (node.node("messages", "no_permission").empty()) {
                     node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
@@ -644,6 +647,15 @@ public class ConfigManager {
                 }
                 if (node.node("messages", "stream_cooldown").empty()) {
                     node.node("messages", "stream_cooldown").set("&cYou have to wait {cooldown} before using /stream again");
+                }
+                if (node.node("messages", "serverexecute_usage").empty()) {
+                    node.node("messages", "serverexecute_usage").set("&cUsage: /serverexecute <server> <command>");
+                }
+                if (node.node("messages", "serverexecute_server_not_found").empty()) {
+                    node.node("messages", "serverexecute_server_not_found").set("&cServer {server} not found");
+                }
+                if (node.node("messages", "serverexecute_sent").empty()) {
+                    node.node("messages", "serverexecute_sent").set("&aSent to server {server}, the command: /{command}");
                 }
                 if (node.node("messages", "day_simbol").empty()) {
                     node.node("messages", "day_simbol").set("d");
@@ -888,6 +900,8 @@ public class ConfigManager {
                     "https://www.twitch.tv/",
                     "https://www.youtube.com/"));
 
+            node.node("serverexecute", "enabled").set(true);
+
             node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
             node.node("messages", "no_console").set("&cOnly players can use this command");
             node.node("messages", "new_version_available").set("&cA new version of VelocityUtils is available (&b{version}&c)! &e{url}");
@@ -945,6 +959,9 @@ public class ConfigManager {
             node.node("messages", "stream_usage").set("&cUsage: /stream <url>");
             node.node("messages", "stream_invalid_url").set("&cThats not a valid stream url");
             node.node("messages", "stream_cooldown").set("&cYou have to wait {cooldown} before using /stream again");
+            node.node("messages", "serverexecute_usage").set("&cUsage: /serverexecute <server> <command>");
+            node.node("messages", "serverexecute_server_not_found").set("&cServer {server} not found");
+            node.node("messages", "serverexecute_sent").set("&aSent to server {server}, the command: /{command}");
             node.node("messages", "day_simbol").set("d");
             node.node("messages", "hour_simbol").set("h");
             node.node("messages", "minute_simbol").set("m");

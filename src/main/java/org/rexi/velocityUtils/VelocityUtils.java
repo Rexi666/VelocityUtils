@@ -13,6 +13,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerPing;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -28,14 +29,14 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import org.spongepowered.configurate.ConfigurationNode;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Plugin(
@@ -60,8 +61,11 @@ public class VelocityUtils {
     public final Set<UUID> adminChatToggled = ConcurrentHashMap.newKeySet();
     private final ChannelIdentifier PLACEHOLDER_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "placeholders");
     private final ChannelIdentifier ALERT_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "alerts");
+    private final ChannelIdentifier SERVEREXECUTE_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "serverexecute");
 
     private final Map<UUID, StaffSession> staffSessions = new ConcurrentHashMap<>();
+
+    public final Map<String, List<String>> pendingCommands = new HashMap<>();
 
     boolean isMySQL = false;
 
@@ -73,7 +77,7 @@ public class VelocityUtils {
         this.webhook = new DiscordWebhook(configManager);
     }
 
-    @Inject private Logger logger;
+    @Inject public Logger logger;
     @Inject private Metrics.Factory metricsFactory;
 
     @Subscribe
@@ -87,6 +91,7 @@ public class VelocityUtils {
         server.getChannelRegistrar().register(ADMINCHAT_CHANNEL);
         server.getChannelRegistrar().register(PLACEHOLDER_CHANNEL);
         server.getChannelRegistrar().register(ALERT_CHANNEL);
+        server.getChannelRegistrar().register(SERVEREXECUTE_CHANNEL);
 
         configManager.loadConfig();
 
@@ -110,6 +115,8 @@ public class VelocityUtils {
         server.getEventManager().register(this, new PluginMessageListenerPlaceholders(server));
         server.getEventManager().register(this, new PluginMessageListenerAlerts(server, configManager));
 
+        server.getEventManager().register(this, new ServerExecuteListener(this, server));
+
         registerCommands();
         registerMoveCommands();
         registerMessagesCommands();
@@ -119,7 +126,7 @@ public class VelocityUtils {
         this.api = new VelocityUtilsAPIImpl(this, server, configManager, luckPerms, webhook);
         VelocityUtilsProvider.register(this.api);
 
-        server.sendMessage(Component.text("The plugin has been activated").color(NamedTextColor.GREEN));
+        server.sendMessage(Component.text("VelocityUtils has been activated").color(NamedTextColor.GREEN));
         server.sendMessage(Component.text("Thank you for using Rexi666 plugins").color(NamedTextColor.BLUE));
     }
 
@@ -228,6 +235,12 @@ public class VelocityUtils {
             server.getCommandManager().register(
                     server.getCommandManager().metaBuilder("stream").build(),
                     new StreamCommand(configManager, server, luckPerms)
+            );
+        }
+        if (configManager.getBoolean("serverexecute.enabled")) {
+            server.getCommandManager().register(
+                    server.getCommandManager().metaBuilder("serverexecute").build(),
+                    new ServerExecuteCommand(configManager, server, this)
             );
         }
     }
@@ -399,5 +412,22 @@ public class VelocityUtils {
     public boolean isUsingMySQL() {
         return isMySQL;
     }
+
+    public void sendCommandToServer(RegisteredServer toserver, String command) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try (DataOutputStream data = new DataOutputStream(out)) {
+            data.writeUTF("execute");
+            data.writeUTF(command);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        toserver.sendPluginMessage(
+                MinecraftChannelIdentifier.from("velocityutils:serverexecute"),
+                out.toByteArray()
+        );
+    }
+
 
 }

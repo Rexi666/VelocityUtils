@@ -225,6 +225,8 @@ stream:
     - "https://www.twitch.tv/"
     - "https://www.youtube.com/"
     - "https://www.kick.com/"
+serverexecute:
+  enabled: true
 messages:
   no_permission: "&cYou don't have permission to use this command"
   no_console: "&cOnly players can use this command"
@@ -283,6 +285,9 @@ messages:
   stream_usage: "&cUsage: /stream <url>"
   stream_invalid_url: "&cThats not a valid stream url"
   stream_cooldown: "&cYou have to wait {cooldown} before using /stream again"
+  serverexecute_usage: "&cUsage: /serverexecute <server> <command>"
+  serverexecute_server_not_found: "&cServer {server} not found"
+  serverexecute_sent: "&aSent to server {server}, the command: /{command}"
   day_simbol: "d"
   hour_simbol: "h"
   minute_simbol: "m"
