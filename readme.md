@@ -36,6 +36,7 @@
 #### Admin commands
 - `/velocityutils reload` | `/vu reload` - Reload the config
 - `/stafftime <jugador> [day|week|month]` - See how long a staff member has been online on the network.
+- `/serverexecute <server> <command>` - Execute a command on a specific server from the proxy console.
 #### Staff commands
 - `/alert <message>` - Send a broadcast message to all the server
 - `/maintenance`
@@ -58,6 +59,7 @@
 - `velocityutils.stafftime.exclude` - permission to be excluded from the staff time
 - `velocityutils.stafftime.use` - access to /stafftime
 - `velocityutils.staffjoin.notify` - permission to be notified when a staff joins/leaves/changes server
+- `velocityutils.serverexecute` - access to /serverexecute
 #### Staff permissions
 - `velocityutils.alert` - access to /alert
 - `velocityutils.maintenance` - access to /maintenance
