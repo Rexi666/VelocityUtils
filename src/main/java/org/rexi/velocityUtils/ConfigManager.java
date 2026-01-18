@@ -475,6 +475,9 @@ public class ConfigManager {
                 if (node.node("serverexecute", "enabled").empty()) {
                     node.node("serverexecute", "enabled").set(true);
                 }
+                if (node.node("togglesc", "enabled").empty()) {
+                    node.node("togglesc", "enabled").set(true);
+                }
 
                 if (node.node("messages", "no_permission").empty()) {
                     node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
@@ -656,6 +659,12 @@ public class ConfigManager {
                 }
                 if (node.node("messages", "serverexecute_sent").empty()) {
                     node.node("messages", "serverexecute_sent").set("&aSent to server {server}, the command: /{command}");
+                }
+                if (node.node("messages", "togglesc_enabled").empty()) {
+                    node.node("messages", "togglesc_enabled").set("&aStaff chat messages will be shown");
+                }
+                if (node.node("messages", "togglesc_disabled").empty()) {
+                    node.node("messages", "togglesc_disabled").set("&cStaff chat messages will be hidden");
                 }
                 if (node.node("messages", "day_simbol").empty()) {
                     node.node("messages", "day_simbol").set("d");
@@ -901,6 +910,7 @@ public class ConfigManager {
                     "https://www.youtube.com/"));
 
             node.node("serverexecute", "enabled").set(true);
+            node.node("togglesc", "enabled").set(true);
 
             node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
             node.node("messages", "no_console").set("&cOnly players can use this command");
@@ -962,6 +972,9 @@ public class ConfigManager {
             node.node("messages", "serverexecute_usage").set("&cUsage: /serverexecute <server> <command>");
             node.node("messages", "serverexecute_server_not_found").set("&cServer {server} not found");
             node.node("messages", "serverexecute_sent").set("&aSent to server {server}, the command: /{command}");
+            node.node("messages", "togglesc_enabled").set("&aStaff chat messages will be shown");
+            node.node("messages", "togglesc_disabled").set("&cStaff chat messages will be hidden");
+
             node.node("messages", "day_simbol").set("d");
             node.node("messages", "hour_simbol").set("h");
             node.node("messages", "minute_simbol").set("m");

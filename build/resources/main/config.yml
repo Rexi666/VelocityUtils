@@ -227,6 +227,8 @@ stream:
     - "https://www.kick.com/"
 serverexecute:
   enabled: true
+togglesc:
+  enabled: true
 messages:
   no_permission: "&cYou don't have permission to use this command"
   no_console: "&cOnly players can use this command"
@@ -288,6 +290,8 @@ messages:
   serverexecute_usage: "&cUsage: /serverexecute <server> <command>"
   serverexecute_server_not_found: "&cServer {server} not found"
   serverexecute_sent: "&aSent to server {server}, the command: /{command}"
+  togglesc_enabled: "&aStaff chat messages will be shown"
+  togglesc_disabled: "&cStaff chat messages will be hidden"
   day_simbol: "d"
   hour_simbol: "h"
   minute_simbol: "m"

@@ -67,6 +67,8 @@ public class VelocityUtils {
 
     public final Map<String, List<String>> pendingCommands = new HashMap<>();
 
+    public List<UUID> disabledSC = new ArrayList<>();
+
     boolean isMySQL = false;
 
     @Inject
@@ -241,6 +243,12 @@ public class VelocityUtils {
             server.getCommandManager().register(
                     server.getCommandManager().metaBuilder("serverexecute").build(),
                     new ServerExecuteCommand(configManager, server, this)
+            );
+        }
+        if (configManager.getBoolean("togglesc.enabled")) {
+            server.getCommandManager().register(
+                    server.getCommandManager().metaBuilder("togglesc").build(),
+                    new ToggleScCommand(this, configManager)
             );
         }
     }

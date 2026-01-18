@@ -47,6 +47,7 @@
 - `/stafflist` - Shows the staff list of your network
 - `/staffchat` | `/sc` - Enables/Disables the staff chat
 - `/adminchat` | `/ac` - Enables/Disables the admin chat
+- `/togglesc` - Toggle whether to receive staff/admin chat messages or not (useful for streamers)
 - `/vlist [server|rank]` - Shows the list of players in your network.
 #### User commands
 - `/report <user> <reason>` - Report a user to the staff team
@@ -71,6 +72,7 @@
 - `velocityutils.stafflist.staff` - permission to be listed in the staff list
 - `velocityutils.staffchat` - access to /staffchat
 - `velocityutils.adminchat` - access to /adminchat
+- `velocityutils.togglesc` - access to /togglesc
 - `velocityutils.stafftime.staff` - permission to be listed in the staff time
 - `velocityutils.vlist` - access to /vlist
 - `velocityutils.staffjoin.staff` - permission to notify when join/leave/change server to those with the permission notify
