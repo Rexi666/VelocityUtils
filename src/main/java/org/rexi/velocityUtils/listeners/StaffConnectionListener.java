@@ -209,20 +209,28 @@ public class StaffConnectionListener {
     }
 
     private void savePlayerInfo(Player player) {
+        String ip = player.getRemoteAddress()
+                .getAddress()
+                .getHostAddress();
+
         String sql;
         if (plugin.isUsingMySQL()) {
             sql = """
-        INSERT INTO player_info (uuid, name, last_join)
-        VALUES (?, ?, NOW())
-        ON DUPLICATE KEY UPDATE name = VALUES(name),
-            last_join = VALUES(last_join);
+        INSERT INTO player_info (uuid, name, last_join, player_ip)
+        VALUES (?, ?, NOW(), ?)
+        ON DUPLICATE KEY UPDATE 
+            name = VALUES(name),
+            last_join = VALUES(last_join),
+            player_ip = VALUES(player_ip);
         """;
         } else {
             sql = """
-        INSERT INTO player_info (uuid, name, last_join)
-        VALUES (?, ?, datetime('now'))
-        ON CONFLICT(uuid) DO UPDATE SET name = excluded.name,
-                last_join = excluded.last_join;
+        INSERT INTO player_info (uuid, name, last_join, player_ip)
+        VALUES (?, ?, datetime('now'), ?)
+        ON CONFLICT(uuid) DO UPDATE SET 
+                name = excluded.name,
+                last_join = excluded.last_join,
+                player_ip = excluded.player_ip;
         """;
         }
 
@@ -230,6 +238,7 @@ public class StaffConnectionListener {
              var pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, player.getUniqueId().toString());
             pstmt.setString(2, player.getUsername());
+            pstmt.setString(3, ip);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

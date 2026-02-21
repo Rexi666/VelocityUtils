@@ -479,6 +479,52 @@ public class ConfigManager {
                     node.node("togglesc", "enabled").set(true);
                 }
 
+                if (node.node("ban_system", "enabled").empty()) {
+                    node.node("ban_system", "enabled").set(true);
+                }
+                if (node.node("ban_system", "commands", "vban").empty()) {
+                    node.node("ban_system", "commands", "vban").set(true);
+                }
+                if (node.node("ban_system", "commands", "vbanip").empty()) {
+                    node.node("ban_system", "commands", "vbanip").set(true);
+                }
+                if (node.node("ban_system", "commands", "vunban").empty()) {
+                    node.node("ban_system", "commands", "vunban").set(true);
+                }
+                if (node.node("ban_system", "commands", "vkick").empty()) {
+                    node.node("ban_system", "commands", "vkick").set(true);
+                }
+                if (node.node("ban_system", "commands", "vcheckban").empty()) {
+                    node.node("ban_system", "commands", "vcheckban").set(true);
+                }
+                if (node.node("ban_system", "default_ban_reason").empty()) {
+                    node.node("ban_system", "default_ban_reason").set("No reason specified");
+                }
+                if (node.node("ban_system", "console").empty()) {
+                    node.node("ban_system", "console").set("Console");
+                }
+                if (node.node("ban_system", "screen_messages", "ban").empty()) {
+                    node.node("ban_system", "screen_messages", "ban").set(String.class, """
+      &f-----------------------------
+      &cYou have been banned from the network!
+      &fPlayer: &b{player}
+      &fBanned by: &b{banned_by}
+      &fBanned at: &b{banned_at}
+      &fReason: &b{reason}
+      &f-----------------------------
+      """);
+                }
+                if (node.node("ban_system", "screen_messages", "kick").empty()) {
+                    node.node("ban_system", "screen_messages", "kick").set(String.class, """
+      &f-----------------------------
+      &cYou have been kicked from the network!
+      &fPlayer: &b{player}
+      &fKicked by: &b{kicked_by}
+      &fReason: &b{reason}
+      &f-----------------------------
+      """);
+                }
+
                 if (node.node("messages", "no_permission").empty()) {
                     node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
                 }
@@ -665,6 +711,72 @@ public class ConfigManager {
                 }
                 if (node.node("messages", "togglesc_disabled").empty()) {
                     node.node("messages", "togglesc_disabled").set("&cStaff chat messages will be hidden");
+                }
+                if (node.node("messages", "usage_ban").empty()) {
+                    node.node("messages", "usage_ban").set("&cUsage: /vban <player> [reason]");
+                }
+                if (node.node("messages", "usage_banip").empty()) {
+                    node.node("messages", "usage_banip").set("&cUsage: /vbanip <player> [reason]");
+                }
+                if (node.node("messages", "usage_unban").empty()) {
+                    node.node("messages", "usage_unban").set("&cUsage: /vunban <player>");
+                }
+                if (node.node("messages", "usage_kick").empty()) {
+                    node.node("messages", "usage_kick").set("&cUsage: /vkick <player> [reason]");
+                }
+                if (node.node("messages", "usage_checkban").empty()) {
+                    node.node("messages", "usage_checkban").set("&cUsage: /vcheckban <player>");
+                }
+                if (node.node("messages", "ban_success").empty()) {
+                    node.node("messages", "ban_success").set("&cYou have banned &b{player} &cfor &b{reason}");
+                }
+                if (node.node("messages", "banip_success").empty()) {
+                    node.node("messages", "banip_success").set("&cYou have ip banned &b{player} &cfor &b{reason}");
+                }
+                if (node.node("messages", "unban_success").empty()) {
+                    node.node("messages", "unban_success").set("&aYou have unbanned &b{player}");
+                }
+                if (node.node("messages", "kick_success").empty()) {
+                    node.node("messages", "kick_success").set("&cYou have kicked &b{player} &cfor &b{reason}");
+                }
+                if (node.node("messages", "checkban_banned").empty()) {
+                    node.node("messages", "checkban_banned").set("&c{player} is banned by {banned_by}! Reason: &b{reason}");
+                }
+                if (node.node("messages", "checkban_banned_ip").empty()) {
+                    node.node("messages", "checkban_banned_ip").set("&c{player} is banned by IP ({ip_playername})! Banned by {banned_by}! Reason: &b{reason}");
+                }
+                if (node.node("messages", "checkban_not_banned").empty()) {
+                    node.node("messages", "checkban_not_banned").set("&a{player} is not banned!");
+                }
+                if (node.node("messages", "already_banned").empty()) {
+                    node.node("messages", "already_banned").set("&c{player} is already banned!");
+                }
+                if (node.node("messages", "not_banned").empty()) {
+                    node.node("messages", "not_banned").set("&c{player} is not banned!");
+                }
+                if (node.node("messages", "not_connected").empty()) {
+                    node.node("messages", "not_connected").set("&c{player} is not connected!");
+                }
+                if (node.node("messages", "not_ip_registered").empty()) {
+                    node.node("messages", "not_ip_registered").set("&c{player} had never entered the server and doesnt have an ip registered!");
+                }
+                if (node.node("messages", "try_join_ban").empty()) {
+                    node.node("messages", "try_join_ban").set("&c{player} tried to join but is banned! Reason: &b{reason}");
+                }
+                if (node.node("messages", "try_join_banip").empty()) {
+                    node.node("messages", "try_join_banip").set("&c{player} tried to join but their IP is banned ({ip_playername})! Reason: &b{reason}");
+                }
+                if (node.node("messages", "ban_notify").empty()) {
+                    node.node("messages", "ban_notify").set("&c{player} was banned by {banned_by} for {reason}");
+                }
+                if (node.node("messages", "banip_notify").empty()) {
+                    node.node("messages", "banip_notify").set("&c{player} was IP banned by {banned_by} for {reason}");
+                }
+                if (node.node("messages", "unban_notify").empty()) {
+                    node.node("messages", "unban_notify").set("&c{player} was unbanned by {unbanned_by}");
+                }
+                if (node.node("messages", "kick_notify").empty()) {
+                    node.node("messages", "kick_notify").set("&c{player} was kicked by {kicked_by} for {reason}");
                 }
                 if (node.node("messages", "day_simbol").empty()) {
                     node.node("messages", "day_simbol").set("d");
@@ -898,7 +1010,6 @@ public class ConfigManager {
             node.node("staffjoin", "leave_message").set("&b&lStaff - &c{rank} {player} has left the server");
             node.node("staffjoin", "change_message").set("&b&lStaff - &e{rank} {player} has changed the server to &b{server}");
 
-
             node.node("stream", "enabled").set(true);
             node.node("stream", "message").set("&7[&d&lSTREAM&7] {rank} &b{player} &fis now streaming &b{url}");
             node.node("stream", "hover_enabled").set(true);
@@ -911,6 +1022,33 @@ public class ConfigManager {
 
             node.node("serverexecute", "enabled").set(true);
             node.node("togglesc", "enabled").set(true);
+
+            node.node("ban_system", "enabled").set(true);
+            node.node("ban_system", "commands", "vban").set(true);
+            node.node("ban_system", "commands", "vbanip").set(true);
+            node.node("ban_system", "commands", "vunban").set(true);
+            node.node("ban_system", "commands", "vkick").set(true);
+            node.node("ban_system", "commands", "vcheckban").set(true);
+            node.node("ban_system", "default_ban_reason").set("No reason specified");
+            node.node("ban_system", "console").set("Console");
+            node.node("ban_system", "screen_messages", "ban").set(String.class, """
+      &f-----------------------------
+      &cYou have been banned from the network!
+      &fPlayer: &b{player}
+      &fBanned by: &b{banned_by}
+      &fBanned at: &b{banned_at}
+      &fReason: &b{reason}
+      &f-----------------------------
+      """);
+            node.node("ban_system", "screen_messages", "kick").set(String.class, """
+      &f-----------------------------
+      &cYou have been kicked from the network!
+      &fPlayer: &b{player}
+      &fKicked by: &b{kicked_by}
+      &fReason: &b{reason}
+      &f-----------------------------
+      """);
+
 
             node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
             node.node("messages", "no_console").set("&cOnly players can use this command");
@@ -974,6 +1112,28 @@ public class ConfigManager {
             node.node("messages", "serverexecute_sent").set("&aSent to server {server}, the command: /{command}");
             node.node("messages", "togglesc_enabled").set("&aStaff chat messages will be shown");
             node.node("messages", "togglesc_disabled").set("&cStaff chat messages will be hidden");
+            node.node("messages", "usage_ban").set("&cUsage: /vban <player> [reason]");
+            node.node("messages", "usage_banip").set("&cUsage: /vbanip <player> [reason]");
+            node.node("messages", "usage_unban").set("&cUsage: /vunban <player>");
+            node.node("messages", "usage_kick").set("&cUsage: /vkick <player> [reason]");
+            node.node("messages", "usage_checkban").set("&cUsage: /vcheckban <player>");
+            node.node("messages", "ban_success").set("&cYou have banned &b{player} &cfor &b{reason}");
+            node.node("messages", "banip_success").set("&cYou have ip banned &b{player} &cfor &b{reason}");
+            node.node("messages", "unban_success").set("&aYou have unbanned &b{player}");
+            node.node("messages", "kick_success").set("&cYou have kicked &b{player} &cfor &b{reason}");
+            node.node("messages", "checkban_banned").set("&c{player} is banned by {banned_by}! Reason: &b{reason}");
+            node.node("messages", "checkban_banned_ip").set("&c{player} is banned by IP ({ip_playername})! Banned by {banned_by}! Reason: &b{reason}");
+            node.node("messages", "checkban_not_banned").set("&a{player} is not banned!");
+            node.node("messages", "already_banned").set("&c{player} is already banned!");
+            node.node("messages", "not_banned").set("&c{player} is not banned!");
+            node.node("messages", "not_connected").set("&c{player} is not connected!");
+            node.node("messages", "not_ip_registered").set("&c{player} had never entered the server and doesnt have an ip registered!");
+            node.node("messages", "try_join_ban").set("&c{player} tried to join but is banned! Reason: &b{reason}");
+            node.node("messages", "try_join_banip").set("&c{player} tried to join but their IP is banned ({ip_playername})! Reason: &b{reason}");
+            node.node("messages", "ban_notify").set("&c{player} was banned by {banned_by} for {reason}");
+            node.node("messages", "banip_notify").set("&c{player} was IP banned by {banned_by} for {reason}");
+            node.node("messages", "unban_notify").set("&c{player} was unbanned by {unbanned_by}");
+            node.node("messages", "kick_notify").set("&c{player} was kicked by {kicked_by} for {reason}");
 
             node.node("messages", "day_simbol").set("d");
             node.node("messages", "hour_simbol").set("h");

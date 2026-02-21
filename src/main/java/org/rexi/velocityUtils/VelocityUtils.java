@@ -1,8 +1,8 @@
 package org.rexi.velocityUtils;
 
 import com.google.inject.Inject;
-import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
+import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
@@ -23,7 +23,9 @@ import org.rexi.velocityUtils.api.VelocityUtilsAPI;
 import org.rexi.velocityUtils.api.VelocityUtilsAPIImpl;
 import org.rexi.velocityUtils.api.VelocityUtilsProvider;
 import org.rexi.velocityUtils.commands.*;
+import org.rexi.velocityUtils.commands.banSystem.*;
 import org.rexi.velocityUtils.listeners.*;
+import org.rexi.velocityUtils.utils.BanData;
 import org.slf4j.Logger;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -33,9 +35,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.net.InetSocketAddress;
+import java.sql.*;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -70,6 +74,9 @@ public class VelocityUtils {
     public List<UUID> disabledSC = new ArrayList<>();
 
     boolean isMySQL = false;
+
+    public Map<String, BanData> banCache = new ConcurrentHashMap<>();
+    public Map<String, List<String>> subIpBanCache = new ConcurrentHashMap<>();
 
     @Inject
     public VelocityUtils(ProxyServer server, PluginContainer plugin) {
@@ -251,6 +258,36 @@ public class VelocityUtils {
                     new ToggleScCommand(this, configManager)
             );
         }
+        if (configManager.getBoolean("ban_system.enabled") && configManager.getBoolean("ban_system.commands.vban")) {
+            server.getCommandManager().register(
+                    server.getCommandManager().metaBuilder("vban").build(),
+                    new BanCommand(configManager, server, this)
+            );
+        }
+        if (configManager.getBoolean("ban_system.enabled") && configManager.getBoolean("ban_system.commands.vbanip")) {
+            server.getCommandManager().register(
+                    server.getCommandManager().metaBuilder("vbanip").build(),
+                    new BanIpCommand(configManager, server, this)
+            );
+        }
+        if (configManager.getBoolean("ban_system.enabled") && configManager.getBoolean("ban_system.commands.vunban")) {
+            server.getCommandManager().register(
+                    server.getCommandManager().metaBuilder("vunban").build(),
+                    new UnbanCommand(configManager, server, this)
+            );
+        }
+        if (configManager.getBoolean("ban_system.enabled") && configManager.getBoolean("ban_system.commands.vkick")) {
+            server.getCommandManager().register(
+                    server.getCommandManager().metaBuilder("vkick").build(),
+                    new KickCommand(configManager, server, this)
+            );
+        }
+        if (configManager.getBoolean("ban_system.enabled") && configManager.getBoolean("ban_system.commands.vcheckban")) {
+            server.getCommandManager().register(
+                    server.getCommandManager().metaBuilder("vcheckban").build(),
+                    new CheckBanCommand(configManager, server, this)
+            );
+        }
     }
 
     @Subscribe
@@ -274,14 +311,204 @@ public class VelocityUtils {
     }
 
     @Subscribe
-    public void onLogin(LoginEvent event) {
+    public void onPreLogin(PreLoginEvent event) {
+        // Comprobar ban
+        if (configManager.getBoolean("ban_system.enabled")) {
+            String playerName = event.getUsername().toLowerCase();
+            BanData cached = banCache.get(playerName);
+            if (cached != null) {
+                event.setResult(PreLoginEvent.PreLoginComponentResult.denied(banDenyMessage(cached, event.getUsername())));
+                String message = configManager.getMessage("try_join_ban");
+                message = message.replace("{player}", event.getUsername())
+                        .replace("{reason}", cached.getReason());
+                Component finalMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(message);
+                server.getConsoleCommandSource().sendMessage(finalMessage);
+
+                for (Player player : server.getAllPlayers()) {
+                    if (player.hasPermission("velocityutils.bansystem.notify")) {
+                        player.sendMessage(finalMessage);
+                    }
+                }
+                return;
+            }
+
+            String ip = ((InetSocketAddress) event.getConnection()
+                    .getRemoteAddress()).getAddress().getHostAddress();
+
+            BanData ban = loadBan(playerName, ip);
+
+            if (ban != null) {
+                banCache.put(playerName, ban);
+                event.setResult(PreLoginEvent.PreLoginComponentResult.denied(banDenyMessage(ban, event.getUsername())));
+
+                boolean ipBanFromOtherAccount = ban.getIpBan() && !ban.getName().equals(playerName);
+
+                if (ipBanFromOtherAccount) {
+                    String bannedName = ban.getName();
+                    List<String> subIpBans = subIpBanCache.getOrDefault(bannedName, new ArrayList<>());
+                    if (!subIpBans.contains(playerName)) {
+                        subIpBans.add(playerName);
+                    }
+                    subIpBanCache.put(bannedName, subIpBans);
+
+                    String message = configManager.getMessage("try_join_banip");
+                    message = message.replace("{player}", event.getUsername())
+                            .replace("{ip_playername}", bannedName)
+                            .replace("{reason}", ban.getReason());
+                    Component finalMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(message);
+                    server.getConsoleCommandSource().sendMessage(finalMessage);
+
+                    for (Player player : server.getAllPlayers()) {
+                        if (player.hasPermission("velocityutils.bansystem.notify")) {
+                            player.sendMessage(finalMessage);
+                        }
+                    }
+                } else {
+                    String message = configManager.getMessage("try_join_ban");
+                    message = message.replace("{player}", event.getUsername())
+                            .replace("{reason}", ban.getReason());
+                    Component finalMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(message);
+                    server.getConsoleCommandSource().sendMessage(finalMessage);
+
+                    for (Player player : server.getAllPlayers()) {
+                        if (player.hasPermission("velocityutils.bansystem.notify")) {
+                            player.sendMessage(finalMessage);
+                        }
+                    }
+                }
+                return;
+            }
+        }
+
+        // Comprobar mantenimiento
         if (configManager.isMaintenanceMode()) {
             List<String> allowedPlayers = configManager.getAllowedPlayers();
-            String username = event.getPlayer().getUsername();
+            String username = event.getUsername();
             if (!allowedPlayers.contains(username)) {
                 String under_maintenance = configManager.getMessage("maintenance_not_on_list");
-                event.setResult(LoginEvent.ComponentResult.denied(LegacyComponentSerializer.legacyAmpersand().deserialize(under_maintenance)));
+                event.setResult(PreLoginEvent.PreLoginComponentResult.denied(LegacyComponentSerializer.legacyAmpersand().deserialize(under_maintenance)));
             }
+        }
+    }
+
+    public BanData loadBan(String name, String ip) {
+        try (Connection conn = getConnection()) {
+            var stmt = conn.prepareStatement("""
+            SELECT name, ip, ipban, banned_by, banned_at, reason
+            FROM player_bans
+            WHERE LOWER(name) = ?
+            UNION ALL
+            SELECT name, ip, ipban, banned_by, banned_at, reason
+            FROM player_bans
+            WHERE ip = ? AND ipban = true
+            LIMIT 1
+        """);
+
+            stmt.setString(1, name);
+            stmt.setString(2, ip);
+
+            var rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new BanData(
+                        rs.getString("name"),
+                        rs.getString("ip"),
+                        rs.getBoolean("ipban"),
+                        rs.getString("banned_by"),
+                        Instant.ofEpochMilli(rs.getLong("banned_at")),
+                        rs.getString("reason")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Component banDenyMessage(BanData ban, String name) {
+        List<String> original = configManager.getStringList("ban_system.screen_messages.ban");
+
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+                        .withZone(ZoneId.systemDefault());
+
+        String joined = String.join("\n", original)
+                .replace("{player}", name)
+                .replace("{banned_by}", ban.getBannedBy())
+                .replace("{banned_at}", formatter.format(ban.getBannedAt()))
+                .replace("{reason}", ban.getReason());
+
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(joined);
+    }
+    public Component kickDenyMessage(String player, String kickedBy, String reason) {
+        List<String> original = configManager.getStringList("ban_system.screen_messages.kick");
+
+        String joined = String.join("\n", original)
+                .replace("{player}", player)
+                .replace("{kicked_by}", kickedBy)
+                .replace("{reason}", reason);
+
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(joined);
+    }
+
+    public void saveBan(BanData banData) {
+        String sql = """
+        INSERT INTO player_bans (name, ip, ipban, banned_by, banned_at, reason)
+        VALUES (?, ?, ?, ?, ?, ?)
+        ON CONFLICT(name) DO UPDATE SET
+            ip = excluded.ip,
+            ipban = excluded.ipban,
+            banned_by = excluded.banned_by,
+            banned_at = excluded.banned_at,
+            reason = excluded.reason
+    """;
+
+        if (isUsingMySQL()) {
+            sql = """
+            INSERT INTO player_bans (name, ip, ipban, banned_by, banned_at, reason)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+                ip = VALUES(ip),
+                ipban = VALUES(ipban),
+                banned_by = VALUES(banned_by),
+                banned_at = VALUES(banned_at),
+                reason = VALUES(reason)
+        """;
+        }
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, banData.getName().toLowerCase());
+            stmt.setString(2, banData.getIp());
+            stmt.setBoolean(3, banData.getIpBan());
+            stmt.setString(4, banData.getBannedBy());
+            stmt.setTimestamp(5, Timestamp.from(banData.getBannedAt()));
+            stmt.setString(6, banData.getReason());
+
+            stmt.executeUpdate();
+
+            banCache.put(banData.getName().toLowerCase(), banData);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removeBan(BanData banData) {
+        String sql = "DELETE FROM player_bans WHERE name = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            String name = banData.getName().toLowerCase();
+
+            stmt.setString(1, name);
+            stmt.executeUpdate();
+
+            banCache.remove(name);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -310,6 +537,7 @@ public class VelocityUtils {
 
         String staffTimeTable;
         String playerInfoTable;
+        String playerBans;
 
         if (dbType.equals("mysql")) {
             staffTimeTable = """
@@ -325,7 +553,19 @@ public class VelocityUtils {
         CREATE TABLE IF NOT EXISTS player_info (
             uuid VARCHAR(36) PRIMARY KEY,
             name VARCHAR(16) NOT NULL,
-            last_join TIMESTAMP
+            last_join TIMESTAMP,
+            player_ip VARCHAR(45)
+        );
+        """;
+
+            playerBans = """
+        CREATE TABLE IF NOT EXISTS player_bans (
+            name VARCHAR(20) PRIMARY KEY,
+            ip VARCHAR(45),
+            ipban BOOLEAN NOT NULL,
+            banned_by VARCHAR(20) NOT NULL,
+            banned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            reason VARCHAR(16)
         );
         """;
         } else {
@@ -342,7 +582,19 @@ public class VelocityUtils {
         CREATE TABLE IF NOT EXISTS player_info (
             uuid TEXT PRIMARY KEY,
             name TEXT NOT NULL,
-            last_join TEXT
+            last_join TEXT,
+            player_ip TEXT
+        );
+        """;
+
+            playerBans = """
+        CREATE TABLE IF NOT EXISTS player_bans (
+            name TEXT PRIMARY KEY,
+            ip TEXT,
+            ipban BOOLEAN NOT NULL,
+            banned_by TEXT NOT NULL,
+            banned_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            reason TEXT
         );
         """;
         }
@@ -351,12 +603,22 @@ public class VelocityUtils {
              var stmt = conn.createStatement()) {
             stmt.execute(staffTimeTable);
             stmt.execute(playerInfoTable);
+            stmt.execute(playerBans);
 
             try {
                 if (dbType.equals("mysql")) {
                     stmt.execute("ALTER TABLE player_info ADD COLUMN IF NOT EXISTS last_join TIMESTAMP");
                 } else {
                     stmt.execute("ALTER TABLE player_info ADD COLUMN last_join TEXT");
+                }
+            } catch (SQLException ignore) {
+                // si ya existe, SQLite lanza error → lo ignoramos
+            }
+            try {
+                if (dbType.equals("mysql")) {
+                    stmt.execute("ALTER TABLE player_info ADD COLUMN IF NOT EXISTS player_ip TIMESTAMP");
+                } else {
+                    stmt.execute("ALTER TABLE player_info ADD COLUMN player_ip TEXT");
                 }
             } catch (SQLException ignore) {
                 // si ya existe, SQLite lanza error → lo ignoramos

@@ -229,6 +229,33 @@ serverexecute:
   enabled: true
 togglesc:
   enabled: true
+ban_system:
+  enabled: true
+  commands:
+    vban: true
+    vbanip: true
+    vunban: true
+    vkick: true
+    vcheckban: true
+  default_ban_reason: "No reason specified"
+  console: "Console"
+  screen_messages:
+    ban:
+        - "&f-----------------------------"
+        - "&cYou have been banned from the network!"
+        - "&fPlayer: &b{player}"
+        - "&fBanned by: &b{banned_by}"
+        - "&fBanned at: &b{banned_at}"
+        - "&fReason: &b{reason}"
+        - "&f-----------------------------"
+    kick:
+      - "&f-----------------------------"
+      - "&cYou have been kicked from the network!"
+      - "&fPlayer: &b{player}"
+      - "&fKicked by: &b{kicked_by}"
+      - "&fReason: &b{reason}"
+      - "&f-----------------------------"
+
 messages:
   no_permission: "&cYou don't have permission to use this command"
   no_console: "&cOnly players can use this command"
@@ -292,6 +319,28 @@ messages:
   serverexecute_sent: "&aSent to server {server}, the command: /{command}"
   togglesc_enabled: "&aStaff chat messages will be shown"
   togglesc_disabled: "&cStaff chat messages will be hidden"
+  usage_ban: "&cUsage: /vban <player> [reason]"
+  usage_banip: "&cUsage: /vbanip <player> [reason]"
+  usage_unban: "&cUsage: /vunban <player>"
+  usage_kick: "&cUsage: /vkick <player> [reason]"
+  usage_checkban: "&cUsage: /vcheckban <player>"
+  ban_success: "&cYou have banned &b{player} &cfor &b{reason}"
+  banip_success: "&cYou have ip banned &b{player} &cfor &b{reason}"
+  unban_success: "&aYou have unbanned &b{player}"
+  kick_success: "&cYou have kicked &b{player} &cfor &b{reason}"
+  checkban_banned: "&c{player} is banned by {banned_by}! Reason: &b{reason}"
+  checkban_banned_ip: "&c{player} is banned by IP ({ip_playername})! Banned by {banned_by}! Reason: &b{reason}"
+  checkban_not_banned: "&a{player} is not banned!"
+  already_banned: "&c{player} is already banned!"
+  not_banned: "&c{player} is not banned!"
+  not_connected: "&c{player} is not connected!"
+  not_ip_registered: "&c{player} had never entered the server and doesnt have an ip registered!"
+  try_join_ban: "&c{player} tried to join but is banned! Reason: &b{reason}"
+  try_join_banip: "&c{player} tried to join but their IP is banned ({ip_playername})! Reason: &b{reason}"
+  ban_notify: "&c{player} was banned by {banned_by} for {reason}"
+  banip_notify: "&c{player} was IP banned by {banned_by} for {reason}"
+  unban_notify: "&c{player} was unbanned by {unbanned_by}"
+  kick_notify: "&c{player} was kicked by {kicked_by} for {reason}"
   day_simbol: "d"
   hour_simbol: "h"
   minute_simbol: "m"

@@ -64,7 +64,7 @@ public class FindCommand implements SimpleCommand {
         // 🔹 Si no está online → buscar en la DB
         try (Connection conn = plugin.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT last_join FROM player_info WHERE name = ?")) {
+                     "SELECT last_join FROM player_info WHERE LOWER(name) = LOWER(?)")) {
             stmt.setString(1, targetName);
             ResultSet rs = stmt.executeQuery();
 
@@ -104,7 +104,7 @@ public class FindCommand implements SimpleCommand {
         } catch (SQLException e) {
             e.printStackTrace();
             source.sendMessage(LegacyComponentSerializer.legacyAmpersand()
-                    .deserialize("&cError al consultar la base de datos."));
+                    .deserialize("&cError trying to reach database."));
         }
     }
 

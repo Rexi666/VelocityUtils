@@ -49,6 +49,11 @@
 - `/adminchat` | `/ac` - Enables/Disables the admin chat
 - `/togglesc` - Toggle whether to receive staff/admin chat messages or not (useful for streamers)
 - `/vlist [server|rank]` - Shows the list of players in your network.
+- `/vban <player> [reason]` - Ban a player from the entire network
+- `/vbanip <player> [reason]` - Ban a player for IP from the entire network
+- `/vunban <player>` - Unban a player from the entire network
+- `/vkick <player> [reason]` - Kick a player from the entire network
+- `/vcheckban <player>` - Check if a player is banned from the network
 #### User commands
 - `/report <user> <reason>` - Report a user to the staff team
 - You can configure a MoveCommand to move players to another server, for example /lobby or /survival
@@ -76,6 +81,12 @@
 - `velocityutils.stafftime.staff` - permission to be listed in the staff time
 - `velocityutils.vlist` - access to /vlist
 - `velocityutils.staffjoin.staff` - permission to notify when join/leave/change server to those with the permission notify
+- `velocityutils.bansystem.notify` - permission to be notified when a player is banned/unbanned by the ban system
+- `velocityutils.bansystem.vban` - access to /vban
+- `velocityutils.bansystem.vbanip` - access to /vbanip
+- `velocityutils.bansystem.vunban` - access to /vunban
+- `velocityutils.bansystem.vkick` - access to /vkick
+- `velocityutils.bansystem.vcheckban` - access to /vcheckban
 #### User permissions
 - `velocityutils.report.use` - access to /report
 - `velocityutils.helpop.use` - access to /helpop
