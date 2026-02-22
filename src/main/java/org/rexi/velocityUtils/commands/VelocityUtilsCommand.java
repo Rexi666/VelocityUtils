@@ -9,6 +9,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
 import org.rexi.velocityUtils.VelocityUtils;
+import org.rexi.velocityUtils.listeners.BrandListener;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,11 +19,13 @@ public class VelocityUtilsCommand implements SimpleCommand {
     private final ConfigManager configManager;
     private final ProxyServer server;
     private final VelocityUtils plugin;
+    private final BrandListener brandListener;
 
-    public VelocityUtilsCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin) {
+    public VelocityUtilsCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin, BrandListener brandListener) {
         this.configManager = configManager;
         this.server = server;
         this.plugin = plugin;
+        this.brandListener = brandListener;
     }
 
     @Override
@@ -35,6 +38,8 @@ public class VelocityUtilsCommand implements SimpleCommand {
                 plugin.registerMoveCommands();
                 plugin.registerCommands();
                 plugin.registerMessagesCommands();
+                brandListener.sendBrandToAll();
+                plugin.startRegularAlerts();
                 Component motd = configManager.getMotd();
                 String configuration_reloaded = configManager.getMessage("configuration_reloaded");
                 source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(configuration_reloaded));

@@ -255,6 +255,31 @@ ban_system:
       - "&fKicked by: &b{kicked_by}"
       - "&fReason: &b{reason}"
       - "&f-----------------------------"
+brand:
+  enabled: true
+  text: "&3&l&nVelocityUtils&r &c| &6by Rexi666"
+regular_alerts:
+  enabled: true
+  delay_seconds: 300
+  alerts:
+    discord:
+      message:
+        - "&f-----------------------------"
+        - "&9Join our &bDiscord&9 for news and updates!"
+        - "&bhttps://discord.myserver.com"
+        - "&f-----------------------------"
+      click_action: "OPEN_URL"
+      action: https://discord.myserver.com
+      hover: "&bClick to join our Discord"
+    store:
+      message:
+        - "&f-----------------------------"
+        - "&9Visit our &bStore&9 for ranks and perks!"
+        - "&bhttps://store.myserver.com"
+        - "&f-----------------------------"
+      click_action: "OPEN_URL"
+      action: https://store.myserver.com
+      hover: "&bClick to open our store"
 
 messages:
   no_permission: "&cYou don't have permission to use this command"

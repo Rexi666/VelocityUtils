@@ -525,6 +525,40 @@ public class ConfigManager {
       """);
                 }
 
+                if (node.node("brand", "enabled").empty()) {
+                    node.node("brand", "enabled").set(true);
+                }
+                if (node.node("brand", "text").empty()) {
+                    node.node("brand", "text").set("&3&l&nVelocityUtils&r &c| &6by Rexi666");
+                }
+
+                if (node.node("regular_alerts", "enabled").empty()) {
+                    node.node("regular_alerts", "enabled").set(true);
+                }
+                if (node.node("regular_alerts", "delay_seconds").empty()) {
+                    node.node("regular_alerts", "delay_seconds").set(300);
+                }
+                if (node.node("regular_alerts", "alerts").empty()) {
+                    node.node("regular_alerts", "alerts", "discord", "message").set(String.class, """
+      &f-----------------------------
+      &9Join our &bDiscord&9 for news and updates!
+      &bhttps://discord.myserver.com
+      &f-----------------------------
+      """);
+                    node.node("regular_alerts", "alerts", "discord", "click_action").set("OPEN_URL");
+                    node.node("regular_alerts", "alerts", "discord", "action").set("https://discord.myserver.com");
+                    node.node("regular_alerts", "alerts", "discord", "hover").set("&bClick to join our Discord");
+                    node.node("regular_alerts", "alerts", "store", "message").set(String.class, """
+      &f-----------------------------
+      &9Visit our &bStore&9 for ranks and perks!
+      &bhttps://store.myserver.com
+      &f-----------------------------
+      """);
+                    node.node("regular_alerts", "alerts", "store", "click_action").set("OPEN_URL");
+                    node.node("regular_alerts", "alerts", "store", "action").set("https://store.myserver.com");
+                    node.node("regular_alerts", "alerts", "store", "hover").set("&bClick to open our store");
+                }
+
                 if (node.node("messages", "no_permission").empty()) {
                     node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
                 }
@@ -1049,6 +1083,29 @@ public class ConfigManager {
       &f-----------------------------
       """);
 
+            node.node("brand", "enabled").set(true);
+            node.node("brand", "text").set("&3&l&nVelocityUtils&r &c| &6by Rexi666");
+
+            node.node("regular_alerts", "enabled").set(true);
+            node.node("regular_alerts", "delay_seconds").set(300);
+            node.node("regular_alerts", "alerts", "discord", "message").set(String.class, """
+      &f-----------------------------
+      &9Join our &bDiscord&9 for news and updates!
+      &bhttps://discord.myserver.com
+      &f-----------------------------
+      """);
+            node.node("regular_alerts", "alerts", "discord", "click_action").set("OPEN_URL");
+            node.node("regular_alerts", "alerts", "discord", "action").set("https://discord.myserver.com");
+            node.node("regular_alerts", "alerts", "discord", "hover").set("&bClick to join our Discord");
+            node.node("regular_alerts", "alerts", "store", "message").set(String.class, """
+      &f-----------------------------
+      &9Visit our &bStore&9 for ranks and perks!
+      &bhttps://store.myserver.com
+      &f-----------------------------
+      """);
+            node.node("regular_alerts", "alerts", "store", "click_action").set("OPEN_URL");
+            node.node("regular_alerts", "alerts", "store", "action").set("https://store.myserver.com");
+            node.node("regular_alerts", "alerts", "store", "hover").set("&bClick to open our store");
 
             node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
             node.node("messages", "no_console").set("&cOnly players can use this command");

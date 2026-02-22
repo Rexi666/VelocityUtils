@@ -15,7 +15,10 @@ import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerPing;
+import com.velocitypowered.api.scheduler.ScheduledTask;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bstats.velocity.Metrics;
@@ -42,6 +45,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Plugin(
         id = "velocityutils",
@@ -54,10 +58,15 @@ public class VelocityUtils {
     private final ProxyServer server;
     private final ConfigManager configManager;
     private final PluginContainer plugin;
+    private final BrandListener brandListener;
     private LuckPerms luckPerms = null;
     private VelocityUtilsAPI api;
 
     private DiscordWebhook webhook;
+
+    private ScheduledTask alertsTask;
+    private int currentAlertIndex = 0;
+    private List<String> alertList = new ArrayList<>();
 
     private final ChannelIdentifier STAFFCHAT_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "staffchat");
     private final ChannelIdentifier ADMINCHAT_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "adminchat");
@@ -83,6 +92,7 @@ public class VelocityUtils {
         this.server = server;
         this.plugin = plugin;
         this.configManager = new ConfigManager();
+        this.brandListener = new BrandListener(configManager, server);
         this.webhook = new DiscordWebhook(configManager);
     }
 
@@ -101,6 +111,7 @@ public class VelocityUtils {
         server.getChannelRegistrar().register(PLACEHOLDER_CHANNEL);
         server.getChannelRegistrar().register(ALERT_CHANNEL);
         server.getChannelRegistrar().register(SERVEREXECUTE_CHANNEL);
+        server.getChannelRegistrar().register(MinecraftChannelIdentifier.from("minecraft:brand"));
 
         configManager.loadConfig();
 
@@ -118,6 +129,7 @@ public class VelocityUtils {
 
         server.getEventManager().register(this, new ChatListener(this));
         server.getEventManager().register(this, new StaffConnectionListener(this, staffSessions, configManager, server, luckPerms, webhook, new DateUtils(configManager)));
+        server.getEventManager().register(this, brandListener);
 
         server.getEventManager().register(this, new PluginMessageListenerStaffChat(this, server, configManager, webhook, luckPerms));
         server.getEventManager().register(this, new PluginMessageListenerAdminChat(this, server, configManager, webhook, luckPerms));
@@ -129,6 +141,7 @@ public class VelocityUtils {
         registerCommands();
         registerMoveCommands();
         registerMessagesCommands();
+        startRegularAlerts();
 
         Metrics metrics = metricsFactory.make(this, 26742);
 
@@ -169,11 +182,11 @@ public class VelocityUtils {
     public void registerCommands() {
         server.getCommandManager().register(
                 server.getCommandManager().metaBuilder("velocityutils").build(),
-                new VelocityUtilsCommand(configManager, server, this));
+                new VelocityUtilsCommand(configManager, server, this, brandListener));
 
         server.getCommandManager().register(
                 server.getCommandManager().metaBuilder("vu").build(),
-                new VelocityUtilsCommand(configManager, server, this));
+                new VelocityUtilsCommand(configManager, server, this, brandListener));
 
         if (configManager.getBoolean("alert.enabled")) {
             server.getCommandManager().register("alert", new AlertCommand(configManager,server));
@@ -295,18 +308,18 @@ public class VelocityUtils {
         try {
             Component motd;
             if (configManager.isMaintenanceMode()) {
-                motd = configManager.getMaintenanceMotd();  // Obtén el MotD de mantenimiento
+                motd = configManager.getMaintenanceMotd();
                 ServerPing ping = event.getPing();
                 ServerPing updatePing = ping.asBuilder().description(motd).build();
                 event.setPing(updatePing);
             } else if (configManager.getBoolean("motd.enabled")) {
-                motd = configManager.getMotd();  // Obtén el MotD normal
+                motd = configManager.getMotd();
                 ServerPing ping = event.getPing();
                 ServerPing updatePing = ping.asBuilder().description(motd).build();
                 event.setPing(updatePing);
             }
         } catch (Exception e) {
-            logger.error("Error al actualizar el MOTD en ProxyPingEvent", e);
+            logger.error("Error trying to update MOTD", e);
         }
     }
 
@@ -699,5 +712,92 @@ public class VelocityUtils {
         );
     }
 
+    public void startRegularAlerts() {
+        if (alertsTask != null) {
+            alertsTask.cancel();
+            alertsTask = null;
+        }
 
+        if (!configManager.getBoolean("regular_alerts.enabled")) {
+            return;
+        }
+
+        int delay = configManager.getInt("regular_alerts.delay_seconds");
+
+        loadAlerts();
+
+        alertsTask = server.getScheduler()
+                .buildTask(this, () -> sendNextAlert())
+                .delay(delay, TimeUnit.SECONDS)
+                .repeat(delay, TimeUnit.SECONDS)
+                .schedule();
+    }
+
+    private void loadAlerts() {
+        alertList.clear();
+        currentAlertIndex = 0;
+
+        ConfigurationNode alertsNode = configManager.getRootNode().node("regular_alerts", "alerts");
+
+        for (Map.Entry<Object, ? extends ConfigurationNode> entry : alertsNode.childrenMap().entrySet()) {
+            alertList.add(entry.getKey().toString());
+        }
+    }
+
+    private void sendNextAlert() {
+        if (alertList.isEmpty()) {
+            return;
+        }
+
+        String alert = alertList.get(currentAlertIndex);
+        List<String> messages = configManager.getStringList("regular_alerts.alerts." + alert + ".message");
+
+        String action = configManager.getString("regular_alerts.alerts." + alert + ".action");
+        String hover = configManager.getString("regular_alerts.alerts." + alert + ".hover");
+        String click_action = configManager.getString("regular_alerts.alerts." + alert + ".click_action");
+
+        if (click_action == null ||
+                (!click_action.equalsIgnoreCase("OPEN_URL") && !click_action.equalsIgnoreCase("RUN_COMMAND"))) {
+            click_action = "NONE";
+        }
+
+        if (messages == null || messages.isEmpty()) {
+            logger.warn("Error trying to send regular alert '{}': message is empty: ", alert);
+            return;
+        }
+
+        if (click_action.equalsIgnoreCase("OPEN_URL") || click_action.equalsIgnoreCase("RUN_COMMAND")) {
+            if (action == null || action.isEmpty() || hover == null || hover.isEmpty()) {
+                logger.warn("Error trying to send regular alert '{}': action or hover message is missing or empty: ", alert);
+                return;
+            }
+        }
+
+        for (Player player : server.getAllPlayers()) {
+            for (String line : messages) {
+                Component messageLine = legacy(line);
+
+                if (click_action.equalsIgnoreCase("OPEN_URL")) {
+                    messageLine = messageLine
+                            .clickEvent(ClickEvent.openUrl(action))
+                            .hoverEvent(HoverEvent.showText(legacy(hover)));
+                } else if (click_action.equalsIgnoreCase("RUN_COMMAND")) {
+                    messageLine = messageLine
+                            .clickEvent(ClickEvent.runCommand(action))
+                            .hoverEvent(HoverEvent.showText(legacy(hover)));
+                }
+                player.sendMessage(messageLine);
+            }
+        }
+
+        currentAlertIndex++;
+
+        if (currentAlertIndex >= alertList.size()) {
+            currentAlertIndex = 0;
+        }
+    }
+
+    private net.kyori.adventure.text.Component legacy(String text) {
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(text);
+    }
 }
