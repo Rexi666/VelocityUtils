@@ -51,9 +51,7 @@ public class BrandListener {
 
         ProtocolVersion version = cp.getProtocolVersion();
 
-        ChannelIdentifier channel = version.noLessThan(ProtocolVersion.MINECRAFT_1_13)
-                ? MinecraftChannelIdentifier.from("minecraft:brand")
-                : MinecraftChannelIdentifier.from("MC|Brand");
+        ChannelIdentifier channel = MinecraftChannelIdentifier.from("minecraft:brand");
 
         ByteBuf buf = Unpooled.buffer();
 
