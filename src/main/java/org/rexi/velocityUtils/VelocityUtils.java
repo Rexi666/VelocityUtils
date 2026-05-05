@@ -29,6 +29,7 @@ import org.rexi.velocityUtils.commands.*;
 import org.rexi.velocityUtils.commands.banSystem.*;
 import org.rexi.velocityUtils.listeners.*;
 import org.rexi.velocityUtils.utils.BanData;
+import org.rexi.velocityUtils.utils.tebex.TebexService;
 import org.slf4j.Logger;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -59,6 +60,7 @@ public class VelocityUtils {
     private final ConfigManager configManager;
     private final PluginContainer plugin;
     private final BrandListener brandListener;
+    private TebexService tebexService;
     private LuckPerms luckPerms = null;
     private VelocityUtilsAPI api;
 
@@ -119,6 +121,7 @@ public class VelocityUtils {
 
         new UpdateChecker(server, plugin, configManager, BuildConstants.VERSION, "https://raw.githubusercontent.com/Rexi666/VelocityUtils/main/latest-version.txt").checkForUpdates();
 
+        tebexService = new TebexService(logger, configManager.getString("tebex_link.secret"), configManager.getInt("tebex_link.refresh_minutes"));
         try {
             this.luckPerms = LuckPermsProvider.get();
             logger.info("[VelocityUtils] LuckPerms detected.");
@@ -133,7 +136,7 @@ public class VelocityUtils {
 
         server.getEventManager().register(this, new PluginMessageListenerStaffChat(this, server, configManager, webhook, luckPerms));
         server.getEventManager().register(this, new PluginMessageListenerAdminChat(this, server, configManager, webhook, luckPerms));
-        server.getEventManager().register(this, new PluginMessageListenerPlaceholders(server));
+        server.getEventManager().register(this, new PluginMessageListenerPlaceholders(server, configManager, tebexService));
         server.getEventManager().register(this, new PluginMessageListenerAlerts(server, configManager));
 
         server.getEventManager().register(this, new ServerExecuteListener(this, server));
@@ -142,6 +145,7 @@ public class VelocityUtils {
         registerMoveCommands();
         registerMessagesCommands();
         startRegularAlerts();
+        refreshTebex();
 
         Metrics metrics = metricsFactory.make(this, 26742);
 
@@ -154,6 +158,13 @@ public class VelocityUtils {
 
     public VelocityUtilsAPI getAPI() {
         return api;
+    }
+
+    public void refreshTebex() {
+        if (configManager.getBoolean("tebex_link.enabled")
+                && !configManager.getString("tebex_link.secret").equalsIgnoreCase("YOUR_TEBEX_SECRET_KEY")) {
+            tebexService.refresh();
+        }
     }
 
     public void registerMoveCommands() {

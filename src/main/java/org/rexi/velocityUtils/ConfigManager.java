@@ -559,6 +559,16 @@ public class ConfigManager {
                     node.node("regular_alerts", "alerts", "store", "hover").set("&bClick to open our store");
                 }
 
+                if (node.node("tebex_link", "enabled").empty()) {
+                    node.node("tebex_link", "enabled").set(true);
+                }
+                if (node.node("tebex_link", "secret").empty()) {
+                    node.node("tebex_link", "secret").set("YOUR_TEBEX_SECRET_KEY");
+                }
+                if (node.node("tebex_link", "refresh_minutes").empty()) {
+                    node.node("tebex_link", "refresh_minutes").set(30);
+                }
+
                 if (node.node("messages", "no_permission").empty()) {
                     node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
                 }
@@ -1106,6 +1116,10 @@ public class ConfigManager {
             node.node("regular_alerts", "alerts", "store", "click_action").set("OPEN_URL");
             node.node("regular_alerts", "alerts", "store", "action").set("https://store.myserver.com");
             node.node("regular_alerts", "alerts", "store", "hover").set("&bClick to open our store");
+
+            node.node("tebex_link", "enabled").set(true);
+            node.node("tebex_link", "secret").set("YOUR_TEBEX_SECRET_KEY");
+            node.node("tebex_link", "refresh_minutes").set(30);
 
             node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
             node.node("messages", "no_console").set("&cOnly players can use this command");

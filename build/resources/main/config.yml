@@ -280,6 +280,10 @@ regular_alerts:
       click_action: "OPEN_URL"
       action: https://store.myserver.com
       hover: "&bClick to open our store"
+tebex_link:
+  enabled: true
+  secret: "YOUR_TEBEX_SECRET_KEY"
+  refresh_minutes: 30
 
 messages:
   no_permission: "&cYou don't have permission to use this command"
