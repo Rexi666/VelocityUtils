@@ -98,6 +98,18 @@
 [VelocityUtilsLink (backend plugin)](https://www.spigotmc.org/resources/velocityutilslink.127649/) + [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) needed to be installed on the backends to use these placeholders.
 - `%velocityutils_globalplayers%` - Total number of players across the network.
 - `%velocityutils_players_<server>%` - Number of players on a specific server.
+- `%velocityutils_tebex_topdonor_alltime_name%` - Tebex top donor name of all time (100 last purchases)
+- `%velocityutils_tebex_topdonor_alltime_money%` - Tebex top donor money of all time (100 last purchases)
+- `%velocityutils_tebex_revenue_alltime%` - Tebex total revenue of all time (100 last purchases)
+- `%velocityutils_tebex_topdonor_month_name%` - Tebex top donor name of the month
+- `%velocityutils_tebex_topdonor_month_money%` - Tebex top donor money of the month
+- `%velocityutils_tebex_revenue_month%` - Tebex total revenue of the month
+- `%velocityutils_tebex_topdonor_week_name%` - Tebex top donor name of the week
+- `%velocityutils_tebex_topdonor_week_money%` - Tebex top donor money of the week
+- `%velocityutils_tebex_revenue_week%` - Tebex total revenue of the week
+- `%velocityutils_tebex_topdonor_week_name%` - Tebex top donor name of the day
+- `%velocityutils_tebex_topdonor_week_money%` - Tebex top donor money of the day
+- `%velocityutils_tebex_revenue_day%` - Tebex total revenue of the day
 
 ### 📦 Why Choose VelocityUtils?
 - ✅ Lightweight and optimized.
