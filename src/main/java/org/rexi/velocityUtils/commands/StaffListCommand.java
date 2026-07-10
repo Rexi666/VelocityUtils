@@ -12,6 +12,7 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.VelocityUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,11 +22,13 @@ public class StaffListCommand implements SimpleCommand {
     private final ConfigManager configManager;
     private final ProxyServer server;
     private final LuckPerms luckPerms;
+    private final VelocityUtils plugin;
 
-    public StaffListCommand(ConfigManager configManager, ProxyServer server, LuckPerms luckPerms) {
+    public StaffListCommand(ConfigManager configManager, ProxyServer server, LuckPerms luckPerms, VelocityUtils plugin) {
         this.configManager = configManager;
         this.server = server;
         this.luckPerms = luckPerms;
+        this.plugin = plugin;
     }
 
     @Override
@@ -52,9 +55,7 @@ public class StaffListCommand implements SimpleCommand {
 
             Component prefix = deserializePrefix(prefixRaw);
 
-            String serverName = player.getCurrentServer()
-                    .map(s -> s.getServerInfo().getName())
-                    .orElse(configManager.getMessage("server_unknown"));
+            String serverName = plugin.getServerName(player);
 
             String rawMessage = configManager.getMessage("stafflist_staff")
                     .replace("{player}", player.getUsername())

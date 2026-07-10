@@ -11,6 +11,7 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
@@ -53,7 +54,11 @@ import java.util.concurrent.TimeUnit;
         name = "VelocityUtils",
         version = BuildConstants.VERSION,
         authors = {"Rexi666"},
-        dependencies = {@Dependency(id = "luckperms", optional = true)})
+        dependencies = {
+                @Dependency(id = "luckperms", optional = true),
+                @Dependency(id = "limboapi", optional = true)
+        }
+        )
 public class VelocityUtils {
 
     private final ProxyServer server;
@@ -77,6 +82,7 @@ public class VelocityUtils {
     private final ChannelIdentifier PLACEHOLDER_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "placeholders");
     private final ChannelIdentifier ALERT_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "alerts");
     private final ChannelIdentifier SERVEREXECUTE_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "serverexecute");
+    private final ChannelIdentifier SOUNDS_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "sounds");
 
     private final Map<UUID, StaffSession> staffSessions = new ConcurrentHashMap<>();
 
@@ -113,6 +119,7 @@ public class VelocityUtils {
         server.getChannelRegistrar().register(PLACEHOLDER_CHANNEL);
         server.getChannelRegistrar().register(ALERT_CHANNEL);
         server.getChannelRegistrar().register(SERVEREXECUTE_CHANNEL);
+        server.getChannelRegistrar().register(SOUNDS_CHANNEL);
         server.getChannelRegistrar().register(MinecraftChannelIdentifier.from("minecraft:brand"));
 
         configManager.loadConfig();
@@ -128,6 +135,10 @@ public class VelocityUtils {
         } catch (IllegalStateException e) {
             this.luckPerms = null;
             logger.warn("[VelocityUtils] LuckPerms not detected.");
+        }
+
+        if (this.server.getPluginManager().getPlugin("limboapi").isPresent()) {
+            server.getEventManager().register(this, new LimboAPIListener(this));
         }
 
         server.getEventManager().register(this, new ChatListener(this));
@@ -184,7 +195,7 @@ public class VelocityUtils {
             if (!messagesCommandsNode.virtual()) {
                 for (ConfigurationNode commandNode : messagesCommandsNode.childrenMap().values()) {
                     String commandName = commandNode.key().toString();
-                    server.getCommandManager().register(commandName, new MessagesCommand(configManager, server, commandName));
+                    server.getCommandManager().register(commandName, new MessagesCommand(configManager, server, commandName, this));
                 }
             }
         }
@@ -200,7 +211,7 @@ public class VelocityUtils {
                 new VelocityUtilsCommand(configManager, server, this, brandListener));
 
         if (configManager.getBoolean("alert.enabled")) {
-            server.getCommandManager().register("alert", new AlertCommand(configManager,server));
+            server.getCommandManager().register("alert", new AlertCommand(configManager,server,this));
         }
 
         if (configManager.getBoolean("maintenance.enabled")) {
@@ -229,7 +240,7 @@ public class VelocityUtils {
         }
 
         if (configManager.getBoolean("stafflist.enabled")) {
-            server.getCommandManager().register("stafflist", new StaffListCommand(configManager, server, luckPerms));
+            server.getCommandManager().register("stafflist", new StaffListCommand(configManager, server, luckPerms, this));
         }
 
         if (configManager.getBoolean("staffchat.enabled")) {
@@ -254,7 +265,7 @@ public class VelocityUtils {
         if (configManager.getBoolean("vlist.enabled")) {
             server.getCommandManager().register(
                     server.getCommandManager().metaBuilder("vlist").build(),
-                    new VListCommand(configManager, server, luckPerms));
+                    new VListCommand(configManager, server, luckPerms, this));
         }
 
         if (configManager.getBoolean("helpop.enabled")) {
@@ -723,6 +734,49 @@ public class VelocityUtils {
         );
     }
 
+    public void sendSoundToPlayer(Player target, String sound) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        try (DataOutputStream data = new DataOutputStream(out)) {
+            data.writeUTF("sound");
+            data.writeUTF(target.getUsername());
+            data.writeUTF(sound);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        Optional<ServerConnection> serverConnection = target.getCurrentServer();
+
+        if (serverConnection.isPresent()) {
+            RegisteredServer server = serverConnection.get().getServer();
+
+            server.sendPluginMessage(MinecraftChannelIdentifier.from("velocityutils:sounds"), out.toByteArray());
+        } else {
+            logger.error("[VelocityUtils] Cannot send sound to player " + target.getUsername());
+        }
+    }
+
+    public void sendSoundToAll(String sound) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        try (DataOutputStream data = new DataOutputStream(out)) {
+            data.writeUTF("sound");
+            data.writeUTF("*");
+            data.writeUTF(sound);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        byte[] message = out.toByteArray();
+        MinecraftChannelIdentifier channel = MinecraftChannelIdentifier.from("velocityutils:sounds");
+
+        for (RegisteredServer registeredServer  : server.getAllServers()) {
+            registeredServer .sendPluginMessage(channel, message);
+        }
+    }
+
     public void startRegularAlerts() {
         if (alertsTask != null) {
             alertsTask.cancel();
@@ -759,6 +813,8 @@ public class VelocityUtils {
         if (alertList.isEmpty()) {
             return;
         }
+
+        String soundName = configManager.getString("regular_alerts.sound");
 
         String alert = alertList.get(currentAlertIndex);
         List<String> messages = configManager.getStringList("regular_alerts.alerts." + alert + ".message");
@@ -801,6 +857,8 @@ public class VelocityUtils {
             }
         }
 
+        sendSoundToAll(soundName);
+
         currentAlertIndex++;
 
         if (currentAlertIndex >= alertList.size()) {
@@ -810,5 +868,18 @@ public class VelocityUtils {
 
     private net.kyori.adventure.text.Component legacy(String text) {
         return LegacyComponentSerializer.legacyAmpersand().deserialize(text);
+    }
+
+    public final Map<UUID, String> playersInSpecialServers = new ConcurrentHashMap<>();
+
+    public String getServerName(Player player) {
+        // Primero comprueba si está en un Limbo
+        if (playersInSpecialServers.containsKey(player.getUniqueId())) {
+            return playersInSpecialServers.get(player.getUniqueId()); // ej: "Limbo"
+        }
+        // Si no, el servidor normal de Velocity
+        return player.getCurrentServer()
+                .map(s -> s.getServerInfo().getName())
+                .orElse(configManager.getMessage("server_unknown"));
     }
 }

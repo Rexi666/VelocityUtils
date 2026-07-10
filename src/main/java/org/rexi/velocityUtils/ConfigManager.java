@@ -79,6 +79,9 @@ public class ConfigManager {
                 if (node.node("alert", "prefix").empty()) {
                     node.node("alert", "prefix").set("&7[&b&lSERVER&7]");
                 }
+                if (node.node("alert", "sound").empty()) {
+                    node.node("alert", "sound").set("BLOCK_NOTE_BLOCK_PLING");
+                }
 
                 if (node.node("motd", "enabled").empty()) {
                     node.node("motd", "enabled").set(true);
@@ -409,6 +412,7 @@ public class ConfigManager {
                     node.node("messagescommands", "discord", "click_action").set("OPEN_URL");
                     node.node("messagescommands", "discord", "action").set("https://discord.com/invite/a3zkKtrjTr");
                     node.node("messagescommands", "discord", "hover").set("&9Click to join ur discord");
+                    node.node("messagescommands", "discord", "sound").set("UI_BUTTON_CLICK");
 
                     node.node("messagescommands", "newgamemode", "message").setList(String.class, List.of(
                             "&f-----------------------------",
@@ -418,12 +422,14 @@ public class ConfigManager {
                     node.node("messagescommands", "newgamemode", "click_action").set("RUN_COMMAND");
                     node.node("messagescommands", "newgamemode", "action").set("/survival");
                     node.node("messagescommands", "newgamemode", "hover").set("&6Click to join ur new survival");
+                    node.node("messagescommands", "newgamemode", "sound").set("ENTITY_PLAYER_LEVELUP");
 
                     node.node("messagescommands", "rules", "message").setList(String.class, List.of(
                             "&f-----------------------------",
                             "&6Remember to read all the server rules",
                             "&f-----------------------------"));
                     node.node("messagescommands", "rules", "click_action").set("NONE");
+                    node.node("messagescommands", "rules", "sound").set("");
                 }
 
                 if (node.node("find", "enabled").empty()) {
@@ -537,6 +543,9 @@ public class ConfigManager {
                 }
                 if (node.node("regular_alerts", "delay_seconds").empty()) {
                     node.node("regular_alerts", "delay_seconds").set(300);
+                }
+                if (node.node("regular_alerts", "sound").empty()) {
+                    node.node("regular_alerts", "sound").set("ENTITY_EXPERIENCE_ORB_PICKUP");
                 }
                 if (node.node("regular_alerts", "alerts").empty()) {
                     node.node("regular_alerts", "alerts", "discord", "message").set(String.class, """
@@ -862,6 +871,7 @@ public class ConfigManager {
 
             node.node("alert", "enabled").set(true);
             node.node("alert", "prefix").set("&7[&b&lSERVER&7]");
+            node.node("alert", "sound").set("BLOCK_NOTE_BLOCK_PLING");
 
             // Agregar mensajes predeterminados
             node.node("motd", "enabled").set(true);
@@ -1031,6 +1041,7 @@ public class ConfigManager {
             node.node("messagescommands", "discord", "click_action").set("OPEN_URL");
             node.node("messagescommands", "discord", "action").set("https://discord.com/invite/a3zkKtrjTr");
             node.node("messagescommands", "discord", "hover").set("&9Click to join ur discord");
+            node.node("messagescommands", "discord", "sound").set("UI_BUTTON_CLICK");
             node.node("messagescommands", "newgamemode", "message").setList(String.class, List.of(
                     "&f-----------------------------",
                     "&6New Game Mode released",
@@ -1039,11 +1050,13 @@ public class ConfigManager {
             node.node("messagescommands", "newgamemode", "click_action").set("RUN_COMMAND");
             node.node("messagescommands", "newgamemode", "action").set("/survival");
             node.node("messagescommands", "newgamemode", "hover").set("&6Click to join ur new survival");
+            node.node("messagescommands", "newgamemode", "sound").set("ENTITY_PLAYER_LEVELUP");
             node.node("messagescommands", "rules", "message").setList(String.class, List.of(
                     "&f-----------------------------",
                     "&6Remember to read all the server rules",
                     "&f-----------------------------"));
             node.node("messagescommands", "rules", "click_action").set("NONE");
+            node.node("messagescommands", "rules", "sound").set("");
 
             node.node("find", "enabled").set(true);
             node.node("goto", "enabled").set(true);
@@ -1098,6 +1111,7 @@ public class ConfigManager {
 
             node.node("regular_alerts", "enabled").set(true);
             node.node("regular_alerts", "delay_seconds").set(300);
+            node.node("regular_alerts", "sound").set("ENTITY_EXPERIENCE_ORB_PICKUP");
             node.node("regular_alerts", "alerts", "discord", "message").set(String.class, """
       &f-----------------------------
       &9Join our &bDiscord&9 for news and updates!

@@ -58,9 +58,7 @@ public class StaffChatCommand implements SimpleCommand {
         if (args.length > 0) {
             String message = String.join(" ", args);
 
-            String serverName = player.getCurrentServer()
-                    .map(s -> s.getServerInfo().getName())
-                    .orElse(configManager.getMessage("server_unknown"));
+            String serverName = plugin.getServerName(player);
 
             String prefixRaw = obtenerRango(player);
 

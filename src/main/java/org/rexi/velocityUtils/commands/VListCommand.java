@@ -11,6 +11,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
 import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.VelocityUtils;
 
 import java.util.*;
 
@@ -19,11 +20,13 @@ public class VListCommand implements SimpleCommand {
     private final ConfigManager configManager;
     private final ProxyServer server;
     private final LuckPerms luckPerms;
+    private final VelocityUtils plugin;
 
-    public VListCommand(ConfigManager configManager, ProxyServer server, LuckPerms luckPerms) {
+    public VListCommand(ConfigManager configManager, ProxyServer server, LuckPerms luckPerms, VelocityUtils plugin) {
         this.configManager = configManager;
         this.server = server;
         this.luckPerms = luckPerms;
+        this.plugin = plugin;
     }
 
     @Override
@@ -60,7 +63,7 @@ public class VListCommand implements SimpleCommand {
         Map<String, List<String>> servidores = new HashMap<>();
 
         for (Player player : server.getAllPlayers()) {
-            String serverName = player.getCurrentServer().map(s -> s.getServerInfo().getName()).orElse(configManager.getMessage("server_unknown"));
+            String serverName = plugin.getServerName(player);
             servidores.computeIfAbsent(serverName, k -> new ArrayList<>()).add(player.getUsername());
         }
 

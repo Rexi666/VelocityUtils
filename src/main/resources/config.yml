@@ -10,6 +10,7 @@ database:
 alert:
   enabled: true
   prefix: "&7[&b&lSERVER&7]"
+  sound: "BLOCK_NOTE_BLOCK_PLING"
 motd:
   enabled: true
   line1: "&aWelcome to this Velocity Server!"
@@ -187,6 +188,7 @@ messagescommands:
     click_action: "OPEN_URL"
     action: https://discord.com/invite/a3zkKtrjTr
     hover: "&9Click to join ur discord"
+    sound: "UI_BUTTON_CLICK"
   newgamemode:
     message:
       - '&f-----------------------------'
@@ -197,12 +199,14 @@ messagescommands:
     click_action: "RUN_COMMAND"
     action: "/survival"
     hover: "&6Click to join ur new survival"
+    sound: "ENTITY_PLAYER_LEVELUP"
   rules:
     message:
       - '&f-----------------------------'
       - '&6Remember to read all the server rules'
       - '&f-----------------------------'
     click_action: "NONE"
+    sound: ""
 find:
   enabled: true
 goto:
@@ -261,6 +265,7 @@ brand:
 regular_alerts:
   enabled: true
   delay_seconds: 300
+  sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
   alerts:
     discord:
       message:

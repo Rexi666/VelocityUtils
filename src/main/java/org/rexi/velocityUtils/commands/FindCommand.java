@@ -50,9 +50,7 @@ public class FindCommand implements SimpleCommand {
         // 🔹 Si está online → mostrar el servidor actual
         if (target.isPresent()) {
             Player player = target.get();
-            String serverName = player.getCurrentServer()
-                    .map(s -> s.getServerInfo().getName())
-                    .orElse(configManager.getMessage("server_unknown"));
+            String serverName = plugin.getServerName(player);
 
             String find_where = configManager.getMessage("find_where");
             find_where = find_where.replace("{player}", player.getUsername());

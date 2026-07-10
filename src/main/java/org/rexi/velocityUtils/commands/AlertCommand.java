@@ -7,15 +7,18 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.VelocityUtils;
 
 public class AlertCommand implements SimpleCommand {
 
     private final ProxyServer server;
     private final ConfigManager configManager;
+    private final VelocityUtils plugin;
 
-    public AlertCommand(ConfigManager configManager, ProxyServer server) {
+    public AlertCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin) {
         this.server = server;
-        this.configManager = new ConfigManager();
+        this.configManager = configManager;
+        this.plugin = plugin;
     }
 
     @Override
@@ -44,12 +47,20 @@ public class AlertCommand implements SimpleCommand {
 
     public void sendAlert(String message) {
         String alertPrefix = configManager.getString("alert.prefix");
+        String soundName = configManager.getString("alert.sound");
 
         // Convierte el mensaje a un formato de Adventure Text
         Component alertMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(alertPrefix + " " + message);
 
         // Envía el mensaje a todos los jugadores conectados
-        server.getAllPlayers().forEach(player -> player.sendMessage(alertMessage));
+        server.getAllPlayers().forEach(player -> {
+            player.sendMessage(alertMessage);
+        });
+
+        // Enviar sonido
+        if (soundName != null && !soundName.isEmpty()) {
+            plugin.sendSoundToAll(soundName);
+        }
 
         // También imprime el mensaje en la consola
         server.getConsoleCommandSource().sendMessage(alertMessage);

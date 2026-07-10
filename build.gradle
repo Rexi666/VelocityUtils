@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'org.rexi'
-version = '3.8'
+version = '3.9'
 
 repositories {
     maven {
@@ -26,6 +26,10 @@ repositories {
     maven {
         url = "https://repo.william278.net/velocity/"
     }
+    maven {
+        setName("elytrium-repo")
+        setUrl("https://maven.elytrium.net/repo/")
+    }
 }
 
 dependencies {
@@ -40,6 +44,7 @@ dependencies {
     implementation 'org.bstats:bstats-velocity:3.0.0'
     implementation 'mysql:mysql-connector-java:8.0.33'
     implementation 'io.netty:netty-all:4.1.97.Final'
+    compileOnly("net.elytrium:limboapi-api:1.0.7")
 }
 
 shadowJar {

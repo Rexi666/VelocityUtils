@@ -3,11 +3,14 @@ package org.rexi.velocityUtils.commands;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.VelocityUtils;
 
 import java.util.List;
 
@@ -16,11 +19,13 @@ public class MessagesCommand implements SimpleCommand {
     private final ConfigManager configManager;
     private final ProxyServer server;
     private final String commandName;
+    private final VelocityUtils plugin;
 
-    public MessagesCommand(ConfigManager configManager, ProxyServer server, String commandName) {
+    public MessagesCommand(ConfigManager configManager, ProxyServer server, String commandName, VelocityUtils plugin) {
         this.configManager = configManager;
         this.server = server;
         this.commandName = commandName;
+        this.plugin = plugin;
     }
 
     @Override
@@ -51,6 +56,7 @@ public class MessagesCommand implements SimpleCommand {
         String action = configManager.getString("messagescommands." + commandName + ".action");
         String hover = configManager.getString("messagescommands." + commandName + ".hover");
         String click_action = configManager.getString("messagescommands." + commandName + ".click_action");
+        String soundName = configManager.getString("messagescommands." + commandName + ".sound");
 
         if (click_action == null ||
                 (!click_action.equalsIgnoreCase("OPEN_URL") && !click_action.equalsIgnoreCase("RUN_COMMAND"))) {
@@ -79,6 +85,10 @@ public class MessagesCommand implements SimpleCommand {
             }
 
             player.sendMessage(messageLine);
+
+            if (soundName != null && !soundName.isEmpty()) {
+                plugin.sendSoundToPlayer(player, soundName);
+            }
         }
 
     }

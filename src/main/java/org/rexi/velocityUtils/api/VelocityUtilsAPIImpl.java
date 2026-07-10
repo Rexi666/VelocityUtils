@@ -34,11 +34,11 @@ public class VelocityUtilsAPIImpl implements VelocityUtilsAPI {
 
     @Override
     public void sendAlert(String message) {
-        new AlertCommand(configManager, server).sendAlert(message);
+        new AlertCommand(configManager, server, plugin).sendAlert(message);
     }
 
     public Map<String, String[]> getStaffList() {
-        StaffListCommand staffListCommand = new StaffListCommand(configManager, server, luckperms);
+        StaffListCommand staffListCommand = new StaffListCommand(configManager, server, luckperms, plugin);
         List<Player> staff = staffListCommand.getStaffOnline();
         if (staff.isEmpty()) {
             return Map.of();
@@ -61,7 +61,7 @@ public class VelocityUtilsAPIImpl implements VelocityUtilsAPI {
     public Map<String, List<String>> getList(Boolean byRank) {
         if (server.getAllPlayers().isEmpty()) return Map.of();
 
-        StaffListCommand staffListCommand = new StaffListCommand(configManager, server, luckperms);
+        StaffListCommand staffListCommand = new StaffListCommand(configManager, server, luckperms, plugin);
         Map<String, List<String>> finalList = new HashMap<>();
 
         if (byRank) {
