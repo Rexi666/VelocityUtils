@@ -39,7 +39,7 @@ public class UpdateChecker {
                 reader.close();
 
                 if (!latestVersion.equalsIgnoreCase(currentVersion)) {
-                    String message = configManager.getMessage("new_version_available").replace("{version}", latestVersion).replace("{url}", "https://www.spigotmc.org/resources/velocityutils.123517/");
+                    String message = configManager.getMessage("new_version_available").replace("{version}", latestVersion).replace("{url}", "https://modrinth.com/plugin/velocityutils-rexi/");
                     server.getConsoleCommandSource().sendMessage(legacy(message));
                 }
             } catch (IOException e) {
@@ -58,9 +58,9 @@ public class UpdateChecker {
                 reader.close();
 
                 if (!latestVersion.equalsIgnoreCase(currentVersion)) {
-                    String message = configManager.getMessage("new_version_available").replace("{version}", latestVersion).replace("{url}", "https://www.spigotmc.org/resources/velocityutils.123517/");
+                    String message = configManager.getMessage("new_version_available").replace("{version}", latestVersion).replace("{url}", "https://modrinth.com/plugin/velocityutils-rexi/");
                     Component tpLine = legacy(message)
-                            .clickEvent(ClickEvent.openUrl("https://www.spigotmc.org/resources/velocityutils.123517/"));
+                            .clickEvent(ClickEvent.openUrl("https://modrinth.com/plugin/velocityutils-rexi/"));
                     player.sendMessage(tpLine);
                 }
             } catch (IOException e) {
