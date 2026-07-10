@@ -9,8 +9,28 @@ database:
 
 alert:
   enabled: true
-  prefix: "&7[&b&lSERVER&7]"
   sound: "BLOCK_NOTE_BLOCK_PLING"
+  message:
+    - "&f-----------------------------"
+    - "&7[&b&lSERVER&7] &r{message}"
+    - "&f-----------------------------"
+  title:
+    enabled: true
+    title: "&7[&b&lSERVER&7]"
+    subtitle: "{message}"
+    durations:
+      fade_in: 20
+      stay: 60
+      fade_out: 20
+  actionbar:
+    enabled: true
+    message: "&7[&b&lSERVER&7] &r{message}"
+  bossbar:
+    enabled: true
+    message: "&7[&b&lSERVER&7] &r{message}"
+    color: BLUE
+    overlay: PROGRESS
+    duration: 5
 motd:
   enabled: true
   line1: "&aWelcome to this Velocity Server!"

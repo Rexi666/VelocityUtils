@@ -1,8 +1,5 @@
 package org.rexi.velocityUtils;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.yaml.NodeStyle;
@@ -81,6 +78,60 @@ public class ConfigManager {
                 }
                 if (node.node("alert", "sound").empty()) {
                     node.node("alert", "sound").set("BLOCK_NOTE_BLOCK_PLING");
+                }
+
+                if (node.node("alert", "message").empty()) {
+                    if (!node.node("alert","prefix").empty()) {
+                        node.node("alert", "message").setList(String.class, List.of(
+                                "&f-----------------------------",
+                                node.node("alert", "prefix").getString()+ " &r{message}",
+                                "&f-----------------------------"));
+                    } else {
+                        node.node("alert", "message").setList(String.class, List.of(
+                                "&f-----------------------------",
+                                "&7[&b&lSERVER&7] &r{message}",
+                                "&f-----------------------------"));
+                    }
+                }
+
+                if (node.node("alert", "title", "enabled").empty()) {
+                    node.node("alert", "title", "enabled").set(true);
+                }
+                if (node.node("alert", "title", "title").empty()) {
+                    node.node("alert", "title", "title").set("&7[&b&lSERVER&7]");
+                }
+                if (node.node("alert", "title", "subtitle").empty()) {
+                    node.node("alert", "title", "subtitle").set("{message}");
+                }
+                if (node.node("alert", "title", "durations", "fade_in").empty()) {
+                    node.node("alert", "title", "durations", "fade_in").set(20);
+                }
+                if (node.node("alert", "title", "durations", "stay").empty()) {
+                    node.node("alert", "title", "durations", "stay").set(60);
+                }
+                if (node.node("alert", "title", "durations", "fade_out").empty()) {
+                    node.node("alert", "title", "durations", "fade_out").set(20);
+                }
+                if (node.node("alert", "actionbar", "enabled").empty()) {
+                    node.node("alert", "actionbar", "enabled").set(true);
+                }
+                if (node.node("alert", "actionbar", "message").empty()) {
+                    node.node("alert", "actionbar", "message").set("&7[&b&lSERVER&7] &r{message}");
+                }
+                if (node.node("alert", "bossbar", "enabled").empty()) {
+                    node.node("alert", "bossbar", "enabled").set(true);
+                }
+                if (node.node("alert", "bossbar", "message").empty()) {
+                    node.node("alert", "bossbar", "message").set("&7[&b&lSERVER&7] &r{message}");
+                }
+                if (node.node("alert", "bossbar", "color").empty()) {
+                    node.node("alert", "bossbar", "color").set("BLUE");
+                }
+                if (node.node("alert", "bossbar", "overlay").empty()) {
+                    node.node("alert", "bossbar", "overlay").set("PROGRESS");
+                }
+                if (node.node("alert", "bossbar", "duration").empty()) {
+                    node.node("alert", "bossbar", "duration").set(5);
                 }
 
                 if (node.node("motd", "enabled").empty()) {
@@ -870,8 +921,25 @@ public class ConfigManager {
             node.node("database", "mysql", "password").set("");
 
             node.node("alert", "enabled").set(true);
-            node.node("alert", "prefix").set("&7[&b&lSERVER&7]");
             node.node("alert", "sound").set("BLOCK_NOTE_BLOCK_PLING");
+            node.node("alert", "message").setList(String.class, List.of(
+                    "&f-----------------------------",
+                    "&7[&b&lSERVER&7] &r{message}",
+                    "&f-----------------------------"));
+            node.node("alert", "title", "enabled").set(true);
+            node.node("alert", "title", "title").set("&7[&b&lSERVER&7]");
+            node.node("alert", "title", "subtitle").set("{message}");
+            node.node("alert", "title", "durations", "fade_in").set(20);
+            node.node("alert", "title", "durations", "stay").set(60);
+            node.node("alert", "title", "durations", "fade_out").set(20);
+            node.node("alert", "actionbar", "enabled").set(true);
+            node.node("alert", "actionbar", "message").set("&7[&b&lSERVER&7] &r{message}");
+            node.node("alert", "bossbar", "enabled").set(true);
+            node.node("alert", "bossbar", "message").set("&7[&b&lSERVER&7] &r{message}");
+            node.node("alert", "bossbar", "color").set("BLUE");
+            node.node("alert", "bossbar", "overlay").set("PROGRESS");
+            node.node("alert", "bossbar", "duration").set(5);
+
 
             // Agregar mensajes predeterminados
             node.node("motd", "enabled").set(true);
@@ -1235,10 +1303,6 @@ public class ConfigManager {
         }
     }
 
-    public String getAlertPrefix() {
-        return config != null ? config.getAlertPrefix() : "&7[&b&lSERVER&7]";
-    }
-
     public String getMessage(String key) {
         try {
             ConfigurationNode node = loader.load();
@@ -1305,123 +1369,33 @@ public class ConfigManager {
         }
     }
 
-    public Component getMotd() {
+    public void setBoolean(String key, boolean value) {
         try {
-            ConfigurationNode node = loader.load();
-            String line1 = node.node("motd", "line1").getString("&aWelcome to this Velocity Server!");
-            String line2 = node.node("motd", "line2").getString("<bold><gradient:yellow:green>Enjoy your stay</gradient></bold>");
+            ConfigurationNode root = loader.load();
+            ConfigurationNode node = root;
 
-            // Serializadores
-            LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacyAmpersand();
-            MiniMessage miniMessage = MiniMessage.miniMessage();
+            for (String part : key.split("\\.")) {
+                node = node.node(part);
+            }
 
-            // Convertir
-            Component component1 = line1.contains("<") ? miniMessage.deserialize(line1) : legacySerializer.deserialize(line1);
-            Component component2 = line2.contains("<") ? miniMessage.deserialize(line2) : legacySerializer.deserialize(line2);
-
-            return Component.text()
-                    .append(component1)
-                    .append(Component.newline())
-                    .append(component2)
-                    .build();
-        } catch (IOException e) {
-            e.printStackTrace();
-
-            String line1 = "&aWelcome to this Velocity Server!";
-            String line2 = "<bold><gradient:yellow:green>Enjoy your stay</gradient></bold>";
-
-            // Serializadores
-            LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacyAmpersand();
-            MiniMessage miniMessage = MiniMessage.miniMessage();
-
-            // Convertir
-            Component component1 = line1.contains("<") ? miniMessage.deserialize(line1) : legacySerializer.deserialize(line1);
-            Component component2 = line2.contains("<") ? miniMessage.deserialize(line2) : legacySerializer.deserialize(line2);
-
-            return Component.text()
-                    .append(component1)
-                    .append(Component.newline())
-                    .append(component2)
-                    .build();
-        }
-    }
-
-    public boolean isMaintenanceMode() {
-        try {
-            ConfigurationNode node = loader.load();
-            return node.node("maintenance", "active").getBoolean(false);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false; // Si hay un error, devolver `false` por defecto.
-        }
-    }
-
-    public List<String> getAllowedPlayers() {
-        try {
-            ConfigurationNode node = loader.load();
-            return node.node("maintenance", "allowed").getList(String.class, List.of());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return List.of(); // Si hay un error, devolver una lista vacía.
-        }
-    }
-
-    public Component getMaintenanceMotd() {
-        try {
-            ConfigurationNode node = loader.load();
-            String line1 = node.node("maintenance", "motd", "line1").getString("&cServer under maintenance!");
-            String line2 = node.node("maintenance", "motd", "line2").getString("<bold><gradient:red:yellow>Try again later</gradient></bold>");
-
-            // Serializadores
-            LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacyAmpersand();
-            MiniMessage miniMessage = MiniMessage.miniMessage();
-
-            // Convertir
-            Component component1 = line1.contains("<") ? miniMessage.deserialize(line1) : legacySerializer.deserialize(line1);
-            Component component2 = line2.contains("<") ? miniMessage.deserialize(line2) : legacySerializer.deserialize(line2);
-
-            return Component.text()
-                    .append(component1)
-                    .append(Component.newline())
-                    .append(component2)
-                    .build();
-        } catch (IOException e) {
-            e.printStackTrace();
-
-            String line1 = "&cServer under maintenance!";
-            String line2 = "<bold><gradient:red:yellow>Try again later</gradient></bold>";
-
-            // Serializadores
-            LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacyAmpersand();
-            MiniMessage miniMessage = MiniMessage.miniMessage();
-
-            // Convertir
-            Component component1 = line1.contains("<") ? miniMessage.deserialize(line1) : legacySerializer.deserialize(line1);
-            Component component2 = line2.contains("<") ? miniMessage.deserialize(line2) : legacySerializer.deserialize(line2);
-
-            return Component.text()
-                    .append(component1)
-                    .append(Component.newline())
-                    .append(component2)
-                    .build();
-        }
-    }
-
-    public void setMaintenanceMode(boolean active) {
-        try {
-            ConfigurationNode node = loader.load();
-            node.node("maintenance", "active").set(active);
-            loader.save(node);
+            node.set(value);
+            loader.save(root);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void setAllowedPlayers(List<String> players) {
+    public void setList(String key, List<String> value) {
         try {
-            ConfigurationNode node = loader.load();
-            node.node("maintenance", "allowed").setList(String.class, players);
-            loader.save(node);
+            ConfigurationNode root = loader.load();
+            ConfigurationNode node = root;
+
+            for (String part : key.split("\\.")) {
+                node = node.node(part);
+            }
+
+            node.set(value);
+            loader.save(root);
         } catch (IOException e) {
             e.printStackTrace();
         }

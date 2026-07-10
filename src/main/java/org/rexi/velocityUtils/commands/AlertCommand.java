@@ -4,10 +4,15 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.ProxyServer;
+import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.title.Title;
 import org.rexi.velocityUtils.ConfigManager;
 import org.rexi.velocityUtils.VelocityUtils;
+
+import java.time.Duration;
+import java.util.List;
 
 public class AlertCommand implements SimpleCommand {
 
@@ -46,23 +51,129 @@ public class AlertCommand implements SimpleCommand {
     }
 
     public void sendAlert(String message) {
-        String alertPrefix = configManager.getString("alert.prefix");
+        List<String> alertLines = configManager.getStringList("alert.message");
         String soundName = configManager.getString("alert.sound");
 
-        // Convierte el mensaje a un formato de Adventure Text
-        Component alertMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(alertPrefix + " " + message);
+        boolean titleEnabled = configManager.getBoolean("alert.title.enabled");
+        boolean actionBarEnabled = configManager.getBoolean("alert.actionbar.enabled");
+        boolean bossBarEnabled = configManager.getBoolean("alert.bossbar.enabled");
 
-        // Envía el mensaje a todos los jugadores conectados
+        String titleText = configManager.getString("alert.title.title");
+        String subtitleText = configManager.getString("alert.title.subtitle");
+        int fade_in = configManager.getInt("alert.title.durations.fade_in");
+        int stay = configManager.getInt("alert.title.durations.stay");
+        int fade_out = configManager.getInt("alert.title.durations.fade_out");
+
+        String actionBarText = configManager.getString("alert.actionbar.message");
+
+        String bossBarText = configManager.getString("alert.bossbar.message");
+        String bossBarColor = configManager.getString("alert.bossbar.color");
+        String bossBarOverlay = configManager.getString("alert.bossbar.overlay");
+        int bossBarDuration = configManager.getInt("alert.bossbar.duration");
+
+        // Title
+
+        Title title = Title.title(
+                LegacyComponentSerializer.legacyAmpersand().deserialize(
+                        titleText.replace("{message}", message)),
+                LegacyComponentSerializer.legacyAmpersand().deserialize(
+                        subtitleText.replace("{message}", message)),
+                Title.Times.times(
+                        Duration.ofMillis(fade_in * 50L),
+                        Duration.ofMillis(stay * 50L),
+                        Duration.ofMillis(fade_out * 50L)
+                )
+        );
+
+        // ActionBar
+
+        Component actionBar = LegacyComponentSerializer.legacyAmpersand()
+                .deserialize(actionBarText.replace("{message}", message));
+
+        // BossBar
+        final BossBar.Color color = parseColor(bossBarColor);
+                /*
+                PINK
+                BLUE
+                RED
+                GREEN
+                YELLOW
+                PURPLE
+                WHITE
+                 */
+        final BossBar.Overlay overlay = parseOverlay(bossBarOverlay);
+                /*
+                PROGRESS
+                NOTCHED_6
+                NOTCHED_10
+                NOTCHED_12
+                NOTCHED_20
+                 */
+
         server.getAllPlayers().forEach(player -> {
-            player.sendMessage(alertMessage);
+
+            // Chat
+            for (String line : alertLines) {
+                Component component = LegacyComponentSerializer.legacyAmpersand()
+                        .deserialize(line.replace("{message}", message));
+                player.sendMessage(component);
+            }
+
+            // Title
+            if (titleEnabled) {
+                player.showTitle(title);
+            }
+
+            // ActionBar
+            if (actionBarEnabled) {
+                player.sendActionBar(actionBar);
+            }
+
+            // BossBar
+            if (bossBarEnabled) {
+                BossBar bossBar = BossBar.bossBar(
+                        LegacyComponentSerializer.legacyAmpersand()
+                                .deserialize(bossBarText.replace("{message}", message)),
+                        1.0f,
+                        color,
+                        overlay
+                );
+
+                player.showBossBar(bossBar);
+
+                server.getScheduler()
+                        .buildTask(plugin, () -> player.hideBossBar(bossBar))
+                        .delay(Duration.ofSeconds(bossBarDuration))
+                        .schedule();
+            }
         });
 
-        // Enviar sonido
+        // Sonido
         if (soundName != null && !soundName.isEmpty()) {
             plugin.sendSoundToAll(soundName);
         }
 
-        // También imprime el mensaje en la consola
-        server.getConsoleCommandSource().sendMessage(alertMessage);
+        // Consola
+        for (String line : alertLines) {
+            Component component = LegacyComponentSerializer.legacyAmpersand()
+                    .deserialize(line.replace("{message}", message));
+            server.getConsoleCommandSource().sendMessage(component);
+        }
+    }
+
+    private BossBar.Color parseColor(String color) {
+        try {
+            return BossBar.Color.valueOf(color.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return BossBar.Color.BLUE;
+        }
+    }
+
+    private BossBar.Overlay parseOverlay(String overlay) {
+        try {
+            return BossBar.Overlay.valueOf(overlay.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return BossBar.Overlay.PROGRESS;
+        }
     }
 }

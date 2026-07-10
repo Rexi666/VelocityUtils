@@ -21,6 +21,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bstats.velocity.Metrics;
 import org.rexi.velocityUtils.api.VelocityUtilsAPI;
@@ -329,17 +330,33 @@ public class VelocityUtils {
     public void onProxyPing(ProxyPingEvent event) {
         try {
             Component motd;
-            if (configManager.isMaintenanceMode()) {
-                motd = configManager.getMaintenanceMotd();
-                ServerPing ping = event.getPing();
-                ServerPing updatePing = ping.asBuilder().description(motd).build();
-                event.setPing(updatePing);
+            String line1;
+            String line2;
+            if (configManager.getBoolean("maintenance.active")) {
+                line1 = configManager.getString("maintenance.motd.line1");
+                line2 = configManager.getString("maintenance.motd.line2");
             } else if (configManager.getBoolean("motd.enabled")) {
-                motd = configManager.getMotd();
-                ServerPing ping = event.getPing();
-                ServerPing updatePing = ping.asBuilder().description(motd).build();
-                event.setPing(updatePing);
-            }
+                line1 = configManager.getString("motd.line1");
+                line2 = configManager.getString("motd.line2");
+            } else {return;}
+
+            // Serializadores
+            LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacyAmpersand();
+            MiniMessage miniMessage = MiniMessage.miniMessage();
+
+            // Convertir
+            Component component1 = line1.contains("<") ? miniMessage.deserialize(line1) : legacySerializer.deserialize(line1);
+            Component component2 = line2.contains("<") ? miniMessage.deserialize(line2) : legacySerializer.deserialize(line2);
+
+            motd =  Component.text()
+                    .append(component1)
+                    .append(Component.newline())
+                    .append(component2)
+                    .build();
+
+            ServerPing ping = event.getPing();
+            ServerPing updatePing = ping.asBuilder().description(motd).build();
+            event.setPing(updatePing);
         } catch (Exception e) {
             logger.error("Error trying to update MOTD", e);
         }
@@ -416,8 +433,8 @@ public class VelocityUtils {
         }
 
         // Comprobar mantenimiento
-        if (configManager.isMaintenanceMode()) {
-            List<String> allowedPlayers = configManager.getAllowedPlayers();
+        if (configManager.getBoolean("maintenance.active")) {
+            List<String> allowedPlayers = configManager.getStringList("maintenance.allowed");
             String username = event.getUsername();
             if (!allowedPlayers.contains(username)) {
                 String under_maintenance = configManager.getMessage("maintenance_not_on_list");

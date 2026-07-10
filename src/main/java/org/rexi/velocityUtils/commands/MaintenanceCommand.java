@@ -39,10 +39,10 @@ public class MaintenanceCommand implements SimpleCommand {
 
         // Comando: /maintenance on
         if (args[0].equalsIgnoreCase("on")) {
-            configManager.setMaintenanceMode(true);
+            configManager.setBoolean("maintenance.active", true);
 
             List<Player> players = server.getAllPlayers().stream().toList();
-            List<String> allowedPlayers = configManager.getAllowedPlayers();
+            List<String> allowedPlayers = configManager.getStringList("maintenance.allowed");
 
             for (Player player : players) {
                 if (!allowedPlayers.contains(player.getUsername())) {
@@ -56,7 +56,7 @@ public class MaintenanceCommand implements SimpleCommand {
         }
         // Comando: /maintenance off
         else if (args[0].equalsIgnoreCase("off")) {
-            configManager.setMaintenanceMode(false);
+            configManager.setBoolean("maintenance.active", false);
 
             String maintenance_deactivated = configManager.getMessage("maintenance_deactivated");
             source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(maintenance_deactivated));
@@ -64,14 +64,14 @@ public class MaintenanceCommand implements SimpleCommand {
         // Comando: /maintenance add <nick>
         else if (args[0].equalsIgnoreCase("add") && args.length == 2) {
             String nick = args[1];
-            List<String> allowedPlayers = configManager.getAllowedPlayers();
+            List<String> allowedPlayers = configManager.getStringList("maintenance.allowed");
             if (allowedPlayers.contains(nick)) {
                 String maintenance_already_on_list = configManager.getMessage("maintenance_already_on_list");
                 source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(maintenance_already_on_list));
                 return;
             }
             allowedPlayers.add(nick);
-            configManager.setAllowedPlayers(allowedPlayers);
+            configManager.setList("maintenance.allowed",allowedPlayers);
             String maintenance_player_added = configManager.getMessage("maintenance_player_added");
             maintenance_player_added = maintenance_player_added.replace("{player}", nick);
             source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(maintenance_player_added));
@@ -79,14 +79,14 @@ public class MaintenanceCommand implements SimpleCommand {
         // Comando: /maintenance remove <nick>
         else if (args[0].equalsIgnoreCase("remove") && args.length == 2) {
             String nick = args[1];
-            List<String> allowedPlayers = configManager.getAllowedPlayers();
+            List<String> allowedPlayers = configManager.getStringList("maintenance.allowed");
             if (!allowedPlayers.contains(nick)) {
                 String maintenance_player_not_on_list = configManager.getMessage("maintenance_player_not_on_list");
                 source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(maintenance_player_not_on_list));
                 return;
             }
             allowedPlayers.remove(nick);
-            configManager.setAllowedPlayers(allowedPlayers);
+            configManager.setList("maintenance.allowed",allowedPlayers);
             String maintenance_player_removed = configManager.getMessage("maintenance_player_removed");
             maintenance_player_removed = maintenance_player_removed.replace("{player}", nick);
             source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(maintenance_player_removed));
@@ -101,7 +101,7 @@ public class MaintenanceCommand implements SimpleCommand {
     @Override
     public List<String> suggest(Invocation invocation) {
         String[] args = invocation.arguments();
-        List<String> allowedPlayers = configManager.getAllowedPlayers();
+        List<String> allowedPlayers = configManager.getStringList("maintenance.allowed");
         List<String> suggestions = new ArrayList<>();
 
         if (args.length == 0) {

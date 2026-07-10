@@ -41,7 +41,6 @@ public class VelocityUtilsCommand implements SimpleCommand {
                 brandListener.sendBrandToAll();
                 plugin.startRegularAlerts();
                 plugin.refreshTebex();
-                Component motd = configManager.getMotd();
                 String configuration_reloaded = configManager.getMessage("configuration_reloaded");
                 source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(configuration_reloaded));
             } else {
