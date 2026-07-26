@@ -29,7 +29,6 @@ public class AlertCommand implements SimpleCommand {
     @Override
     public void execute(Invocation invocation) {
         CommandSource source = invocation.source();
-        configManager.loadConfig();
 
         // Verifica si el usuario tiene permiso
         if (!source.hasPermission("velocityutils.alert") && !(source instanceof ConsoleCommandSource)) {

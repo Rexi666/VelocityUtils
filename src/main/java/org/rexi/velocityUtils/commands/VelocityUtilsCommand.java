@@ -35,6 +35,7 @@ public class VelocityUtilsCommand implements SimpleCommand {
         if (invocation.arguments().length > 0 && invocation.arguments()[0].equalsIgnoreCase("reload")) {
             if (source.hasPermission("velocityutils.admin") || source instanceof ConsoleCommandSource) {
                 configManager.loadConfig();
+                configManager.loadMessages();
                 plugin.registerMoveCommands();
                 plugin.registerCommands();
                 plugin.registerMessagesCommands();

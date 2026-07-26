@@ -13,8 +13,10 @@ import java.util.List;
 public class ConfigManager {
 
     private final Path configPath;
-    private final YamlConfigurationLoader loader;
-    private Config config;
+    private final Path messagePath;
+
+    private final YamlConfigurationLoader configLoader;
+    private final YamlConfigurationLoader messagesLoader;
 
     public ConfigManager() {
         // Define la carpeta del plugin dentro de "plugins/"
@@ -31,23 +33,31 @@ public class ConfigManager {
 
         // Ruta correcta dentro de "plugins/VelocityUtils/"
         this.configPath = pluginFolder.resolve("config.yml");
+        this.messagePath = pluginFolder.resolve("messages.yml");
 
         // 💡 Configura el YAML para evitar inline objects
-        this.loader = YamlConfigurationLoader.builder()
+        this.configLoader = YamlConfigurationLoader.builder()
                 .path(configPath)
                 .nodeStyle(NodeStyle.BLOCK) // 🔥 Evita la serialización en una sola línea
                 .build();
+
+        this.messagesLoader = YamlConfigurationLoader.builder()
+                .path(messagePath)
+                .nodeStyle(NodeStyle.BLOCK) // 🔥 Evita la serialización en una sola línea
+                .build();
     }
+
+    ////////////
+    // CONFIG //
+    ////////////
 
     public void loadConfig() {
         try {
             if (!Files.exists(configPath)) {
                 // Si el archivo no existe, crea uno con valores por defecto
-                config = new Config();
                 saveConfig();
             } else {
-                ConfigurationNode node = loader.load();
-                config = new Config();
+                ConfigurationNode node = configLoader.load();
 
                 // Cargar las configs si no existen
 
@@ -156,8 +166,8 @@ public class ConfigManager {
                 if (node.node("maintenance", "motd", "line2").empty()) {
                     node.node("maintenance", "motd", "line2").set("<bold><gradient:red:yellow>Try again later</gradient></bold>");
                 }
-                if (node.node("maintenance", "allowed").empty()) {
-                    node.node("maintenance", "allowed").setList(String.class, List.of("Rexigamer666"));
+                if (!node.node("maintenance", "allowed").empty()) {
+                    node.node("maintenance", "allowed").set(null); // Eliminar la lista, ahora se usa permiso
                 }
 
                 if (node.node("report", "enabled").empty()) {
@@ -629,274 +639,68 @@ public class ConfigManager {
                     node.node("tebex_link", "refresh_minutes").set(30);
                 }
 
-                if (node.node("messages", "no_permission").empty()) {
-                    node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
+                if (node.node("serverwhitelist", "enabled").empty()) {
+                    node.node("serverwhitelist", "enabled").set(true);
                 }
-                if (node.node("messages", "no_console").empty()) {
-                    node.node("messages", "no_console").set("&cOnly players can use this command");
+                if (node.node("serverwhitelist", "active_servers").empty()) {
+                    node.node("serverwhitelist", "active_servers").set(String.class, """
+      whitelisted_server1
+      whitelisted_server2
+      """);
                 }
-                if (node.node("messages", "new_version_available").empty()) {
-                    node.node("messages", "new_version_available").set("&cA new version of VelocityUtils is available (&b{version}&c)! &e{url}");
+                if (node.node("serverwhitelist", "sound").empty()) {
+                    node.node("serverwhitelist", "sound").set("ENTITY_VILLAGER_NO");
                 }
-                if (node.node("messages", "alert_usage").empty()) {
-                    node.node("messages", "alert_usage").set("&cUsage: /alert <message>");
+                if (node.node("serverwhitelist", "message").empty()) {
+                    node.node("serverwhitelist", "message").set(String.class, """
+      &f-----------------------------
+      &cThis server is &lwhitelisted&c!
+      &fPlease wait until you are allowed to join.
+      &f-----------------------------
+      """);
                 }
-                if (node.node("messages", "configuration_reloaded").empty()) {
-                    node.node("messages", "configuration_reloaded").set("&aConfiguration reloaded successfully! For some changes to take effect, you may need to restart the proxy.");
+                if (node.node("serverwhitelist", "title", "enabled").empty()) {
+                    node.node("serverwhitelist", "title", "enabled").set(true);
                 }
-                if (node.node("messages", "velocityutils_usage").empty()) {
-                    node.node("messages", "velocityutils_usage").set("&cUsage: /velocityutils reload");
+                if (node.node("serverwhitelist", "title", "title").empty()) {
+                    node.node("serverwhitelist", "title", "title").set("&cServer Whitelisted");
                 }
-                if (node.node("messages", "maintenance_not_on_list").empty()) {
-                    node.node("messages", "maintenance_not_on_list").set("&cThe server is under maintenance!");
+                if (node.node("serverwhitelist", "title", "subtitle").empty()) {
+                    node.node("serverwhitelist", "title", "subtitle").set("&7Wait until you are allowed to join.");
                 }
-                if (node.node("messages", "maintenance_usage").empty()) {
-                    node.node("messages", "maintenance_usage").set("&cUsage: /maintenance <on|off> | /maintenance <add|remove> <nick>");
+                if (node.node("serverwhitelist", "title", "durations", "fade_in").empty()) {
+                    node.node("serverwhitelist", "title", "durations", "fade_in").set(20);
                 }
-                if (node.node("messages", "maintenance_activated").empty()) {
-                    node.node("messages", "maintenance_activated").set("&aMaintenance mode activated.");
+                if (node.node("serverwhitelist", "title", "durations", "stay").empty()) {
+                    node.node("serverwhitelist", "title", "durations", "stay").set(60);
                 }
-                if (node.node("messages", "maintenance_deactivated").empty()) {
-                    node.node("messages", "maintenance_deactivated").set("&cMaintenance mode deactivated.");
+                if (node.node("serverwhitelist", "title", "durations", "fade_out").empty()) {
+                    node.node("serverwhitelist", "title", "durations", "fade_out").set(20);
                 }
-                if (node.node("messages", "maintenance_already_on_list").empty()) {
-                    node.node("messages", "maintenance_already_on_list").set("&cThe player is already in the maintenance list.");
+                if (node.node("serverwhitelist", "actionbar", "enabled").empty()) {
+                    node.node("serverwhitelist", "actionbar", "enabled").set(true);
                 }
-                if (node.node("messages", "maintenance_player_added").empty()) {
-                    node.node("messages", "maintenance_player_added").set("&aPlayer {player} added to the maintenance list.");
+                if (node.node("serverwhitelist", "actionbar", "message").empty()) {
+                    node.node("serverwhitelist", "actionbar", "message").set("&cServer Whitelisted");
                 }
-                if (node.node("messages", "maintenance_player_not_on_list").empty()) {
-                    node.node("messages", "maintenance_player_not_on_list").set("&cThe player is not in the maintenance list.");
+                if (node.node("serverwhitelist", "bossbar", "enabled").empty()) {
+                    node.node("serverwhitelist", "bossbar", "enabled").set(true);
                 }
-                if (node.node("messages", "maintenance_player_removed").empty()) {
-                    node.node("messages", "maintenance_player_removed").set("&cPlayer {player} removed from the maintenance list.");
+                if (node.node("serverwhitelist", "bossbar", "message").empty()) {
+                    node.node("serverwhitelist", "bossbar", "message").set("&cServer Whitelisted");
                 }
-                if (node.node("messages", "report_usage").empty()) {
-                    node.node("messages", "report_usage").set("&cUsage: /report <nick> <reason>");
+                if (node.node("serverwhitelist", "bossbar", "color").empty()) {
+                    node.node("serverwhitelist", "bossbar", "color").set("RED");
                 }
-                if (node.node("messages", "report_player_not_found").empty()) {
-                    node.node("messages", "report_player_not_found").set("&cPlayer {player} not found");
+                if (node.node("serverwhitelist", "bossbar", "overlay").empty()) {
+                    node.node("serverwhitelist", "bossbar", "overlay").set("PROGRESS");
                 }
-                if (node.node("messages", "report_sent").empty()) {
-                    node.node("messages", "report_sent").set("&aYour report for the player {target} was sent");
-                }
-                if (node.node("messages", "report_hover").empty()) {
-                    node.node("messages", "report_hover").set("&bClick to teleport");
-                }
-                if (node.node("messages", "report_cooldown").empty()) {
-                    node.node("messages", "report_cooldown").set("&cYou have {time}s before using /report again");
-                }
-                if (node.node("messages", "report_webhook_error").empty()) {
-                    node.node("messages", "report_webhook_error").set("&cError trying to send discord report webhook");
-                }
-                if (node.node("messages", "helpop_usage").empty()) {
-                    node.node("messages", "helpop_usage").set("&cUsage: /helpop <reason>");
-                }
-                if (node.node("messages", "helpop_cooldown").empty()) {
-                    node.node("messages", "helpop_cooldown").set("&cYou have {time}s before using /helpop again");
-                }
-                if (node.node("messages", "helpop_hover").empty()) {
-                    node.node("messages", "helpop_hover").set("&bClick to teleport");
-                }
-                if (node.node("messages", "helpop_sent").empty()) {
-                    node.node("messages", "helpop_sent").set("&aYour help request was sent");
-                }
-                if (node.node("messages", "goto_usage").empty()) {
-                    node.node("messages", "goto_usage").set("&cUsage: /goto <player>");
-                }
-                if (node.node("messages", "goto_player_not_found").empty()) {
-                    node.node("messages", "goto_player_not_found").set("&cPlayer {player} not found");
-                }
-                if (node.node("messages", "goto_server_not_found").empty()) {
-                    node.node("messages", "goto_server_not_found").set("&cServer could not be found");
-                }
-                if (node.node("messages", "goto_same_server").empty()) {
-                    node.node("messages", "goto_same_server").set("&cYou are currently on the same server as {player}");
-                }
-                if (node.node("messages", "goto_connecting").empty()) {
-                    node.node("messages", "goto_connecting").set("&aConnecting with {player} server");
-                }
-                if (node.node("messages", "find_usage").empty()) {
-                    node.node("messages", "find_usage").set("&cUsage: /find <player>");
-                }
-                if (node.node("messages", "find_player_not_found").empty()) {
-                    node.node("messages", "find_player_not_found").set("&cPlayer {player} not found");
-                }
-                if (node.node("messages", "find_where").empty()) {
-                    node.node("messages", "find_where").set("&b{player} &eis on &b{server}");
-                }
-                if (node.node("messages", "find_last_seen").empty()) {
-                    node.node("messages", "find_last_seen").set("&e{player} &cis not connected. Last seen: &e{time} ago");
-                }
-                if (node.node("messages", "find_less_minute").empty()) {
-                    node.node("messages", "find_less_minute").set("Less than 1 minute");
-                }
-                if (node.node("messages", "server_unknown").empty()) {
-                    node.node("messages", "server_unknown").set("Unknown");
-                }
-                if (node.node("messages", "stafflist_no_staff").empty()) {
-                    node.node("messages", "stafflist_no_staff").set("&cThere are no staff online");
-                }
-                if (node.node("messages", "stafflist_header").empty()) {
-                    node.node("messages", "stafflist_header").set("&b&lStaff List");
-                }
-                if (node.node("messages", "stafflist_staff").empty()) {
-                    node.node("messages", "stafflist_staff").set("{prefix} &f{player} &7- &b{server}");
-                }
-                if (node.node("messages", "staffchat_disabled").empty()) {
-                    node.node("messages", "staffchat_disabled").set("&eStaff chat &cdisabled");
-                }
-                if (node.node("messages", "staffchat_enabled").empty()) {
-                    node.node("messages", "staffchat_enabled").set("&eStaff chat &aenabled");
-                }
-                if (node.node("messages", "staffchat_format").empty()) {
-                    node.node("messages", "staffchat_format").set("&8[&bStaffChat&8] &7{server} - {prefix} &b{player}&7: &f{message}");
-                }
-
-                if (node.node("messages", "adminchat_disabled").empty()) {
-                    node.node("messages", "adminchat_disabled").set("&eAdmin chat &cdisabled");
-                }
-                if (node.node("messages", "adminchat_enabled").empty()) {
-                    node.node("messages", "adminchat_enabled").set("&eAdmin chat &aenabled");
-                }
-                if (node.node("messages", "adminchat_format").empty()) {
-                    node.node("messages", "adminchat_format").set("&8[&dAdminChat&8] &7{server} - {prefix} &d{player}&7: &f{message}");
-                }
-                if (node.node("messages", "stafftime_usage").empty()) {
-                    node.node("messages", "stafftime_usage").set("&cUsage: /stafftime <player> [day|week|month]");
-                }
-                if (node.node("messages", "stafftime_not_found").empty()) {
-                    node.node("messages", "stafftime_not_found").set("&cPlayer {player} not found on the database.");
-                }
-                if (node.node("messages", "stafftime_invalid_type").empty()) {
-                    node.node("messages", "stafftime_invalid_type").set("&cInvalid type. Use day, week or month");
-                }
-                if (node.node("messages", "vlist_no_players").empty()) {
-                    node.node("messages", "vlist_no_players").set("&cThere are no players online.");
-                }
-                if (node.node("messages", "movecommands_no_servers").empty()) {
-                    node.node("messages", "movecommands_no_servers").set("&cThere are no servers configured for this command");
-                }
-                if (node.node("messages", "movecommands_server_not_found").empty()) {
-                    node.node("messages", "movecommands_server_not_found").set("&cThat server is not available at this moment.");
-                }
-                if (node.node("messages", "movecommands_already_connected").empty()) {
-                    node.node("messages", "movecommands_already_connected").set("&cYou are already connected to that server");
-                }
-                if (node.node("messages", "messagescommands_no_message_console").empty()) {
-                    node.node("messages", "messagescommands_no_message_console").set("&cThe messagecommand message is empty: {command}");
-                }
-                if (node.node("messages", "messagescommands_no_action_or_hover_console").empty()) {
-                    node.node("messages", "messagescommands_no_action_or_hover_console").set("&cThe messagecommand {command} has action set to true, but no action or hover set");
-                }
-                if (node.node("messages", "messagescommands_error_player").empty()) {
-                    node.node("messages", "messagescommands_error_player").set("&cThat messagecommand doesnt work as intended, contact an administrator");
-                }
-                if (node.node("messages", "stream_usage").empty()) {
-                    node.node("messages", "stream_usage").set("&cUsage: /stream <url>");
-                }
-                if (node.node("messages", "stream_invalid_url").empty()) {
-                    node.node("messages", "stream_invalid_url").set("&cThats not a valid stream url");
-                }
-                if (node.node("messages", "stream_cooldown").empty()) {
-                    node.node("messages", "stream_cooldown").set("&cYou have to wait {cooldown} before using /stream again");
-                }
-                if (node.node("messages", "serverexecute_usage").empty()) {
-                    node.node("messages", "serverexecute_usage").set("&cUsage: /serverexecute <server> <command>");
-                }
-                if (node.node("messages", "serverexecute_server_not_found").empty()) {
-                    node.node("messages", "serverexecute_server_not_found").set("&cServer {server} not found");
-                }
-                if (node.node("messages", "serverexecute_sent").empty()) {
-                    node.node("messages", "serverexecute_sent").set("&aSent to server {server}, the command: /{command}");
-                }
-                if (node.node("messages", "togglesc_enabled").empty()) {
-                    node.node("messages", "togglesc_enabled").set("&aStaff chat messages will be shown");
-                }
-                if (node.node("messages", "togglesc_disabled").empty()) {
-                    node.node("messages", "togglesc_disabled").set("&cStaff chat messages will be hidden");
-                }
-                if (node.node("messages", "usage_ban").empty()) {
-                    node.node("messages", "usage_ban").set("&cUsage: /vban <player> [reason]");
-                }
-                if (node.node("messages", "usage_banip").empty()) {
-                    node.node("messages", "usage_banip").set("&cUsage: /vbanip <player> [reason]");
-                }
-                if (node.node("messages", "usage_unban").empty()) {
-                    node.node("messages", "usage_unban").set("&cUsage: /vunban <player>");
-                }
-                if (node.node("messages", "usage_kick").empty()) {
-                    node.node("messages", "usage_kick").set("&cUsage: /vkick <player> [reason]");
-                }
-                if (node.node("messages", "usage_checkban").empty()) {
-                    node.node("messages", "usage_checkban").set("&cUsage: /vcheckban <player>");
-                }
-                if (node.node("messages", "ban_success").empty()) {
-                    node.node("messages", "ban_success").set("&cYou have banned &b{player} &cfor &b{reason}");
-                }
-                if (node.node("messages", "banip_success").empty()) {
-                    node.node("messages", "banip_success").set("&cYou have ip banned &b{player} &cfor &b{reason}");
-                }
-                if (node.node("messages", "unban_success").empty()) {
-                    node.node("messages", "unban_success").set("&aYou have unbanned &b{player}");
-                }
-                if (node.node("messages", "kick_success").empty()) {
-                    node.node("messages", "kick_success").set("&cYou have kicked &b{player} &cfor &b{reason}");
-                }
-                if (node.node("messages", "checkban_banned").empty()) {
-                    node.node("messages", "checkban_banned").set("&c{player} is banned by {banned_by}! Reason: &b{reason}");
-                }
-                if (node.node("messages", "checkban_banned_ip").empty()) {
-                    node.node("messages", "checkban_banned_ip").set("&c{player} is banned by IP ({ip_playername})! Banned by {banned_by}! Reason: &b{reason}");
-                }
-                if (node.node("messages", "checkban_not_banned").empty()) {
-                    node.node("messages", "checkban_not_banned").set("&a{player} is not banned!");
-                }
-                if (node.node("messages", "already_banned").empty()) {
-                    node.node("messages", "already_banned").set("&c{player} is already banned!");
-                }
-                if (node.node("messages", "not_banned").empty()) {
-                    node.node("messages", "not_banned").set("&c{player} is not banned!");
-                }
-                if (node.node("messages", "not_connected").empty()) {
-                    node.node("messages", "not_connected").set("&c{player} is not connected!");
-                }
-                if (node.node("messages", "not_ip_registered").empty()) {
-                    node.node("messages", "not_ip_registered").set("&c{player} had never entered the server and doesnt have an ip registered!");
-                }
-                if (node.node("messages", "try_join_ban").empty()) {
-                    node.node("messages", "try_join_ban").set("&c{player} tried to join but is banned! Reason: &b{reason}");
-                }
-                if (node.node("messages", "try_join_banip").empty()) {
-                    node.node("messages", "try_join_banip").set("&c{player} tried to join but their IP is banned ({ip_playername})! Reason: &b{reason}");
-                }
-                if (node.node("messages", "ban_notify").empty()) {
-                    node.node("messages", "ban_notify").set("&c{player} was banned by {banned_by} for {reason}");
-                }
-                if (node.node("messages", "banip_notify").empty()) {
-                    node.node("messages", "banip_notify").set("&c{player} was IP banned by {banned_by} for {reason}");
-                }
-                if (node.node("messages", "unban_notify").empty()) {
-                    node.node("messages", "unban_notify").set("&c{player} was unbanned by {unbanned_by}");
-                }
-                if (node.node("messages", "kick_notify").empty()) {
-                    node.node("messages", "kick_notify").set("&c{player} was kicked by {kicked_by} for {reason}");
-                }
-                if (node.node("messages", "day_simbol").empty()) {
-                    node.node("messages", "day_simbol").set("d");
-                }
-                if (node.node("messages", "hour_simbol").empty()) {
-                    node.node("messages", "hour_simbol").set("h");
-                }
-                if (node.node("messages", "minute_simbol").empty()) {
-                    node.node("messages", "minute_simbol").set("m");
-                }
-                if (node.node("messages", "second_simbol").empty()) {
-                    node.node("messages", "second_simbol").set("s");
+                if (node.node("serverwhitelist", "bossbar", "duration").empty()) {
+                    node.node("serverwhitelist", "bossbar", "duration").set(5);
                 }
 
                 // Guardar en caso de que se hayan agregado valores predeterminados
-                loader.save(node);
+                configLoader.save(node);
             }
         } catch (SerializationException e) {
             System.err.println("Error al serializar/deserializar la configuración.");
@@ -910,7 +714,7 @@ public class ConfigManager {
 
     public void saveConfig() {
         try {
-            ConfigurationNode node = loader.createNode();
+            ConfigurationNode node = configLoader.createNode();
 
             // 💡 Crear la estructura correctamente sin inline mapping
             node.node("database", "type").set("sqlite");
@@ -950,7 +754,6 @@ public class ConfigManager {
             node.node("maintenance", "active").set(false);
             node.node("maintenance", "motd", "line1").set("&cServer under maintenance!");
             node.node("maintenance", "motd", "line2").set("<bold><gradient:red:yellow>Try again later</gradient></bold>");
-            node.node("maintenance", "allowed").setList(String.class, List.of("Rexigamer666"));
 
             node.node("report", "enabled").set(true);
             node.node("report", "teleport_on_click").set(true);
@@ -1203,97 +1006,34 @@ public class ConfigManager {
             node.node("tebex_link", "secret").set("YOUR_TEBEX_SECRET_KEY");
             node.node("tebex_link", "refresh_minutes").set(30);
 
-            node.node("messages", "no_permission").set("&cYou don't have permission to use this command");
-            node.node("messages", "no_console").set("&cOnly players can use this command");
-            node.node("messages", "new_version_available").set("&cA new version of VelocityUtils is available (&b{version}&c)! &e{url}");
-            node.node("messages", "alert_usage").set("&cUsage: /alert <message>");
-            node.node("messages", "configuration_reloaded").set("&aConfiguration reloaded successfully! For some changes to take effect, you may need to restart the proxy.");
-            node.node("messages", "velocityutils_usage").set("&cUsage: /velocityutils reload");
-            node.node("messages", "maintenance_not_on_list").set("&cThe server is under maintenance!");
-            node.node("messages", "maintenance_usage").set("&cUsage: /maintenance <on|off> | /maintenance <add|remove> <nick>");
-            node.node("messages", "maintenance_activated").set("&aMaintenance mode activated.");
-            node.node("messages", "maintenance_deactivated").set("&cMaintenance mode deactivated.");
-            node.node("messages", "maintenance_already_on_list").set("&cThe player is already in the maintenance list.");
-            node.node("messages", "maintenance_player_added").set("&aPlayer {player} added to the maintenance list.");
-            node.node("messages", "maintenance_player_not_on_list").set("&cThe player is not in the maintenance list.");
-            node.node("messages", "maintenance_player_removed").set("&cPlayer {player} removed from the maintenance list.");
-            node.node("messages", "report_usage").set("&cUsage: /report <nick> <reason>");
-            node.node("messages", "report_player_not_found").set("&cPlayer {player} not found");
-            node.node("messages", "report_sent").set("&aYour report for the player {target} was sent");
-            node.node("messages", "report_hover").set("&bClick to teleport");
-            node.node("messages", "report_cooldown").set("&cYou have {time}s before using /report again");
-            node.node("messages", "report_webhook_error").set("&cError trying to send discord report webhook");
-            node.node("messages", "helpop_usage").set("&cUsage: /helpop <reason>");
-            node.node("messages", "helpop_cooldown").set("&cYou have {time}s before using /helpop again");
-            node.node("messages", "helpop_hover").set("&bClick to teleport");
-            node.node("messages", "helpop_sent").set("&aYour help request was sent");
-            node.node("messages", "goto_usage").set("&cUsage: /goto <player>");
-            node.node("messages", "goto_player_not_found").set("&cPlayer {player} not found");
-            node.node("messages", "goto_server_not_found").set("&cServer could not be found");
-            node.node("messages", "goto_same_server").set("&cYou are currently on the same server as {player}");
-            node.node("messages", "goto_connecting").set("&aConnecting with {player} server");
-            node.node("messages", "find_usage").set("&cUsage: /find <player>");
-            node.node("messages", "find_player_not_found").set("&cPlayer {player} not found");
-            node.node("messages", "find_where").set("&b{player} &eis on &b{server}");
-            node.node("messages", "find_last_seen").set("&e{player} &cis not connected. Last seen: &e{time} ago");
-            node.node("messages", "find_less_minute").set("Less than 1 minute");
-            node.node("messages", "server_unknown").set("Unknown");
-            node.node("messages", "stafflist_no_staff").set("&cThere are no staff online");
-            node.node("messages", "stafflist_header").set("&b&lStaff List");
-            node.node("messages", "stafflist_staff").set("{prefix} &f{player} &7- &b{server}");
-            node.node("messages", "staffchat_disabled").set("&eStaff chat &cdisabled");
-            node.node("messages", "staffchat_enabled").set("&eStaff chat &aenabled");
-            node.node("messages", "staffchat_format").set("&8[&bStaffChat&8] &7{server} - {prefix} &b{player}&7: &f{message}");
-            node.node("messages", "adminchat_disabled").set("&eAdmin chat &cdisabled");
-            node.node("messages", "adminchat_enabled").set("&eAdmin chat &aenabled");
-            node.node("messages", "adminchat_format").set("&8[&dAdminChat&8] &7{server} - {prefix} &d{player}&7: &f{message}");
-            node.node("messages", "stafftime_usage").set("&cUsage: /stafftime <player> [day|week|month]");
-            node.node("messages", "stafftime_not_found").set("&cPlayer {player} not found on the database.");
-            node.node("messages", "stafftime_invalid_type").set("&cInvalid type. Use day, week or month");
-            node.node("messages", "vlist_no_players").set("&cThere are no players online.");
-            node.node("messages", "movecommands_no_servers").set("&cThere are no servers configured for this command");
-            node.node("messages", "movecommands_server_not_found").set("&cThat server is not available at this moment.");
-            node.node("messages", "movecommands_already_connected").set("&cYou are already connected to that server");
-            node.node("messages", "messagescommands_no_message_console").set("&cThe messagecommand message is empty: {command}");
-            node.node("messages", "messagescommands_no_action_or_hover_console").set("&cThe messagecommand {command} has action set to true, but no action or hover set");
-            node.node("messages", "messagescommands_error_player").set("&cThat messagecommand doesnt work as intended, contact an administrator");
-            node.node("messages", "stream_usage").set("&cUsage: /stream <url>");
-            node.node("messages", "stream_invalid_url").set("&cThats not a valid stream url");
-            node.node("messages", "stream_cooldown").set("&cYou have to wait {cooldown} before using /stream again");
-            node.node("messages", "serverexecute_usage").set("&cUsage: /serverexecute <server> <command>");
-            node.node("messages", "serverexecute_server_not_found").set("&cServer {server} not found");
-            node.node("messages", "serverexecute_sent").set("&aSent to server {server}, the command: /{command}");
-            node.node("messages", "togglesc_enabled").set("&aStaff chat messages will be shown");
-            node.node("messages", "togglesc_disabled").set("&cStaff chat messages will be hidden");
-            node.node("messages", "usage_ban").set("&cUsage: /vban <player> [reason]");
-            node.node("messages", "usage_banip").set("&cUsage: /vbanip <player> [reason]");
-            node.node("messages", "usage_unban").set("&cUsage: /vunban <player>");
-            node.node("messages", "usage_kick").set("&cUsage: /vkick <player> [reason]");
-            node.node("messages", "usage_checkban").set("&cUsage: /vcheckban <player>");
-            node.node("messages", "ban_success").set("&cYou have banned &b{player} &cfor &b{reason}");
-            node.node("messages", "banip_success").set("&cYou have ip banned &b{player} &cfor &b{reason}");
-            node.node("messages", "unban_success").set("&aYou have unbanned &b{player}");
-            node.node("messages", "kick_success").set("&cYou have kicked &b{player} &cfor &b{reason}");
-            node.node("messages", "checkban_banned").set("&c{player} is banned by {banned_by}! Reason: &b{reason}");
-            node.node("messages", "checkban_banned_ip").set("&c{player} is banned by IP ({ip_playername})! Banned by {banned_by}! Reason: &b{reason}");
-            node.node("messages", "checkban_not_banned").set("&a{player} is not banned!");
-            node.node("messages", "already_banned").set("&c{player} is already banned!");
-            node.node("messages", "not_banned").set("&c{player} is not banned!");
-            node.node("messages", "not_connected").set("&c{player} is not connected!");
-            node.node("messages", "not_ip_registered").set("&c{player} had never entered the server and doesnt have an ip registered!");
-            node.node("messages", "try_join_ban").set("&c{player} tried to join but is banned! Reason: &b{reason}");
-            node.node("messages", "try_join_banip").set("&c{player} tried to join but their IP is banned ({ip_playername})! Reason: &b{reason}");
-            node.node("messages", "ban_notify").set("&c{player} was banned by {banned_by} for {reason}");
-            node.node("messages", "banip_notify").set("&c{player} was IP banned by {banned_by} for {reason}");
-            node.node("messages", "unban_notify").set("&c{player} was unbanned by {unbanned_by}");
-            node.node("messages", "kick_notify").set("&c{player} was kicked by {kicked_by} for {reason}");
+            node.node("serverwhitelist", "enabled").set(true);
+            node.node("serverwhitelist", "active_servers").set(String.class, """
+      whitelisted_server1
+      whitelisted_server2
+      """);
+            node.node("serverwhitelist", "sound").set("ENTITY_VILLAGER_NO");
+            node.node("serverwhitelist", "message").set(String.class, """
+      &f-----------------------------
+      &cThis server is &lwhitelisted&c!
+      &fPlease wait until you are allowed to join.
+      &f-----------------------------
+      """);
+            node.node("serverwhitelist", "title", "enabled").set(true);
+            node.node("serverwhitelist", "title", "title").set("&cServer Whitelisted");
+            node.node("serverwhitelist", "title", "subtitle").set("&7Wait until you are allowed to join.");
+            node.node("serverwhitelist", "title", "durations", "fade_in").set(20);
+            node.node("serverwhitelist", "title", "durations", "stay").set(60);
+            node.node("serverwhitelist", "title", "durations", "fade_out").set(20);
+            node.node("serverwhitelist", "actionbar", "enabled").set(true);
+            node.node("serverwhitelist", "actionbar", "message").set("&cServer Whitelisted");
+            node.node("serverwhitelist", "bossbar", "enabled").set(true);
+            node.node("serverwhitelist", "bossbar", "message").set("&cServer Whitelisted");
+            node.node("serverwhitelist", "bossbar", "color").set("RED");
+            node.node("serverwhitelist", "bossbar", "overlay").set("PROGRESS");
+            node.node("serverwhitelist", "bossbar", "duration").set(5);
 
-            node.node("messages", "day_simbol").set("d");
-            node.node("messages", "hour_simbol").set("h");
-            node.node("messages", "minute_simbol").set("m");
-            node.node("messages", "second_simbol").set("s");
 
-            loader.save(node);
+            configLoader.save(node);
         } catch (SerializationException e) {
             System.err.println("Error al serializar la configuración.");
             e.printStackTrace();
@@ -1303,19 +1043,9 @@ public class ConfigManager {
         }
     }
 
-    public String getMessage(String key) {
-        try {
-            ConfigurationNode node = loader.load();
-            return node.node("messages", key).getString("&cMessage not found: " + key);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "&cError loading message: " + key;
-        }
-    }
-
     public int getInt(String key) {
         try {
-            ConfigurationNode node = loader.load();
+            ConfigurationNode node = configLoader.load();
             String[] parts = key.split("\\.");
             for (String part : parts) {
                 node = node.node(part);
@@ -1330,7 +1060,7 @@ public class ConfigManager {
 
     public String getString(String key) {
         try {
-            ConfigurationNode node = loader.load();
+            ConfigurationNode node = configLoader.load();
             String[] parts = key.split("\\.");
             for (String part : parts) {
                 node = node.node(part);
@@ -1345,7 +1075,7 @@ public class ConfigManager {
 
     public boolean getBoolean(String key) {
         try {
-            ConfigurationNode node = loader.load();
+            ConfigurationNode node = configLoader.load();
             for (String part : key.split("\\.")) {
                 node = node.node(part);
             }
@@ -1358,7 +1088,7 @@ public class ConfigManager {
 
     public List<String> getStringList(String key) {
         try {
-            ConfigurationNode node = loader.load();
+            ConfigurationNode node = configLoader.load();
             for (String part : key.split("\\.")) {
                 node = node.node(part);
             }
@@ -1371,7 +1101,7 @@ public class ConfigManager {
 
     public void setBoolean(String key, boolean value) {
         try {
-            ConfigurationNode root = loader.load();
+            ConfigurationNode root = configLoader.load();
             ConfigurationNode node = root;
 
             for (String part : key.split("\\.")) {
@@ -1379,7 +1109,7 @@ public class ConfigManager {
             }
 
             node.set(value);
-            loader.save(root);
+            configLoader.save(root);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1387,7 +1117,7 @@ public class ConfigManager {
 
     public void setList(String key, List<String> value) {
         try {
-            ConfigurationNode root = loader.load();
+            ConfigurationNode root = configLoader.load();
             ConfigurationNode node = root;
 
             for (String part : key.split("\\.")) {
@@ -1395,7 +1125,7 @@ public class ConfigManager {
             }
 
             node.set(value);
-            loader.save(root);
+            configLoader.save(root);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1403,11 +1133,479 @@ public class ConfigManager {
 
     public ConfigurationNode getRootNode() {
         try {
-            return loader.load();
+            return configLoader.load();
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
     }
+    
+    //////////////
+    // MENSAJES //
+    //////////////
 
+    public void loadMessages() {
+        try {
+            if (!Files.exists(messagePath)) {
+                if (Files.exists(configPath)) {
+                    ConfigurationNode config = configLoader.load();
+
+                    if (!config.node("messages").virtual()) {
+                        ConfigurationNode messages = messagesLoader.createNode();
+
+                        messages.set(config.node("messages"));
+
+                        messagesLoader.save(messages);
+
+                        // Elimina la sección antigua del config.yml
+                        config.node("messages").set(null);
+                        configLoader.save(config);
+
+                        // Completa con las nuevas claves por defecto
+                        loadMessages();
+                        return;
+                    }
+                }
+                // Si el archivo no existe, crea uno con valores por defecto
+                saveMessages();
+            } else {
+                ConfigurationNode node = messagesLoader.load();
+
+                // Cargar las configs si no existen
+
+                if (node.node("no_permission").empty()) {
+                    node.node("no_permission").set("&cYou don't have permission to use this command");
+                }
+                if (node.node("no_console").empty()) {
+                    node.node("no_console").set("&cOnly players can use this command");
+                }
+                if (node.node("new_version_available").empty()) {
+                    node.node("new_version_available").set("&cA new version of VelocityUtils is available (&b{version}&c)! &e{url}");
+                }
+                if (node.node("alert_usage").empty()) {
+                    node.node("alert_usage").set("&cUsage: /alert <message>");
+                }
+                if (node.node("configuration_reloaded").empty()) {
+                    node.node("configuration_reloaded").set("&aConfiguration reloaded successfully! For some changes to take effect, you may need to restart the proxy.");
+                }
+                if (node.node("velocityutils_usage").empty()) {
+                    node.node("velocityutils_usage").set("&cUsage: /velocityutils reload");
+                }
+                if (node.node("maintenance_not_on_list").empty()) {
+                    node.node("maintenance_not_on_list").set("&cThe server is under maintenance!");
+                }
+                if (node.node("maintenance_usage").empty()) {
+                    node.node("maintenance_usage").set("&cUsage: /maintenance <on|off>");
+                }
+                if (node.node("maintenance_activated").empty()) {
+                    node.node("maintenance_activated").set("&aMaintenance mode activated.");
+                }
+                if (node.node("maintenance_deactivated").empty()) {
+                    node.node("maintenance_deactivated").set("&cMaintenance mode deactivated.");
+                }
+                if (!node.node("maintenance_already_on_list").empty()) { // Ya no se necesita
+                    node.node("maintenance_already_on_list").set(null);
+                }
+                if (!node.node("maintenance_player_added").empty()) { // Ya no se necesita
+                    node.node("maintenance_player_added").set(null);
+                }
+                if (!node.node("maintenance_player_not_on_list").empty()) { // Ya no se necesita
+                    node.node("maintenance_player_not_on_list").set(null);
+                }
+                if (!node.node("maintenance_player_removed").empty()) { // Ya no se necesita
+                    node.node("maintenance_player_removed").set(null);
+                }
+                if (node.node("report_usage").empty()) {
+                    node.node("report_usage").set("&cUsage: /report <nick> <reason>");
+                }
+                if (node.node("report_player_not_found").empty()) {
+                    node.node("report_player_not_found").set("&cPlayer {player} not found");
+                }
+                if (node.node("report_sent").empty()) {
+                    node.node("report_sent").set("&aYour report for the player {target} was sent");
+                }
+                if (node.node("report_hover").empty()) {
+                    node.node("report_hover").set("&bClick to teleport");
+                }
+                if (node.node("report_cooldown").empty()) {
+                    node.node("report_cooldown").set("&cYou have {time}s before using /report again");
+                }
+                if (node.node("report_webhook_error").empty()) {
+                    node.node("report_webhook_error").set("&cError trying to send discord report webhook");
+                }
+                if (node.node("helpop_usage").empty()) {
+                    node.node("helpop_usage").set("&cUsage: /helpop <reason>");
+                }
+                if (node.node("helpop_cooldown").empty()) {
+                    node.node("helpop_cooldown").set("&cYou have {time}s before using /helpop again");
+                }
+                if (node.node("helpop_hover").empty()) {
+                    node.node("helpop_hover").set("&bClick to teleport");
+                }
+                if (node.node("helpop_sent").empty()) {
+                    node.node("helpop_sent").set("&aYour help request was sent");
+                }
+                if (node.node("goto_usage").empty()) {
+                    node.node("goto_usage").set("&cUsage: /goto <player>");
+                }
+                if (node.node("goto_player_not_found").empty()) {
+                    node.node("goto_player_not_found").set("&cPlayer {player} not found");
+                }
+                if (node.node("goto_server_not_found").empty()) {
+                    node.node("goto_server_not_found").set("&cServer could not be found");
+                }
+                if (node.node("goto_same_server").empty()) {
+                    node.node("goto_same_server").set("&cYou are currently on the same server as {player}");
+                }
+                if (node.node("goto_connecting").empty()) {
+                    node.node("goto_connecting").set("&aConnecting with {player} server");
+                }
+                if (node.node("find_usage").empty()) {
+                    node.node("find_usage").set("&cUsage: /find <player>");
+                }
+                if (node.node("find_player_not_found").empty()) {
+                    node.node("find_player_not_found").set("&cPlayer {player} not found");
+                }
+                if (node.node("find_where").empty()) {
+                    node.node("find_where").set("&b{player} &eis on &b{server}");
+                }
+                if (node.node("find_last_seen").empty()) {
+                    node.node("find_last_seen").set("&e{player} &cis not connected. Last seen: &e{time} ago");
+                }
+                if (node.node("find_less_minute").empty()) {
+                    node.node("find_less_minute").set("Less than 1 minute");
+                }
+                if (node.node("server_unknown").empty()) {
+                    node.node("server_unknown").set("Unknown");
+                }
+                if (node.node("stafflist_no_staff").empty()) {
+                    node.node("stafflist_no_staff").set("&cThere are no staff online");
+                }
+                if (node.node("stafflist_header").empty()) {
+                    node.node("stafflist_header").set("&b&lStaff List");
+                }
+                if (node.node("stafflist_staff").empty()) {
+                    node.node("stafflist_staff").set("{prefix} &f{player} &7- &b{server}");
+                }
+                if (node.node("staffchat_disabled").empty()) {
+                    node.node("staffchat_disabled").set("&eStaff chat &cdisabled");
+                }
+                if (node.node("staffchat_enabled").empty()) {
+                    node.node("staffchat_enabled").set("&eStaff chat &aenabled");
+                }
+                if (node.node("staffchat_format").empty()) {
+                    node.node("staffchat_format").set("&8[&bStaffChat&8] &7{server} - {prefix} &b{player}&7: &f{message}");
+                }
+
+                if (node.node("adminchat_disabled").empty()) {
+                    node.node("adminchat_disabled").set("&eAdmin chat &cdisabled");
+                }
+                if (node.node("adminchat_enabled").empty()) {
+                    node.node("adminchat_enabled").set("&eAdmin chat &aenabled");
+                }
+                if (node.node("adminchat_format").empty()) {
+                    node.node("adminchat_format").set("&8[&dAdminChat&8] &7{server} - {prefix} &d{player}&7: &f{message}");
+                }
+                if (node.node("stafftime_usage").empty()) {
+                    node.node("stafftime_usage").set("&cUsage: /stafftime <player> [day|week|month]");
+                }
+                if (node.node("stafftime_not_found").empty()) {
+                    node.node("stafftime_not_found").set("&cPlayer {player} not found on the database.");
+                }
+                if (node.node("stafftime_invalid_type").empty()) {
+                    node.node("stafftime_invalid_type").set("&cInvalid type. Use day, week or month");
+                }
+                if (node.node("vlist_no_players").empty()) {
+                    node.node("vlist_no_players").set("&cThere are no players online.");
+                }
+                if (node.node("movecommands_no_servers").empty()) {
+                    node.node("movecommands_no_servers").set("&cThere are no servers configured for this command");
+                }
+                if (node.node("movecommands_server_not_found").empty()) {
+                    node.node("movecommands_server_not_found").set("&cThat server is not available at this moment.");
+                }
+                if (node.node("movecommands_already_connected").empty()) {
+                    node.node("movecommands_already_connected").set("&cYou are already connected to that server");
+                }
+                if (node.node("messagescommands_no_message_console").empty()) {
+                    node.node("messagescommands_no_message_console").set("&cThe messagecommand message is empty: {command}");
+                }
+                if (node.node("messagescommands_no_action_or_hover_console").empty()) {
+                    node.node("messagescommands_no_action_or_hover_console").set("&cThe messagecommand {command} has action set to true, but no action or hover set");
+                }
+                if (node.node("messagescommands_error_player").empty()) {
+                    node.node("messagescommands_error_player").set("&cThat messagecommand doesnt work as intended, contact an administrator");
+                }
+                if (node.node("stream_usage").empty()) {
+                    node.node("stream_usage").set("&cUsage: /stream <url>");
+                }
+                if (node.node("stream_invalid_url").empty()) {
+                    node.node("stream_invalid_url").set("&cThats not a valid stream url");
+                }
+                if (node.node("stream_cooldown").empty()) {
+                    node.node("stream_cooldown").set("&cYou have to wait {cooldown} before using /stream again");
+                }
+                if (node.node("serverexecute_usage").empty()) {
+                    node.node("serverexecute_usage").set("&cUsage: /serverexecute <server> <command>");
+                }
+                if (node.node("serverexecute_server_not_found").empty()) {
+                    node.node("serverexecute_server_not_found").set("&cServer {server} not found");
+                }
+                if (node.node("serverexecute_sent").empty()) {
+                    node.node("serverexecute_sent").set("&aSent to server {server}, the command: /{command}");
+                }
+                if (node.node("togglesc_enabled").empty()) {
+                    node.node("togglesc_enabled").set("&aStaff chat messages will be shown");
+                }
+                if (node.node("togglesc_disabled").empty()) {
+                    node.node("togglesc_disabled").set("&cStaff chat messages will be hidden");
+                }
+                if (node.node("usage_ban").empty()) {
+                    node.node("usage_ban").set("&cUsage: /vban <player> [reason]");
+                }
+                if (node.node("usage_banip").empty()) {
+                    node.node("usage_banip").set("&cUsage: /vbanip <player> [reason]");
+                }
+                if (node.node("usage_unban").empty()) {
+                    node.node("usage_unban").set("&cUsage: /vunban <player>");
+                }
+                if (node.node("usage_kick").empty()) {
+                    node.node("usage_kick").set("&cUsage: /vkick <player> [reason]");
+                }
+                if (node.node("usage_checkban").empty()) {
+                    node.node("usage_checkban").set("&cUsage: /vcheckban <player>");
+                }
+                if (node.node("ban_success").empty()) {
+                    node.node("ban_success").set("&cYou have banned &b{player} &cfor &b{reason}");
+                }
+                if (node.node("banip_success").empty()) {
+                    node.node("banip_success").set("&cYou have ip banned &b{player} &cfor &b{reason}");
+                }
+                if (node.node("unban_success").empty()) {
+                    node.node("unban_success").set("&aYou have unbanned &b{player}");
+                }
+                if (node.node("kick_success").empty()) {
+                    node.node("kick_success").set("&cYou have kicked &b{player} &cfor &b{reason}");
+                }
+                if (node.node("checkban_banned").empty()) {
+                    node.node("checkban_banned").set("&c{player} is banned by {banned_by}! Reason: &b{reason}");
+                }
+                if (node.node("checkban_banned_ip").empty()) {
+                    node.node("checkban_banned_ip").set("&c{player} is banned by IP ({ip_playername})! Banned by {banned_by}! Reason: &b{reason}");
+                }
+                if (node.node("checkban_not_banned").empty()) {
+                    node.node("checkban_not_banned").set("&a{player} is not banned!");
+                }
+                if (node.node("already_banned").empty()) {
+                    node.node("already_banned").set("&c{player} is already banned!");
+                }
+                if (node.node("not_banned").empty()) {
+                    node.node("not_banned").set("&c{player} is not banned!");
+                }
+                if (node.node("not_connected").empty()) {
+                    node.node("not_connected").set("&c{player} is not connected!");
+                }
+                if (node.node("not_ip_registered").empty()) {
+                    node.node("not_ip_registered").set("&c{player} had never entered the server and doesnt have an ip registered!");
+                }
+                if (node.node("try_join_ban").empty()) {
+                    node.node("try_join_ban").set("&c{player} tried to join but is banned! Reason: &b{reason}");
+                }
+                if (node.node("try_join_banip").empty()) {
+                    node.node("try_join_banip").set("&c{player} tried to join but their IP is banned ({ip_playername})! Reason: &b{reason}");
+                }
+                if (node.node("ban_notify").empty()) {
+                    node.node("ban_notify").set("&c{player} was banned by {banned_by} for {reason}");
+                }
+                if (node.node("banip_notify").empty()) {
+                    node.node("banip_notify").set("&c{player} was IP banned by {banned_by} for {reason}");
+                }
+                if (node.node("unban_notify").empty()) {
+                    node.node("unban_notify").set("&c{player} was unbanned by {unbanned_by}");
+                }
+                if (node.node("kick_notify").empty()) {
+                    node.node("kick_notify").set("&c{player} was kicked by {kicked_by} for {reason}");
+                }
+                if (node.node("serverwhitelist_tried").empty()) {
+                    node.node("serverwhitelist_tried").set("&c{player} tried to join {server} but its whitelisted!");
+                }
+                if (node.node("serverwhitelist_usage").empty()) {
+                    node.node("serverwhitelist_usage").set("&cUsage: /serverwhitelist <add|remove> <server> | /serverwhitelist list");
+                }
+                if (node.node("serverwhitelist_server_not_found").empty()) {
+                    node.node("serverwhitelist_server_not_found").set("&cServer {server} not found");
+                }
+                if (node.node("serverwhitelist_already_on_list").empty()) {
+                    node.node("serverwhitelist_already_on_list").set("&cThat server is already with whitelist on");
+                }
+                if (node.node("serverwhitelist_server_added").empty()) {
+                    node.node("serverwhitelist_server_added").set("&aServer {server} added to whitelist");
+                }
+                if (node.node("serverwhitelist_server_not_on_list").empty()) {
+                    node.node("serverwhitelist_server_not_on_list").set("&cServer {server} is not on the whitelist");
+                }
+                if (node.node("serverwhitelist_server_removed").empty()) {
+                    node.node("serverwhitelist_server_removed").set("&cServer {server} removed from whitelist");
+                }
+                if (node.node("serverwhitelist_list_empty").empty()) {
+                    node.node("serverwhitelist_list_empty").set("&cThere are no servers on the whitelist");
+                }
+                if (node.node("serverwhitelist_list_header").empty()) {
+                    node.node("serverwhitelist_list_header").set("&6Whitelisted servers:");
+                }
+                if (node.node("serverwhitelist_list_format").empty()) {
+                    node.node("serverwhitelist_list_format").set("&7- &e{server}");
+                }
+                if (node.node("day_simbol").empty()) {
+                    node.node("day_simbol").set("d");
+                }
+                if (node.node("hour_simbol").empty()) {
+                    node.node("hour_simbol").set("h");
+                }
+                if (node.node("minute_simbol").empty()) {
+                    node.node("minute_simbol").set("m");
+                }
+                if (node.node("second_simbol").empty()) {
+                    node.node("second_simbol").set("s");
+                }
+                
+                // Guardar en caso de que se hayan agregado valores predeterminados
+                messagesLoader.save(node);
+            }
+        } catch (SerializationException e) {
+            System.err.println("Error al serializar/deserializar la configuración de messages.");
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("Error al leer/escribir el archivo de configuración de messages.");
+            e.printStackTrace();
+        }
+    }
+
+    public void saveMessages() {
+        try {
+            ConfigurationNode node = messagesLoader.createNode();
+
+            // 💡 Crear la estructura correctamente sin inline mapping
+            node.node("no_permission").set("&cYou don't have permission to use this command");
+            node.node("no_console").set("&cOnly players can use this command");
+            node.node("new_version_available").set("&cA new version of VelocityUtils is available (&b{version}&c)! &e{url}");
+            node.node("alert_usage").set("&cUsage: /alert <message>");
+            node.node("configuration_reloaded").set("&aConfiguration reloaded successfully! For some changes to take effect, you may need to restart the proxy.");
+            node.node("velocityutils_usage").set("&cUsage: /velocityutils reload");
+            node.node("maintenance_not_on_list").set("&cThe server is under maintenance!");
+            node.node("maintenance_usage").set("&cUsage: /maintenance <on|off>");
+            node.node("maintenance_activated").set("&aMaintenance mode activated.");
+            node.node("maintenance_deactivated").set("&cMaintenance mode deactivated.");
+            node.node("report_usage").set("&cUsage: /report <nick> <reason>");
+            node.node("report_player_not_found").set("&cPlayer {player} not found");
+            node.node("report_sent").set("&aYour report for the player {target} was sent");
+            node.node("report_hover").set("&bClick to teleport");
+            node.node("report_cooldown").set("&cYou have {time}s before using /report again");
+            node.node("report_webhook_error").set("&cError trying to send discord report webhook");
+            node.node("helpop_usage").set("&cUsage: /helpop <reason>");
+            node.node("helpop_cooldown").set("&cYou have {time}s before using /helpop again");
+            node.node("helpop_hover").set("&bClick to teleport");
+            node.node("helpop_sent").set("&aYour help request was sent");
+            node.node("goto_usage").set("&cUsage: /goto <player>");
+            node.node("goto_player_not_found").set("&cPlayer {player} not found");
+            node.node("goto_server_not_found").set("&cServer could not be found");
+            node.node("goto_same_server").set("&cYou are currently on the same server as {player}");
+            node.node("goto_connecting").set("&aConnecting with {player} server");
+            node.node("find_usage").set("&cUsage: /find <player>");
+            node.node("find_player_not_found").set("&cPlayer {player} not found");
+            node.node("find_where").set("&b{player} &eis on &b{server}");
+            node.node("find_last_seen").set("&e{player} &cis not connected. Last seen: &e{time} ago");
+            node.node("find_less_minute").set("Less than 1 minute");
+            node.node("server_unknown").set("Unknown");
+            node.node("stafflist_no_staff").set("&cThere are no staff online");
+            node.node("stafflist_header").set("&b&lStaff List");
+            node.node("stafflist_staff").set("{prefix} &f{player} &7- &b{server}");
+            node.node("staffchat_disabled").set("&eStaff chat &cdisabled");
+            node.node("staffchat_enabled").set("&eStaff chat &aenabled");
+            node.node("staffchat_format").set("&8[&bStaffChat&8] &7{server} - {prefix} &b{player}&7: &f{message}");
+            node.node("adminchat_disabled").set("&eAdmin chat &cdisabled");
+            node.node("adminchat_enabled").set("&eAdmin chat &aenabled");
+            node.node("adminchat_format").set("&8[&dAdminChat&8] &7{server} - {prefix} &d{player}&7: &f{message}");
+            node.node("stafftime_usage").set("&cUsage: /stafftime <player> [day|week|month]");
+            node.node("stafftime_not_found").set("&cPlayer {player} not found on the database.");
+            node.node("stafftime_invalid_type").set("&cInvalid type. Use day, week or month");
+            node.node("vlist_no_players").set("&cThere are no players online.");
+            node.node("movecommands_no_servers").set("&cThere are no servers configured for this command");
+            node.node("movecommands_server_not_found").set("&cThat server is not available at this moment.");
+            node.node("movecommands_already_connected").set("&cYou are already connected to that server");
+            node.node("messagescommands_no_message_console").set("&cThe messagecommand message is empty: {command}");
+            node.node("messagescommands_no_action_or_hover_console").set("&cThe messagecommand {command} has action set to true, but no action or hover set");
+            node.node("messagescommands_error_player").set("&cThat messagecommand doesnt work as intended, contact an administrator");
+            node.node("stream_usage").set("&cUsage: /stream <url>");
+            node.node("stream_invalid_url").set("&cThats not a valid stream url");
+            node.node("stream_cooldown").set("&cYou have to wait {cooldown} before using /stream again");
+            node.node("serverexecute_usage").set("&cUsage: /serverexecute <server> <command>");
+            node.node("serverexecute_server_not_found").set("&cServer {server} not found");
+            node.node("serverexecute_sent").set("&aSent to server {server}, the command: /{command}");
+            node.node("togglesc_enabled").set("&aStaff chat messages will be shown");
+            node.node("togglesc_disabled").set("&cStaff chat messages will be hidden");
+            node.node("usage_ban").set("&cUsage: /vban <player> [reason]");
+            node.node("usage_banip").set("&cUsage: /vbanip <player> [reason]");
+            node.node("usage_unban").set("&cUsage: /vunban <player>");
+            node.node("usage_kick").set("&cUsage: /vkick <player> [reason]");
+            node.node("usage_checkban").set("&cUsage: /vcheckban <player>");
+            node.node("ban_success").set("&cYou have banned &b{player} &cfor &b{reason}");
+            node.node("banip_success").set("&cYou have ip banned &b{player} &cfor &b{reason}");
+            node.node("unban_success").set("&aYou have unbanned &b{player}");
+            node.node("kick_success").set("&cYou have kicked &b{player} &cfor &b{reason}");
+            node.node("checkban_banned").set("&c{player} is banned by {banned_by}! Reason: &b{reason}");
+            node.node("checkban_banned_ip").set("&c{player} is banned by IP ({ip_playername})! Banned by {banned_by}! Reason: &b{reason}");
+            node.node("checkban_not_banned").set("&a{player} is not banned!");
+            node.node("already_banned").set("&c{player} is already banned!");
+            node.node("not_banned").set("&c{player} is not banned!");
+            node.node("not_connected").set("&c{player} is not connected!");
+            node.node("not_ip_registered").set("&c{player} had never entered the server and doesnt have an ip registered!");
+            node.node("try_join_ban").set("&c{player} tried to join but is banned! Reason: &b{reason}");
+            node.node("try_join_banip").set("&c{player} tried to join but their IP is banned ({ip_playername})! Reason: &b{reason}");
+            node.node("ban_notify").set("&c{player} was banned by {banned_by} for {reason}");
+            node.node("banip_notify").set("&c{player} was IP banned by {banned_by} for {reason}");
+            node.node("unban_notify").set("&c{player} was unbanned by {unbanned_by}");
+            node.node("kick_notify").set("&c{player} was kicked by {kicked_by} for {reason}");
+
+            node.node("serverwhitelist_tried").set("&c{player} tried to join {server} but its whitelisted!");
+            node.node("serverwhitelist_usage").set("&cUsage: /serverwhitelist <add|remove> <server> | /serverwhitelist list");
+            node.node("serverwhitelist_server_not_found").set("&cServer {server} not found");
+            node.node("serverwhitelist_already_on_list").set("&cThat server is already with whitelist on");
+            node.node("serverwhitelist_server_added").set("&aServer {server} added to whitelist");
+            node.node("serverwhitelist_server_not_on_list").set("&cServer {server} is not on the whitelist");
+            node.node("serverwhitelist_server_removed").set("&cServer {server} removed from whitelist");
+            node.node("serverwhitelist_list_empty").set("&cThere are no servers on the whitelist");
+            node.node("serverwhitelist_list_header").set("&6Whitelisted servers:");
+            node.node("serverwhitelist_list_format").set("&7- &e{server}");
+
+
+            node.node("day_simbol").set("d");
+            node.node("hour_simbol").set("h");
+            node.node("minute_simbol").set("m");
+            node.node("second_simbol").set("s");
+
+            messagesLoader.save(node);
+        } catch (SerializationException e) {
+            System.err.println("Error al serializar la configuración de mensajes.");
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("Error al escribir el archivo de configuración de mensajes.");
+            e.printStackTrace();
+        }
+    }
+    
+    public String getMessage(String key) {
+        try {
+            ConfigurationNode node = messagesLoader.load();
+            
+            for (String part : key.split("\\.")) {
+                node = node.node(part);
+            }
+
+            return node.getString("&cMessage not found: " + key);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "&cError loading message: " + key;
+        }
+    }
 }

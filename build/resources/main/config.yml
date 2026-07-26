@@ -41,8 +41,6 @@ maintenance:
   motd:
     line1: "&cServer under maintenance!"
     line2: "<bold><gradient:red:yellow>Try again later</gradient></bold>"
-  allowed:
-    - "Rexigamer666"
 report:
   enabled: true
   teleport_on_click: true
@@ -309,93 +307,31 @@ tebex_link:
   enabled: true
   secret: "YOUR_TEBEX_SECRET_KEY"
   refresh_minutes: 30
-
-messages:
-  no_permission: "&cYou don't have permission to use this command"
-  no_console: "&cOnly players can use this command"
-  new_version_available: "&cA new version of VelocityUtils is available (&b{version}&c)! &e{url}"
-  alert_usage: "&cUsage: /alert <message>"
-  configuration_reloaded: "&aConfiguration reloaded successfully! For some changes to take effect, you may need to restart the proxy."
-  velocityutils_usage: "&cUsage: /velocityutils reload"
-  maintenance_not_on_list: "&cThe server is under maintenance!"
-  maintenance_usage: "&cUsage: /maintenance <on|off> | /maintenance <add|remove> <nick>"
-  maintenance_activated: "&aMaintenance mode activated."
-  maintenance_deactivated: "&cMaintenance mode deactivated."
-  maintenance_already_on_list: "&cThe player is already in the maintenance list."
-  maintenance_player_added: "&aPlayer {player} added to the maintenance list."
-  maintenance_player_not_on_list: "&cThe player is not in the maintenance list."
-  maintenance_player_removed: "&cPlayer {player} removed from the maintenance list."
-  report_usage: "&cUsage: /report <nick> <reason>"
-  report_player_not_found: "&cPlayer {player} not found"
-  report_sent: "&aYour report for the player {target} was sent"
-  report_hover: "&bClick to teleport"
-  report_cooldown: "&cYou have {time}s before using /report again"
-  report_webhook_error: "&cError trying to send discord report webhook"
-  helpop_usage: "&cUsage: /helpop <reason>"
-  helpop_cooldown: "&cYou have {time}s before using /helpop again"
-  helpop_hover: "&bClick to teleport"
-  helpop_sent: "&aYour help request was sent"
-  goto_usage: "&cUsage: /goto <player>"
-  goto_player_not_found: "&cPlayer {player} not found"
-  goto_server_not_found: "&cServer could not be found"
-  goto_same_server: "&cYou are currently on the same server as {player}"
-  goto_connecting: "&aConnecting with {player} server"
-  find_usage: "&cUsage: /find <player>"
-  find_player_not_found: "&cPlayer {player} not found"
-  find_where: "&b{player} &eis on &b{server}"
-  find_last_seen: "&e{player} &cis not connected. Last seen: &e{time} ago"
-  find_less_minute: "Less than 1 minute"
-  server_unknown: "Unknown"
-  stafflist_no_staff: "&cThere are no staff online"
-  stafflist_header: "&b&lStaff List"
-  stafflist_staff: "{prefix} &f{player} &7- &b{server}"
-  staffchat_disabled: "&eStaff chat &cdisabled"
-  staffchat_enabled: "&eStaff chat &aenabled"
-  staffchat_format: "&8[&bStaffChat&8] &7{server} - {prefix} &b{player}&7: &f{message}"
-  adminchat_disabled: "&eAdmin chat &cdisabled"
-  adminchat_enabled: "&eAdmin chat &aenabled"
-  adminchat_format: "&8[&dAdminChat&8] &7{server} - {prefix} &d{player}&7: &f{message}"
-  stafftime_usage: "&cUsage: /stafftime <player> [day|week|month]"
-  stafftime_not_found: "&cPlayer {player} not found on the database."
-  stafftime_invalid_type: "&cInvalid type. Use day, week or month"
-  vlist_no_players: "&cThere are no players online."
-  movecommands_no_servers: "&cThere are no servers configured for this command"
-  movecommands_server_not_found: "&cThat server is not available at this moment."
-  movecommands_already_connected: "&cYou are already connected to that server"
-  messagescommands_no_message_console: "&cThe messagecommand message is empty: {command}"
-  messagescommands_no_action_or_hover_console: "&cThe messagecommand {command} has action set to true, but no action or hover set"
-  messagescommands_error_player: "&cThat messagecommand doesnt work as intended, contact an administrator"
-  stream_usage: "&cUsage: /stream <url>"
-  stream_invalid_url: "&cThats not a valid stream url"
-  stream_cooldown: "&cYou have to wait {cooldown} before using /stream again"
-  serverexecute_usage: "&cUsage: /serverexecute <server> <command>"
-  serverexecute_server_not_found: "&cServer {server} not found"
-  serverexecute_sent: "&aSent to server {server}, the command: /{command}"
-  togglesc_enabled: "&aStaff chat messages will be shown"
-  togglesc_disabled: "&cStaff chat messages will be hidden"
-  usage_ban: "&cUsage: /vban <player> [reason]"
-  usage_banip: "&cUsage: /vbanip <player> [reason]"
-  usage_unban: "&cUsage: /vunban <player>"
-  usage_kick: "&cUsage: /vkick <player> [reason]"
-  usage_checkban: "&cUsage: /vcheckban <player>"
-  ban_success: "&cYou have banned &b{player} &cfor &b{reason}"
-  banip_success: "&cYou have ip banned &b{player} &cfor &b{reason}"
-  unban_success: "&aYou have unbanned &b{player}"
-  kick_success: "&cYou have kicked &b{player} &cfor &b{reason}"
-  checkban_banned: "&c{player} is banned by {banned_by}! Reason: &b{reason}"
-  checkban_banned_ip: "&c{player} is banned by IP ({ip_playername})! Banned by {banned_by}! Reason: &b{reason}"
-  checkban_not_banned: "&a{player} is not banned!"
-  already_banned: "&c{player} is already banned!"
-  not_banned: "&c{player} is not banned!"
-  not_connected: "&c{player} is not connected!"
-  not_ip_registered: "&c{player} had never entered the server and doesnt have an ip registered!"
-  try_join_ban: "&c{player} tried to join but is banned! Reason: &b{reason}"
-  try_join_banip: "&c{player} tried to join but their IP is banned ({ip_playername})! Reason: &b{reason}"
-  ban_notify: "&c{player} was banned by {banned_by} for {reason}"
-  banip_notify: "&c{player} was IP banned by {banned_by} for {reason}"
-  unban_notify: "&c{player} was unbanned by {unbanned_by}"
-  kick_notify: "&c{player} was kicked by {kicked_by} for {reason}"
-  day_simbol: "d"
-  hour_simbol: "h"
-  minute_simbol: "m"
-  second_simbol: "s"
+serverwhitelist:
+  enabled: true
+  active_servers:
+    - "whitelisted_server1"
+    - "whitelisted_server2"
+  sound: "ENTITY_VILLAGER_NO"
+  message:
+    - "&f-----------------------------"
+    - "&cThis server is &lwhitelisted&c!"
+    - "&fPlease wait until you are allowed to join."
+    - "&f-----------------------------"
+  title:
+    enabled: true
+    title: "&cServer Whitelisted"
+    subtitle: "&7Wait until you are allowed to join."
+    durations:
+      fade_in: 20
+      stay: 60
+      fade_out: 20
+  actionbar:
+    enabled: true
+    message: "&cServer Whitelisted"
+  bossbar:
+    enabled: true
+    message: "&cServer Whitelisted"
+    color: RED
+    overlay: PROGRESS
+    duration: 5

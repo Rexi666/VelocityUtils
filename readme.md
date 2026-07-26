@@ -37,11 +37,12 @@
 - `/velocityutils reload` | `/vu reload` - Reload the config
 - `/stafftime <jugador> [day|week|month]` - See how long a staff member has been online on the network.
 - `/serverexecute <server> <command>` - Execute a command on a specific server from the proxy console.
+- `/serverwhitelist` 
+  - `<add/remove> <server>` - Manage the serverwhitelist servers
+  - `<list>` - List the serverwhitelist servers
 #### Staff commands
 - `/alert <message>` - Send a broadcast message to all the server
-- `/maintenance`
-  - `<on/off>` - Activate/Deactivate the maintenance mode
-  - `<add/remove> <nick>` - Add/Remove someone of the maintenance list exception
+- `/maintenance <on/off>` - Activate/Deactivate the maintenance mode
 - `/find <player>` - Tells you where a player is
 - `/goto <player>` - Sends you to the server where the player is
 - `/stafflist` - Shows the staff list of your network
@@ -66,6 +67,9 @@
 - `velocityutils.stafftime.use` - access to /stafftime
 - `velocityutils.staffjoin.notify` - permission to be notified when a staff joins/leaves/changes server
 - `velocityutils.serverexecute` - access to /serverexecute
+- `velocityutils.serverwhitelist.bypass` - permission to bypass the server whitelist
+- `velocityutils.serverwhitelist.command` - permission to use the /serverwhitelist command
+- `velocityutils.maintenance.bypass` - permission to bypass the maintenance mode
 #### Staff permissions
 - `velocityutils.alert` - access to /alert
 - `velocityutils.maintenance` - access to /maintenance

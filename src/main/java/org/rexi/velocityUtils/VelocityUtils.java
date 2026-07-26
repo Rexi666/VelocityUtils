@@ -1,6 +1,7 @@
 package org.rexi.velocityUtils;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -124,6 +125,7 @@ public class VelocityUtils {
         server.getChannelRegistrar().register(MinecraftChannelIdentifier.from("minecraft:brand"));
 
         configManager.loadConfig();
+        configManager.loadMessages();
 
         createTables();
 
@@ -145,6 +147,7 @@ public class VelocityUtils {
         server.getEventManager().register(this, new ChatListener(this));
         server.getEventManager().register(this, new StaffConnectionListener(this, staffSessions, configManager, server, luckPerms, webhook, new DateUtils(configManager)));
         server.getEventManager().register(this, brandListener);
+        server.getEventManager().register(this, new ServerWhitelistListener(configManager, server, this));
 
         server.getEventManager().register(this, new PluginMessageListenerStaffChat(this, server, configManager, webhook, luckPerms));
         server.getEventManager().register(this, new PluginMessageListenerAdminChat(this, server, configManager, webhook, luckPerms));
@@ -324,6 +327,11 @@ public class VelocityUtils {
                     new CheckBanCommand(configManager, server, this)
             );
         }
+        if (configManager.getBoolean("serverwhitelist.enabled")) {
+            server.getCommandManager().register(
+                    server.getCommandManager().metaBuilder("serverwhitelist").build(),
+                    new ServerWhitelistCommand(configManager, server));
+        }
     }
 
     @Subscribe
@@ -431,14 +439,14 @@ public class VelocityUtils {
                 return;
             }
         }
+    }
 
-        // Comprobar mantenimiento
+    @Subscribe
+    public void onLogin(LoginEvent event) {
         if (configManager.getBoolean("maintenance.active")) {
-            List<String> allowedPlayers = configManager.getStringList("maintenance.allowed");
-            String username = event.getUsername();
-            if (!allowedPlayers.contains(username)) {
+            if (!event.getPlayer().hasPermission("velocityutils.maintenance.bypass")) {
                 String under_maintenance = configManager.getMessage("maintenance_not_on_list");
-                event.setResult(PreLoginEvent.PreLoginComponentResult.denied(LegacyComponentSerializer.legacyAmpersand().deserialize(under_maintenance)));
+                event.setResult(LoginEvent.ComponentResult.denied(LegacyComponentSerializer.legacyAmpersand().deserialize(under_maintenance)));
             }
         }
     }

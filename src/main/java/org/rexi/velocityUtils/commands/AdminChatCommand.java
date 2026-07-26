@@ -38,7 +38,6 @@ public class AdminChatCommand implements SimpleCommand {
     @Override
     public void execute(Invocation invocation) {
         CommandSource source = invocation.source();
-        configManager.loadConfig();
 
         if (!(source instanceof Player player)) {
             source.sendMessage(Component.text("This command can only be used by players.").color(NamedTextColor.RED));

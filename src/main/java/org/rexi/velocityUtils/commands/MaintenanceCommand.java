@@ -42,10 +42,9 @@ public class MaintenanceCommand implements SimpleCommand {
             configManager.setBoolean("maintenance.active", true);
 
             List<Player> players = server.getAllPlayers().stream().toList();
-            List<String> allowedPlayers = configManager.getStringList("maintenance.allowed");
 
             for (Player player : players) {
-                if (!allowedPlayers.contains(player.getUsername())) {
+                if (!player.hasPermission("velocityutils.maintenance.bypass")) {
                     String under_maintenance = configManager.getMessage("maintenance_not_on_list");
                     player.disconnect(LegacyComponentSerializer.legacyAmpersand().deserialize(under_maintenance));
                 }
@@ -61,36 +60,6 @@ public class MaintenanceCommand implements SimpleCommand {
             String maintenance_deactivated = configManager.getMessage("maintenance_deactivated");
             source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(maintenance_deactivated));
         }
-        // Comando: /maintenance add <nick>
-        else if (args[0].equalsIgnoreCase("add") && args.length == 2) {
-            String nick = args[1];
-            List<String> allowedPlayers = configManager.getStringList("maintenance.allowed");
-            if (allowedPlayers.contains(nick)) {
-                String maintenance_already_on_list = configManager.getMessage("maintenance_already_on_list");
-                source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(maintenance_already_on_list));
-                return;
-            }
-            allowedPlayers.add(nick);
-            configManager.setList("maintenance.allowed",allowedPlayers);
-            String maintenance_player_added = configManager.getMessage("maintenance_player_added");
-            maintenance_player_added = maintenance_player_added.replace("{player}", nick);
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(maintenance_player_added));
-        }
-        // Comando: /maintenance remove <nick>
-        else if (args[0].equalsIgnoreCase("remove") && args.length == 2) {
-            String nick = args[1];
-            List<String> allowedPlayers = configManager.getStringList("maintenance.allowed");
-            if (!allowedPlayers.contains(nick)) {
-                String maintenance_player_not_on_list = configManager.getMessage("maintenance_player_not_on_list");
-                source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(maintenance_player_not_on_list));
-                return;
-            }
-            allowedPlayers.remove(nick);
-            configManager.setList("maintenance.allowed",allowedPlayers);
-            String maintenance_player_removed = configManager.getMessage("maintenance_player_removed");
-            maintenance_player_removed = maintenance_player_removed.replace("{player}", nick);
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(maintenance_player_removed));
-        }
         // Comando no reconocido
         else {
             String maintenance_usage = configManager.getMessage("maintenance_usage");
@@ -105,12 +74,12 @@ public class MaintenanceCommand implements SimpleCommand {
         List<String> suggestions = new ArrayList<>();
 
         if (args.length == 0) {
-            return List.of("on", "off", "add", "remove");
+            return List.of("on", "off");
         }
 
         if (args.length == 1) {
             String input = args[0].toLowerCase();
-            List<String> options = List.of("on", "off", "add", "remove");
+            List<String> options = List.of("on", "off");
 
             for (String option : options) {
                 if (option.startsWith(input)) {
@@ -118,28 +87,6 @@ public class MaintenanceCommand implements SimpleCommand {
                 }
             }
             return suggestions;
-        } else if (args.length == 2) {
-            String subCommand = args[0].toLowerCase();
-            String input = args[1].toLowerCase();
-
-            if (subCommand.equals("add")) {
-                // Sugerir jugadores que NO están en la lista de permitidos (podrías cambiar esto según convenga)
-                for (Player player : server.getAllPlayers()) {
-                    String name = player.getUsername();
-                    if (!allowedPlayers.contains(name) &&
-                            (name.toLowerCase().startsWith(input))) {
-                        suggestions.add(name);
-                    }
-                }
-            } else if (subCommand.equals("remove")) {
-                // Sugerir jugadores que SÍ están en la lista de permitidos
-                for (String name : allowedPlayers) {
-                    if (name.toLowerCase().startsWith(input)) {
-                        suggestions.add(name);
-                    }
-                }
-                return suggestions;
-            }
         }
 
         return List.of();
