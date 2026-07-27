@@ -13,23 +13,22 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
 import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.utils.DefaultFontInfo;
+import org.rexi.velocityUtils.VelocityUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class StreamCommand implements SimpleCommand {
 
     private final ConfigManager configManager;
     private final ProxyServer server;
     private final LuckPerms luckPerms;
+    private final VelocityUtils plugin;
 
-    public StreamCommand(ConfigManager configManager, ProxyServer server, LuckPerms luckPerms) {
+    public StreamCommand(ConfigManager configManager, ProxyServer server, LuckPerms luckPerms, VelocityUtils plugin) {
         this.configManager = configManager;
         this.server = server;
         this.luckPerms = luckPerms;
+        this.plugin = plugin;
     }
 
     private final Map<UUID, Long> streamCooldowns = new HashMap<>();
@@ -111,68 +110,61 @@ public class StreamCommand implements SimpleCommand {
 
     private void sendMessage(Player player, String url) {
         String rangoRaw = obtenerRango(player);
-        Component prefix = deserializePrefix(rangoRaw);
-        String semiformated = configManager.getString("stream.message")
-                .replace("{player}", player.getUsername())
-                .replace("{url}", url);
 
-        List<String> messageList = configManager.getStringList("stream.messagelist");
-        boolean list = false;
-        if (!messageList.isEmpty()) {
-            list = true;
-        }
-        Component semibasemessage = legacy(semiformated);
+        Component rankComponent = deserializePrefix(rangoRaw);
 
-        Component baseMessage = semibasemessage.replaceText(TextReplacementConfig.builder()
-                .matchLiteral("{rank}")
-                .replacement(prefix)
-                .build());
+        String rankPlain = LegacyComponentSerializer.legacySection().serialize(rankComponent);
+        rankPlain = MiniMessage.miniMessage().stripTags(rankPlain);
 
-        Component finalMessage;
+        List<String> messageLines = configManager.getStringList("stream.message");
         boolean hoverEnabled = configManager.getBoolean("stream.hover_enabled");
-        if (hoverEnabled) {
-            String hover = configManager.getString("stream.hover");
-            finalMessage = baseMessage
-                    .clickEvent(ClickEvent.openUrl(url))
-                    .hoverEvent(HoverEvent.showText(
-                            legacy(hover)));
-        } else {
-            finalMessage = baseMessage.clickEvent(ClickEvent.openUrl(url));
-        }
 
-        if (list) {
-            String hover = configManager.getString("stream.hover");
-            for (String line : messageList) {
-                line = line
-                        .replace("{player}", player.getUsername())
-                        .replace("{url}", url);
-                if (line.startsWith("[center]")) {
-                    line = line.replace("[center]", "");
-                    line = getCenteredMessage(line);
-                }
-                Component semiLine = legacy(line);
-                Component baseLine = semiLine.replaceText(TextReplacementConfig.builder()
-                        .matchLiteral("{rank}")
-                        .replacement(prefix)
-                        .build());
+        Component hoverComponent = hoverEnabled
+                ? legacy(configManager.getString("stream.hover"))
+                : null;
 
-                Component finalLine;
-                if (hoverEnabled) {
-                    finalLine = baseLine
-                            .clickEvent(ClickEvent.openUrl(url))
-                            .hoverEvent(HoverEvent.showText(
-                                    legacy(hover)));
-                } else {
-                    finalLine = baseLine.clickEvent(ClickEvent.openUrl(url));
-                }
-                for (Player onlinePlayer : server.getAllPlayers()) {
-                    onlinePlayer.sendMessage(finalLine);
-                }
+        Collection<Player> players = server.getAllPlayers();
+
+        for (String line : messageLines) {
+            line = line.replace("{player}", player.getUsername())
+                    .replace("{url}", url)
+                    .replace("{rank}", rankPlain);
+
+            if (line.startsWith("{center}")) {
+                line = line.replaceFirst("^\\{center\\}\\s*", "");
+                line = plugin.getCenteredMessage(line);
             }
-        } else {
-            for (Player onlinePlayer : server.getAllPlayers()) {
+
+            Component base = legacy(line);
+
+            base = base.replaceText(TextReplacementConfig.builder()
+                    .matchLiteral(rankPlain)
+                    .replacement(rankComponent)
+                    .build());
+
+            Component finalMessage;
+
+            if (hoverEnabled) {
+                finalMessage = base
+                        .clickEvent(ClickEvent.openUrl(url))
+                        .hoverEvent(HoverEvent.showText(hoverComponent));
+            } else {
+                finalMessage = base.clickEvent(ClickEvent.openUrl(url));
+            }
+
+            for (Player onlinePlayer : players) {
                 onlinePlayer.sendMessage(finalMessage);
             }
+        }
+
+        // Console
+        for (String line : messageLines) {
+            line = line.replace("{player}", player.getUsername())
+                    .replace("{url}", url)
+                    .replace("{rank}", rankPlain);
+            line = line.replaceFirst("^\\{center\\}\\s*", "");
+            server.getConsoleCommandSource().sendMessage(LegacyComponentSerializer.legacyAmpersand()
+                    .deserialize(line));
         }
     }
 
@@ -214,41 +206,6 @@ public class StreamCommand implements SimpleCommand {
         }
 
         // Si no, asumimos que es con códigos &
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
-    }
-
-    public static String getCenteredMessage(String message){
-        int CENTER_PX = 154;
-        int messagePxSize = 0;
-        boolean previousCode = false;
-        boolean isBold = false;
-
-        for(char c : message.toCharArray()){
-            if(c == '§'){
-                previousCode = true;
-                continue;
-            }else if(previousCode == true){
-                previousCode = false;
-                if(c == 'l' || c == 'L'){
-                    isBold = true;
-                    continue;
-                } else isBold = false;
-            }else{
-                DefaultFontInfo dFI = DefaultFontInfo.getDefaultFontInfo(c);
-                messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
-                messagePxSize++;
-            }
-        }
-
-        int halvedMessageSize = messagePxSize / 2;
-        int toCompensate = CENTER_PX - halvedMessageSize;
-        int spaceLength = DefaultFontInfo.SPACE.getLength() + 1;
-        int compensated = 0;
-        StringBuilder sb = new StringBuilder();
-        while(compensated < toCompensate){
-            sb.append(" ");
-            compensated += spaceLength;
-        }
-        return (sb.toString() + message);
+        return LEGACY_HEX_SERIALIZER.deserialize(input);
     }
 }

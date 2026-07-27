@@ -113,9 +113,15 @@ public class AlertCommand implements SimpleCommand {
 
             // Chat
             for (String line : alertLines) {
-                Component component = LegacyComponentSerializer.legacyAmpersand()
-                        .deserialize(line.replace("{message}", message));
-                player.sendMessage(component);
+                line = line.replace("{message}", message);
+
+                if (line.startsWith("{center}")) {
+                    line = line.replaceFirst("^\\{center\\}\\s*", "");
+                    line = plugin.getCenteredMessage(line);
+                }
+
+                player.sendMessage(LegacyComponentSerializer.legacyAmpersand()
+                        .deserialize(line));
             }
 
             // Title
@@ -154,9 +160,11 @@ public class AlertCommand implements SimpleCommand {
 
         // Consola
         for (String line : alertLines) {
-            Component component = LegacyComponentSerializer.legacyAmpersand()
-                    .deserialize(line.replace("{message}", message));
-            server.getConsoleCommandSource().sendMessage(component);
+            line = line.replace("{message}", message);
+            line = line.replaceFirst("^\\{center\\}\\s*", "");
+
+            server.getConsoleCommandSource().sendMessage(LegacyComponentSerializer.legacyAmpersand()
+                    .deserialize(line));
         }
     }
 

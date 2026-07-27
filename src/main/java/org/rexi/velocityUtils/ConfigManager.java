@@ -98,9 +98,9 @@ public class ConfigManager {
                                 "&f-----------------------------"));
                     } else {
                         node.node("alert", "message").setList(String.class, List.of(
-                                "&f-----------------------------",
-                                "&7[&b&lSERVER&7] &r{message}",
-                                "&f-----------------------------"));
+                                "{center} &f-----------------------------",
+                                "{center} &7[&b&lSERVER&7] &r{message}",
+                                "{center} &f-----------------------------"));
                     }
                 }
 
@@ -178,13 +178,13 @@ public class ConfigManager {
                 }
                 if (node.node("report", "message").empty()) {
                     node.node("report", "message").setList(String.class, List.of(
-                            "&f-----------------------------",
-                            "&eNew Report from {player}!",
-                            "&fReported: &c{reported}",
-                            "&fReason: &b{reason}",
-                            "&fServer: &b{server}",
-                            "&eClick to teleport",
-                            "&f-----------------------------"));
+                            "{center} &f-----------------------------",
+                            "{center} &eNew Report from {player}!",
+                            "{center} &fReported: &c{reported}",
+                            "{center} &fReason: &b{reason}",
+                            "{center} &fServer: &b{server}",
+                            "{center} &eClick to teleport",
+                            "{center} &f-----------------------------"));
                 }
                 if (node.node("report", "discord_hook", "enabled").empty()) {
                     node.node("report", "discord_hook", "enabled").set(false);
@@ -221,12 +221,12 @@ public class ConfigManager {
                 }
                 if (node.node("helpop", "message").empty()) {
                     node.node("helpop", "message").setList(String.class, List.of(
-                            "&f-----------------------------",
-                            "&eNew Help Request from {player}!",
-                            "&fReason: &b{reason}",
-                            "&fServer: &b{server}",
-                            "&eClick to teleport",
-                            "&f-----------------------------"));
+                            "{center} &f-----------------------------",
+                            "{center} &eNew Help Request from {player}!",
+                            "{center} &fReason: &b{reason}",
+                            "{center} &fServer: &b{server}",
+                            "{center} &eClick to teleport",
+                            "{center} &f-----------------------------"));
                 }
                 if (node.node("helpop", "discord_hook", "enabled").empty()) {
                     node.node("helpop", "discord_hook", "enabled").set(false);
@@ -402,19 +402,19 @@ public class ConfigManager {
                 }
                 if (node.node("stafftime", "command", "no_type").empty()) {
                     node.node("stafftime", "command", "no_type").setList(String.class, List.of(
-                            "&f-----------------------------",
-                            "&eStaff Time from {player}",
-                            "&fToday: &b{day}",
-                            "&fWeek: &b{week}",
-                            "&fMonth: &b{month}",
-                            "&f-----------------------------"));
+                            "{center} &f-----------------------------",
+                            "{center} &eStaff Time from {player}",
+                            "{center} &fToday: &b{day}",
+                            "{center} &fWeek: &b{week}",
+                            "{center} &fMonth: &b{month}",
+                            "{center} &f-----------------------------"));
                 }
                 if (node.node("stafftime", "command", "type").empty()) {
                     node.node("stafftime", "command", "type").setList(String.class, List.of(
-                            "&f-----------------------------",
-                            "&eStaff Time from {player} ({type})",
-                            "&f{type}: &b{time}",
-                            "&f-----------------------------"));
+                            "{center} &f-----------------------------",
+                            "{center} &eStaff Time from {player} ({type})",
+                            "{center} &f{type}: &b{time}",
+                            "{center} &f-----------------------------"));
                 }
                 if (node.node("stafftime", "command", "day").empty()) {
                     node.node("stafftime", "command", "day").set("Day");
@@ -434,23 +434,23 @@ public class ConfigManager {
                 }
                 if (node.node("vlist", "server", "message").empty()) {
                     node.node("vlist", "server", "message").setList(String.class, List.of(
-                            "&f-----------------------------",
-                            "&eThere are {count} players online",
+                            "{center} &f-----------------------------",
+                            "{center} &eThere are {count} players online",
                             "{servercount}",
-                            "&f-----------------------------"));
+                            "{center} &f-----------------------------"));
                 }
                 if (node.node("vlist", "server", "servercount").empty()) {
-                    node.node("vlist", "server", "servercount").set("&7[&b{server} &7(&b{count}&7)] - &f{players}");
+                    node.node("vlist", "server", "servercount").set("{center} &7[&b{server} &7(&b{count}&7)] - &f{players}");
                 }
                 if (node.node("vlist", "rank", "message").empty()) {
                     node.node("vlist", "rank", "message").setList(String.class, List.of(
-                            "&f-----------------------------",
-                            "&eThere are {count} players online",
+                            "{center} &f-----------------------------",
+                            "{center} &eThere are {count} players online",
                             "{rankcount}",
-                            "&f-----------------------------"));
+                            "{center} &f-----------------------------"));
                 }
                 if (node.node("vlist", "rank", "rankcount").empty()) {
-                    node.node("vlist", "rank", "rankcount").set("&7[&b{rank} &7(&b{count}&7)] - &f{players}");
+                    node.node("vlist", "rank", "rankcount").set("{center} &7[&b{rank} &7(&b{count}&7)] - &f{players}");
                 }
                 if (node.node("movecommands").empty()) {
                     node.node("movecommands", "enabled").set(true);
@@ -466,10 +466,10 @@ public class ConfigManager {
                 if (node.node("messagescommands").empty()) {
                     node.node("messagescommands", "enabled").set(true);
                     node.node("messagescommands", "discord", "message").setList(String.class, List.of(
-                            "&f-----------------------------",
-                            "&fJoin ur &9discord",
-                            "&9https://discord.com/invite/a3zkKtrjTr",
-                            "&f-----------------------------"));
+                            "{center} &f-----------------------------",
+                            "{center} &fJoin ur &9discord",
+                            "{center} &9https://discord.com/invite/a3zkKtrjTr",
+                            "{center} &f-----------------------------"));
                     node.node("messagescommands", "discord", "click_action").set("OPEN_URL");
                     node.node("messagescommands", "discord", "action").set("https://discord.com/invite/a3zkKtrjTr");
                     node.node("messagescommands", "discord", "hover").set("&9Click to join ur discord");
@@ -478,7 +478,7 @@ public class ConfigManager {
                     node.node("messagescommands", "newgamemode", "message").setList(String.class, List.of(
                             "&f-----------------------------",
                             "&6New Game Mode released",
-                            "&#c3d600&lJ&#c6c900&lO&#cabd00&lI&#cdb000&lN &#d1a400&lT&#d49700&lH&#d78a00&lE&#db7e00&lN&#de7100&lE&#e26500&lW &#e55800&lS&#e94c00&lU&#ec3f00&lR&#ef3200&lV&#f32600&lI&#f61900&lV&#fa0d00&lA&#fd0000&lL",
+                            "&#c3d600&lJ&#c6c900&lO&#cabd00&lI&#cdb000&lN &#d1a400&lT&#d49700&lH&#d78a00&lE &#db7e00&lN&#de7100&lE&#e26500&lW &#e55800&lS&#e94c00&lU&#ec3f00&lR&#ef3200&lV&#f32600&lI&#f61900&lV&#fa0d00&lA&#fd0000&lL",
                             "&f-----------------------------"));
                     node.node("messagescommands", "newgamemode", "click_action").set("RUN_COMMAND");
                     node.node("messagescommands", "newgamemode", "action").set("/survival");
@@ -519,9 +519,20 @@ public class ConfigManager {
                 if (node.node("stream", "enabled").empty()) {
                     node.node("stream", "enabled").set(true);
                 }
+
                 if (node.node("stream", "message").empty()) {
-                    node.node("stream", "message").set("&7[&d&lSTREAM&7] {rank} &b{player} &fis now streaming &b{url}");
+                    node.node("stream", "message").set(List.of(
+                            "{center} &f-----------------------------",
+                            "{center} {rank} &b{player} &fis now &6streaming",
+                            "{center} &b{url}",
+                            "{center} &f-----------------------------"
+                    ));
+                } else if (!node.node("stream", "message").isList()) {
+                    node.node("stream", "message").set(List.of(
+                            node.node("stream", "message").getString("")
+                    ));
                 }
+
                 if (node.node("stream", "hover_enabled").empty()) {
                     node.node("stream", "hover_enabled").set(true);
                 }
@@ -608,22 +619,23 @@ public class ConfigManager {
                 if (node.node("regular_alerts", "sound").empty()) {
                     node.node("regular_alerts", "sound").set("ENTITY_EXPERIENCE_ORB_PICKUP");
                 }
+
                 if (node.node("regular_alerts", "alerts").empty()) {
-                    node.node("regular_alerts", "alerts", "discord", "message").set(String.class, """
-      &f-----------------------------
-      &9Join our &bDiscord&9 for news and updates!
-      &bhttps://discord.myserver.com
-      &f-----------------------------
-      """);
+                    node.node("regular_alerts", "alerts", "discord", "message").set(List.of(
+                            "{center} &f-----------------------------",
+                            "{center} &9Join our &bDiscord&9 for news and updates!",
+                            "{center} &bhttps://discord.myserver.com",
+                            "{center} &f-----------------------------"
+                    ));
                     node.node("regular_alerts", "alerts", "discord", "click_action").set("OPEN_URL");
                     node.node("regular_alerts", "alerts", "discord", "action").set("https://discord.myserver.com");
                     node.node("regular_alerts", "alerts", "discord", "hover").set("&bClick to join our Discord");
-                    node.node("regular_alerts", "alerts", "store", "message").set(String.class, """
-      &f-----------------------------
-      &9Visit our &bStore&9 for ranks and perks!
-      &bhttps://store.myserver.com
-      &f-----------------------------
-      """);
+                    node.node("regular_alerts", "alerts", "store", "message").set(List.of(
+                            "&f-----------------------------",
+                            "&9Visit our &bStore&9 for ranks and perks!",
+                            "{center} &bhttps://store.myserver.com",
+                            "&f-----------------------------"
+                    ));
                     node.node("regular_alerts", "alerts", "store", "click_action").set("OPEN_URL");
                     node.node("regular_alerts", "alerts", "store", "action").set("https://store.myserver.com");
                     node.node("regular_alerts", "alerts", "store", "hover").set("&bClick to open our store");
@@ -643,21 +655,21 @@ public class ConfigManager {
                     node.node("serverwhitelist", "enabled").set(true);
                 }
                 if (node.node("serverwhitelist", "active_servers").empty()) {
-                    node.node("serverwhitelist", "active_servers").set(String.class, """
-      whitelisted_server1
-      whitelisted_server2
-      """);
+                    node.node("serverwhitelist", "active_servers").set(List.of(
+                            "whitelisted_server1",
+                            "whitelisted_server2"
+                    ));
                 }
                 if (node.node("serverwhitelist", "sound").empty()) {
                     node.node("serverwhitelist", "sound").set("ENTITY_VILLAGER_NO");
                 }
                 if (node.node("serverwhitelist", "message").empty()) {
-                    node.node("serverwhitelist", "message").set(String.class, """
-      &f-----------------------------
-      &cThis server is &lwhitelisted&c!
-      &fPlease wait until you are allowed to join.
-      &f-----------------------------
-      """);
+                    node.node("serverwhitelist", "message").set(List.of(
+                            "{center} &f-----------------------------",
+                            "{center} &cThis server is &lwhitelisted&c!",
+                            "{center} &fPlease wait until you are allowed to join.",
+                            "{center} &f-----------------------------"
+                    ));
                 }
                 if (node.node("serverwhitelist", "title", "enabled").empty()) {
                     node.node("serverwhitelist", "title", "enabled").set(true);
@@ -727,9 +739,9 @@ public class ConfigManager {
             node.node("alert", "enabled").set(true);
             node.node("alert", "sound").set("BLOCK_NOTE_BLOCK_PLING");
             node.node("alert", "message").setList(String.class, List.of(
-                    "&f-----------------------------",
-                    "&7[&b&lSERVER&7] &r{message}",
-                    "&f-----------------------------"));
+                    "{center} &f-----------------------------",
+                    "{center} &7[&b&lSERVER&7] &r{message}",
+                    "{center} &f-----------------------------"));
             node.node("alert", "title", "enabled").set(true);
             node.node("alert", "title", "title").set("&7[&b&lSERVER&7]");
             node.node("alert", "title", "subtitle").set("{message}");
@@ -758,13 +770,13 @@ public class ConfigManager {
             node.node("report", "enabled").set(true);
             node.node("report", "teleport_on_click").set(true);
             node.node("report", "message").setList(String.class, List.of(
-                    "&f-----------------------------",
-                    "&eNew Report from {player}!",
-                    "&fReported: &c{reported}",
-                    "&fReason: &b{reason}",
-                    "&fServer: &b{server}",
-                    "&eClick to teleport",
-                    "&f-----------------------------"));
+                    "{center} &f-----------------------------",
+                    "{center} &eNew Report from {player}!",
+                    "{center} &fReported: &c{reported}",
+                    "{center} &fReason: &b{reason}",
+                    "{center} &fServer: &b{server}",
+                    "{center} &eClick to teleport",
+                    "{center} &f-----------------------------"));
             node.node("report", "discord_hook", "enabled").set(false);
             node.node("report", "discord_hook", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");
             node.node("report", "discord_hook", "avatar").set("https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968");
@@ -781,12 +793,12 @@ public class ConfigManager {
             node.node("helpop", "enabled").set(true);
             node.node("helpop", "teleport_on_click").set(true);
             node.node("helpop", "message").setList(String.class, List.of(
-                    "&f-----------------------------",
-                    "&eNew Help Request from {player}!",
-                    "&fReason: &b{reason}",
-                    "&fServer: &b{server}",
-                    "&eClick to teleport",
-                    "&f-----------------------------"));
+                    "{center} &f-----------------------------",
+                    "{center} &eNew Help Request from {player}!",
+                    "{center} &fReason: &b{reason}",
+                    "{center} &fServer: &b{server}",
+                    "{center} &eClick to teleport",
+                    "{center} &f-----------------------------"));
             node.node("helpop", "discord_hook", "enabled").set(false);
             node.node("helpop", "discord_hook", "url").set("https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy");
             node.node("helpop", "discord_hook", "avatar").set("https://www.spigotmc.org/data/resource_icons/123/123517.jpg?1742847968");
@@ -864,17 +876,17 @@ public class ConfigManager {
             node.node("stafftime", "discord_hook", "leave", "serverstime").set("- {server} - {time}");
             node.node("stafftime", "command", "enabled").set(true);
             node.node("stafftime", "command", "no_type").setList(String.class, List.of(
-                    "&f-----------------------------",
-                    "&eStaff Time from {player}",
-                    "&fToday: &b{day}",
-                    "&fWeek: &b{week}",
-                    "&fMonth: &b{month}",
-                    "&f-----------------------------"));
+                    "{center} &f-----------------------------",
+                    "{center} &eStaff Time from {player}",
+                    "{center} &fToday: &b{day}",
+                    "{center} &fWeek: &b{week}",
+                    "{center} &fMonth: &b{month}",
+                    "{center} &f-----------------------------"));
             node.node("stafftime", "command", "type").setList(String.class, List.of(
-                    "&f-----------------------------",
-                    "&eStaff Time from {player} ({type})",
-                    "&f{type}: &b{time}",
-                    "&f-----------------------------"));
+                    "{center} &f-----------------------------",
+                    "{center} &eStaff Time from {player} ({type})",
+                    "{center} &f{type}: &b{time}",
+                    "{center} &f-----------------------------"));
             node.node("stafftime", "command", "day").set("Day");
             node.node("stafftime", "command", "week").set("Week");
             node.node("stafftime", "command", "month").set("Month");
@@ -882,17 +894,17 @@ public class ConfigManager {
             node.node("vlist", "enabled").set(true);
             node.node("vlist", "default_mode").set("server");
             node.node("vlist", "server", "message").setList(String.class, List.of(
-                    "&f-----------------------------",
-                    "&eThere are {count} players online",
+                    "{center} &f-----------------------------",
+                    "{center} &eThere are {count} players online",
                     "{servercount}",
-                    "&f-----------------------------"));
-            node.node("vlist", "server", "servercount").set("&7[&b{server} &7(&b{count}&7)] - &f{players}");
+                    "{center} &f-----------------------------"));
+            node.node("vlist", "server", "servercount").set("{center} &7[&b{server} &7(&b{count}&7)] - &f{players}");
             node.node("vlist", "rank", "message").setList(String.class, List.of(
-                    "&f-----------------------------",
-                    "&eThere are {count} players online",
+                    "{center} &f-----------------------------",
+                    "{center} &eThere are {count} players online",
                     "{rankcount}",
-                    "&f-----------------------------"));
-            node.node("vlist", "rank", "rankcount").set("&7[&b{rank} &7(&b{count}&7)] - &f{players}");
+                    "{center} &f-----------------------------"));
+            node.node("vlist", "rank", "rankcount").set("{center} &7[&b{rank} &7(&b{count}&7)] - &f{players}");
 
             node.node("movecommands", "enabled").set(true);
             node.node("movecommands", "lobby", "server").setList(String.class, List.of(
@@ -905,10 +917,10 @@ public class ConfigManager {
 
             node.node("messagescommands", "enabled").set(true);
             node.node("messagescommands", "discord", "message").setList(String.class, List.of(
-                    "&f-----------------------------",
-                    "&fJoin ur &9discord",
-                    "&9https://discord.com/invite/a3zkKtrjTr",
-                    "&f-----------------------------"));
+                    "{center} &f-----------------------------",
+                    "{center} &fJoin ur &9discord",
+                    "{center} &9https://discord.com/invite/a3zkKtrjTr",
+                    "{center} &f-----------------------------"));
             node.node("messagescommands", "discord", "click_action").set("OPEN_URL");
             node.node("messagescommands", "discord", "action").set("https://discord.com/invite/a3zkKtrjTr");
             node.node("messagescommands", "discord", "hover").set("&9Click to join ur discord");
@@ -916,7 +928,7 @@ public class ConfigManager {
             node.node("messagescommands", "newgamemode", "message").setList(String.class, List.of(
                     "&f-----------------------------",
                     "&6New Game Mode released",
-                    "&#c3d600&lJ&#c6c900&lO&#cabd00&lI&#cdb000&lN &#d1a400&lT&#d49700&lH&#d78a00&lE&#db7e00&lN&#de7100&lE&#e26500&lW &#e55800&lS&#e94c00&lU&#ec3f00&lR&#ef3200&lV&#f32600&lI&#f61900&lV&#fa0d00&lA&#fd0000&lL",
+                    "&#c3d600&lJ&#c6c900&lO&#cabd00&lI&#cdb000&lN &#d1a400&lT&#d49700&lH&#d78a00&lE &#db7e00&lN&#de7100&lE&#e26500&lW &#e55800&lS&#e94c00&lU&#ec3f00&lR&#ef3200&lV&#f32600&lI&#f61900&lV&#fa0d00&lA&#fd0000&lL",
                     "&f-----------------------------"));
             node.node("messagescommands", "newgamemode", "click_action").set("RUN_COMMAND");
             node.node("messagescommands", "newgamemode", "action").set("/survival");
@@ -939,7 +951,12 @@ public class ConfigManager {
             node.node("staffjoin", "change_message").set("&b&lStaff - &e{rank} {player} has changed the server to &b{server}");
 
             node.node("stream", "enabled").set(true);
-            node.node("stream", "message").set("&7[&d&lSTREAM&7] {rank} &b{player} &fis now streaming &b{url}");
+            node.node("stream", "message").set(List.of(
+                    "{center} &f-----------------------------",
+                    "{center} {rank} &b{player} &fis now &6streaming",
+                    "{center} &b{url}",
+                    "{center} &f-----------------------------"
+            ));
             node.node("stream", "hover_enabled").set(true);
             node.node("stream", "hover").set("&bClick to watch the stream");
             node.node("stream", "cooldown_seconds").set(300);
@@ -983,21 +1000,21 @@ public class ConfigManager {
             node.node("regular_alerts", "enabled").set(true);
             node.node("regular_alerts", "delay_seconds").set(300);
             node.node("regular_alerts", "sound").set("ENTITY_EXPERIENCE_ORB_PICKUP");
-            node.node("regular_alerts", "alerts", "discord", "message").set(String.class, """
-      &f-----------------------------
-      &9Join our &bDiscord&9 for news and updates!
-      &bhttps://discord.myserver.com
-      &f-----------------------------
-      """);
+            node.node("regular_alerts", "alerts", "discord", "message").set(List.of(
+      "{center} &f-----------------------------",
+      "{center} &9Join our &bDiscord&9 for news and updates!",
+      "{center} &bhttps://discord.myserver.com",
+      "{center} &f-----------------------------"
+      ));
             node.node("regular_alerts", "alerts", "discord", "click_action").set("OPEN_URL");
             node.node("regular_alerts", "alerts", "discord", "action").set("https://discord.myserver.com");
             node.node("regular_alerts", "alerts", "discord", "hover").set("&bClick to join our Discord");
-            node.node("regular_alerts", "alerts", "store", "message").set(String.class, """
-      &f-----------------------------
-      &9Visit our &bStore&9 for ranks and perks!
-      &bhttps://store.myserver.com
-      &f-----------------------------
-      """);
+            node.node("regular_alerts", "alerts", "store", "message").set(List.of(
+                    "&f-----------------------------",
+                    "&9Visit our &bStore&9 for ranks and perks!",
+                    "{center} &bhttps://store.myserver.com",
+                    "&f-----------------------------"
+            ));
             node.node("regular_alerts", "alerts", "store", "click_action").set("OPEN_URL");
             node.node("regular_alerts", "alerts", "store", "action").set("https://store.myserver.com");
             node.node("regular_alerts", "alerts", "store", "hover").set("&bClick to open our store");
@@ -1007,17 +1024,17 @@ public class ConfigManager {
             node.node("tebex_link", "refresh_minutes").set(30);
 
             node.node("serverwhitelist", "enabled").set(true);
-            node.node("serverwhitelist", "active_servers").set(String.class, """
-      whitelisted_server1
-      whitelisted_server2
-      """);
+            node.node("serverwhitelist", "active_servers").set(List.of(
+                    "whitelisted_server1",
+                    "whitelisted_server2"
+            ));
             node.node("serverwhitelist", "sound").set("ENTITY_VILLAGER_NO");
-            node.node("serverwhitelist", "message").set(String.class, """
-      &f-----------------------------
-      &cThis server is &lwhitelisted&c!
-      &fPlease wait until you are allowed to join.
-      &f-----------------------------
-      """);
+            node.node("serverwhitelist", "message").set(List.of(
+                    "{center} &f-----------------------------",
+                    "{center} &cThis server is &lwhitelisted&c!",
+                    "{center} &fPlease wait until you are allowed to join.",
+                    "{center} &f-----------------------------"
+            ));
             node.node("serverwhitelist", "title", "enabled").set(true);
             node.node("serverwhitelist", "title", "title").set("&cServer Whitelisted");
             node.node("serverwhitelist", "title", "subtitle").set("&7Wait until you are allowed to join.");
@@ -1220,6 +1237,9 @@ public class ConfigManager {
                 }
                 if (node.node("report_player_not_found").empty()) {
                     node.node("report_player_not_found").set("&cPlayer {player} not found");
+                }
+                if (node.node("report_not_own").empty()) {
+                    node.node("report_not_own").set("&cYou cannot report yourself");
                 }
                 if (node.node("report_sent").empty()) {
                     node.node("report_sent").set("&aYour report for the player {target} was sent");
@@ -1498,6 +1518,7 @@ public class ConfigManager {
             node.node("maintenance_deactivated").set("&cMaintenance mode deactivated.");
             node.node("report_usage").set("&cUsage: /report <nick> <reason>");
             node.node("report_player_not_found").set("&cPlayer {player} not found");
+            node.node("report_not_own").set("&cYou cannot report yourself");
             node.node("report_sent").set("&aYour report for the player {target} was sent");
             node.node("report_hover").set("&bClick to teleport");
             node.node("report_cooldown").set("&cYou have {time}s before using /report again");

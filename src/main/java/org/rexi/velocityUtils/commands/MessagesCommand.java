@@ -72,6 +72,11 @@ public class MessagesCommand implements SimpleCommand {
         }
 
         for (String line : message) {
+            if (line.startsWith("{center}")) {
+                line = line.replaceFirst("^\\{center\\}\\s*", "");
+                line = plugin.getCenteredMessage(line);
+            }
+
             Component messageLine = legacy(line);
 
             if (click_action.equalsIgnoreCase("OPEN_URL")) {

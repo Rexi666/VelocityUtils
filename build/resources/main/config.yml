@@ -11,9 +11,9 @@ alert:
   enabled: true
   sound: "BLOCK_NOTE_BLOCK_PLING"
   message:
-    - "&f-----------------------------"
-    - "&7[&b&lSERVER&7] &r{message}"
-    - "&f-----------------------------"
+    - "{center} &f-----------------------------"
+    - "{center} &7[&b&lSERVER&7] &r{message}"
+    - "{center} &f-----------------------------"
   title:
     enabled: true
     title: "&7[&b&lSERVER&7]"
@@ -45,13 +45,13 @@ report:
   enabled: true
   teleport_on_click: true
   message:
-    - "&f-----------------------------"
-    - "&eNew Report from {player}!"
-    - "&fReported: &c{reported}"
-    - "&fReason: &b{reason}"
-    - "&fServer: &b{server}"
-    - "&eClick to teleport"
-    - "&f-----------------------------"
+    - "{center} &f-----------------------------"
+    - "{center} &eNew Report from {player}!"
+    - "{center} &fReported: &c{reported}"
+    - "{center} &fReason: &b{reason}"
+    - "{center} &fServer: &b{server}"
+    - "{center} &eClick to teleport"
+    - "{center} &f-----------------------------"
   discord_hook:
     enabled: false
     url: "https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy"
@@ -68,12 +68,12 @@ helpop:
   enabled: true
   teleport_on_click: true
   message:
-    - "&f-----------------------------"
-    - "&eNew Help Request from {player}!"
-    - "&fReason: &b{reason}"
-    - "&fServer: &b{server}"
-    - "&eClick to teleport"
-    - "&f-----------------------------"
+    - "{center} &f-----------------------------"
+    - "{center} &eNew Help Request from {player}!"
+    - "{center} &fReason: &b{reason}"
+    - "{center} &fServer: &b{server}"
+    - "{center} &eClick to teleport"
+    - "{center} &f-----------------------------"
   discord_hook:
     enabled: false
     url: "https://discord.com/api/webhooks/xxxxxxxx/yyyyyyyyyyyy"
@@ -153,17 +153,17 @@ stafftime:
   command:
     enabled: true
     no_type:
-      - "&f-----------------------------"
-      - "&eStaff Time from {player}"
-      - "&fToday: &b{day}"
-      - "&fWeek: &b{week}"
-      - "&fMonth: &b{month}"
-      - "&f-----------------------------"
+      - "{center} &f-----------------------------"
+      - "{center} &eStaff Time from {player}"
+      - "{center} &fToday: &b{day}"
+      - "{center} &fWeek: &b{week}"
+      - "{center} &fMonth: &b{month}"
+      - "{center} &f-----------------------------"
     type:
-      - "&f-----------------------------"
-      - "&eStaff Time from {player} ({type})"
-      - "&f{type}: &b{time}"
-      - "&f-----------------------------"
+      - "{center} &f-----------------------------"
+      - "{center} &eStaff Time from {player} ({type})"
+      - "{center} &f{type}: &b{time}"
+      - "{center} &f-----------------------------"
     day: "Day"
     week: "Week"
     month: "Month"
@@ -172,17 +172,17 @@ vlist:
   default_mode: "server"
   server:
     message:
-      - "&f-----------------------------"
-      - "&eThere are {count} players online"
-      - "{servercount}"
-      - "&f-----------------------------"
+      - "{center} &f-----------------------------"
+      - "{center} &eThere are {count} players online"
+      - "{center} {servercount}"
+      - "{center} &f-----------------------------"
     servercount: "&7[&b{server} &7(&b{count}&7)] - &f{players}"
   rank:
     message:
-      - "&f-----------------------------"
-      - "&eThere are {count} players online"
-      - "{rankcount}"
-      - "&f-----------------------------"
+      - "{center} &f-----------------------------"
+      - "{center} &eThere are {count} players online"
+      - "{center} {rankcount}"
+      - "{center} &f-----------------------------"
     rankcount: "&7[&b{rank} &7(&b{count}&7)] - &f{players}"
 movecommands:
   enabled: true
@@ -199,10 +199,10 @@ messagescommands:
   enabled: true
   discord:
     message:
-      - "&f-----------------------------"
-      - "&fJoin ur &9discord"
-      - "&9https://discord.com/invite/a3zkKtrjTr"
-      - "&f-----------------------------"
+      - "{center} &f-----------------------------"
+      - "{center} &fJoin ur &9discord"
+      - "{center} &9https://discord.com/invite/a3zkKtrjTr"
+      - "{center} &f-----------------------------"
     click_action: "OPEN_URL"
     action: https://discord.com/invite/a3zkKtrjTr
     hover: "&9Click to join ur discord"
@@ -211,8 +211,7 @@ messagescommands:
     message:
       - '&f-----------------------------'
       - '&6New Game Mode released'
-      - '&#c3d600&lJ&#c6c900&lO&#cabd00&lI&#cdb000&lN &#d1a400&lT&#d49700&lH&#d78a00&lE
-              &#db7e00&lN&#de7100&lE&#e26500&lW &#e55800&lS&#e94c00&lU&#ec3f00&lR&#ef3200&lV&#f32600&lI&#f61900&lV&#fa0d00&lA&#fd0000&lL'
+      - '&#c3d600&lJ&#c6c900&lO&#cabd00&lI&#cdb000&lN &#d1a400&lT&#d49700&lH&#d78a00&lE &#db7e00&lN&#de7100&lE&#e26500&lW &#e55800&lS&#e94c00&lU&#ec3f00&lR&#ef3200&lV&#f32600&lI&#f61900&lV&#fa0d00&lA&#fd0000&lL'
       - '&f-----------------------------'
     click_action: "RUN_COMMAND"
     action: "/survival"
@@ -238,7 +237,11 @@ staffjoin:
   change_message: "&b&lStaff - &e{rank} {player} has changed the server &b{from} &e> &b{server}"
 stream:
   enabled: true
-  message: "&7[&d&lSTREAM&7] {rank} &b{player} &fis now streaming &b{url}"
+  message:
+    - "{center} &f-----------------------------"
+    - "{center} {rank} &b{player} &fis now &6streaming"
+    - "{center} &b{url}"
+    - "{center} &f-----------------------------"
   hover_enabled: true
   hover: "&bClick to watch the stream"
   cooldown_seconds: 300
@@ -287,10 +290,10 @@ regular_alerts:
   alerts:
     discord:
       message:
-        - "&f-----------------------------"
-        - "&9Join our &bDiscord&9 for news and updates!"
-        - "&bhttps://discord.myserver.com"
-        - "&f-----------------------------"
+        - "{center} &f-----------------------------"
+        - "{center} &9Join our &bDiscord&9 for news and updates!"
+        - "{center} &bhttps://discord.myserver.com"
+        - "{center} &f-----------------------------"
       click_action: "OPEN_URL"
       action: https://discord.myserver.com
       hover: "&bClick to join our Discord"
@@ -314,10 +317,10 @@ serverwhitelist:
     - "whitelisted_server2"
   sound: "ENTITY_VILLAGER_NO"
   message:
-    - "&f-----------------------------"
-    - "&cThis server is &lwhitelisted&c!"
-    - "&fPlease wait until you are allowed to join."
-    - "&f-----------------------------"
+    - "{center} &f-----------------------------"
+    - "{center} &cThis server is &lwhitelisted&c!"
+    - "{center} &fPlease wait until you are allowed to join."
+    - "{center} &f-----------------------------"
   title:
     enabled: true
     title: "&cServer Whitelisted"

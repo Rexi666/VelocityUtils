@@ -52,14 +52,17 @@ public class VListCommand implements SimpleCommand {
             return;
         }
 
+        boolean isPlayer = true;
+        if (!(source instanceof Player)) {isPlayer = false;}
+
         if (mode.equals("rank")) {
-            mostrarPorRangos(source, playerCount);
+            mostrarPorRangos(source, playerCount, isPlayer);
         } else {
-            mostrarPorServidores(source, playerCount);
+            mostrarPorServidores(source, playerCount, isPlayer);
         }
     }
 
-    private void mostrarPorServidores(CommandSource source, int totalPlayers) {
+    private void mostrarPorServidores(CommandSource source, int totalPlayers, boolean isPlayer) {
         Map<String, List<String>> servidores = new HashMap<>();
 
         for (Player player : server.getAllPlayers()) {
@@ -75,15 +78,30 @@ public class VListCommand implements SimpleCommand {
                             .replace("{server}", entry.getKey())
                             .replace("{count}", String.valueOf(entry.getValue().size()))
                             .replace("{players}", String.join(", ", entry.getValue()));
+
+                    if (formatted.startsWith("{center}")) {
+                        formatted = formatted.replaceFirst("^\\{center\\}\\s*", "");
+                        if (isPlayer) {
+                            formatted = plugin.getCenteredMessage(formatted);
+                        }
+                    }
+
                     source.sendMessage(legacy(formatted));
                 }
             } else {
-                source.sendMessage(legacy(line.replace("{count}", String.valueOf(totalPlayers))));
+                line = line.replace("{count}", String.valueOf(totalPlayers));
+                if (line.startsWith("{center}")) {
+                    line = line.replaceFirst("^\\{center\\}\\s*", "");
+                    if (isPlayer) {
+                        line = plugin.getCenteredMessage(line);
+                    }
+                }
+                source.sendMessage(legacy(line));
             }
         }
     }
 
-    private void mostrarPorRangos(CommandSource source, int totalPlayers) {
+    private void mostrarPorRangos(CommandSource source, int totalPlayers, boolean isPlayer) {
         // Map de rango -> lista de jugadores
         Map<String, List<String>> rangos = new HashMap<>();
         // Map de rango -> weight
@@ -109,21 +127,41 @@ public class VListCommand implements SimpleCommand {
                                 rangosWeight.getOrDefault(e1.getKey(), 0)
                         ))
                         .forEach(entry -> {
+                            String rankPlain = LegacyComponentSerializer.legacySection().serialize(
+                                    rangosComponentes.getOrDefault(entry.getKey(), Component.text(entry.getKey()))
+                            );
+                            rankPlain = MiniMessage.miniMessage().stripTags(rankPlain);
+
                             String semiFormatted = configManager.getString("vlist.rank.rankcount")
                                     .replace("{count}", String.valueOf(entry.getValue().size()))
-                                    .replace("{players}", String.join(", ", entry.getValue()));
+                                    .replace("{players}", String.join(", ", entry.getValue()))
+                                    .replace("{rank}", rankPlain);
 
-                            Component formatted = LegacyComponentSerializer.legacyAmpersand().deserialize(semiFormatted);
+                            if (semiFormatted.startsWith("{center}")) {
+                                semiFormatted = semiFormatted.replaceFirst("^\\{center\\}\\s*", "");
+                                if (isPlayer) {
+                                    semiFormatted = plugin.getCenteredMessage(semiFormatted);
+                                }
+                            }
+
+                            Component formatted = legacy(semiFormatted);
 
                             formatted = formatted.replaceText(TextReplacementConfig.builder()
-                                    .matchLiteral("{rank}")
+                                    .matchLiteral(rankPlain)
                                     .replacement(rangosComponentes.getOrDefault(entry.getKey(), Component.text(entry.getKey())))
                                     .build());
 
                             source.sendMessage(formatted);
                         });
             } else {
-                source.sendMessage(legacy(line.replace("{count}", String.valueOf(totalPlayers))));
+                line = line.replace("{count}", String.valueOf(totalPlayers));
+                if (line.startsWith("{center}")) {
+                    line = line.replaceFirst("^\\{center\\}\\s*", "");
+                    if (isPlayer) {
+                        line = plugin.getCenteredMessage(line);
+                    }
+                }
+                source.sendMessage(legacy(line));
             }
         }
     }

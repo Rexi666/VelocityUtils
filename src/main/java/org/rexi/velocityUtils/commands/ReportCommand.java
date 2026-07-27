@@ -10,6 +10,7 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
 import org.rexi.velocityUtils.DiscordWebhook;
+import org.rexi.velocityUtils.VelocityUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,15 +20,17 @@ public class ReportCommand implements SimpleCommand {
     private final ConfigManager configManager;
     private final ProxyServer server;
     private final DiscordWebhook webhook;
+    private final VelocityUtils plugin;
 
     // Mapa para cooldowns: UUID -> timestamp del último uso
     private final Map<UUID, Long> cooldowns = new HashMap<>();
     private static final long COOLDOWN_MILLIS = 30 * 1000;
 
-    public ReportCommand(ConfigManager configManager, ProxyServer server, DiscordWebhook webhook) {
+    public ReportCommand(ConfigManager configManager, ProxyServer server, DiscordWebhook webhook, VelocityUtils plugin) {
         this.configManager = configManager;
         this.server = server;
         this.webhook = webhook;
+        this.plugin = plugin;
     }
 
     @Override
@@ -68,7 +71,14 @@ public class ReportCommand implements SimpleCommand {
         }
 
         Player target = targetOpt.get();
-        String reporterName = (source instanceof Player p) ? p.getUsername() : "Console";
+        String reporterName = (source instanceof Player p) ? p.getUsername() : "Unknown";
+
+        if (targetName.equals(reporterName)) {
+            String report_not_own = configManager.getMessage("report_not_own");
+            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(report_not_own));
+            return;
+        }
+
         String serverName = target.getCurrentServer().map(s -> s.getServerInfo().getName()).orElse(configManager.getMessage("server_unknown"));
 
         /* ──────────── 4. Cooldown ──────────── */
@@ -93,18 +103,6 @@ public class ReportCommand implements SimpleCommand {
 
         /* ──────────── 5. Preparar líneas del mensaje ──────────── */
         List<String> rawLines = configManager.getStringList("report.message");
-        if (rawLines == null || rawLines.isEmpty()) {
-            // Fallback por si el usuario borra la sección
-            rawLines = List.of(
-                    "&f-----------------------------",
-                    "&eNew Report from {player}!",
-                    "&fReported: &c{reported}",
-                    "&fReason: &b{reason}",
-                    "&fServer: &b{server}",
-                    "&eClick to teleport",
-                    "&f-----------------------------"
-            );
-        }
 
         if (configManager.getBoolean("report.discord_hook.enabled")) {
             String raw = configManager.getString("report.discord_hook.message");
@@ -127,6 +125,11 @@ public class ReportCommand implements SimpleCommand {
                         .replace("{reason}", reason)
                         .replace("{server}", serverName);
 
+                if (parsed.startsWith("{center}")) {
+                    parsed = parsed.replaceFirst("^\\{center\\}\\s*", "");
+                    parsed = plugin.getCenteredMessage(parsed);
+                }
+
                 if (configManager.getBoolean("report.teleport_on_click")) {
                     String report_hover = configManager.getMessage("report_hover");
                     Component tpLine = legacy(parsed)
@@ -138,6 +141,20 @@ public class ReportCommand implements SimpleCommand {
                     online.sendMessage(legacy(parsed));
                 }
             }
+        }
+
+        // Console
+        for (String raw : rawLines) {
+            String parsed = raw
+                    .replace("{player}", reporterName)
+                    .replace("{reported}", target.getUsername())
+                    .replace("{reason}", reason)
+                    .replace("{server}", serverName);
+
+            parsed = parsed.replaceFirst("^\\{center\\}\\s*", "");
+
+            server.getConsoleCommandSource().sendMessage(LegacyComponentSerializer.legacyAmpersand()
+                    .deserialize(parsed));
         }
 
         /* ──────────── 7. Confirmación al reportador ──────────── */

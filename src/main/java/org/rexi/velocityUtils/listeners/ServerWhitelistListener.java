@@ -58,6 +58,11 @@ public class ServerWhitelistListener {
 
         // Mensajes
         for (String line : message) {
+            if (line.startsWith("{center}")) {
+                line = line.replaceFirst("^\\{center\\}\\s*", "");
+                line = plugin.getCenteredMessage(line);
+            }
+
             player.sendMessage(
                     LegacyComponentSerializer.legacyAmpersand().deserialize(line)
             );

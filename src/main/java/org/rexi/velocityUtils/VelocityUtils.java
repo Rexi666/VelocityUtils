@@ -32,6 +32,7 @@ import org.rexi.velocityUtils.commands.*;
 import org.rexi.velocityUtils.commands.banSystem.*;
 import org.rexi.velocityUtils.listeners.*;
 import org.rexi.velocityUtils.utils.BanData;
+import org.rexi.velocityUtils.utils.DefaultFontInfo;
 import org.rexi.velocityUtils.utils.tebex.TebexService;
 import org.slf4j.Logger;
 import net.luckperms.api.LuckPerms;
@@ -188,7 +189,7 @@ public class VelocityUtils {
             if (!moveCommandsNode.virtual()) {
                 for (ConfigurationNode commandNode : moveCommandsNode.childrenMap().values()) {
                     String commandName = commandNode.key().toString();
-                    server.getCommandManager().register(commandName, new MoveCommand(configManager, server, commandName));
+                    server.getCommandManager().register(commandName, new MoveCommand(configManager, server, commandName, this));
                 }
             }
         }
@@ -227,7 +228,7 @@ public class VelocityUtils {
         if (configManager.getBoolean("report.enabled")) {
             server.getCommandManager().register(
                     server.getCommandManager().metaBuilder("report").build(),
-                    new ReportCommand(configManager, server, webhook)
+                    new ReportCommand(configManager, server, webhook, this)
             );
         }
 
@@ -275,14 +276,14 @@ public class VelocityUtils {
         if (configManager.getBoolean("helpop.enabled")) {
             server.getCommandManager().register(
                     server.getCommandManager().metaBuilder("helpop").build(),
-                    new HelpopCommand(configManager, server, webhook)
+                    new HelpopCommand(configManager, server, webhook, this)
             );
         }
 
         if (configManager.getBoolean("stream.enabled")) {
             server.getCommandManager().register(
                     server.getCommandManager().metaBuilder("stream").build(),
-                    new StreamCommand(configManager, server, luckPerms)
+                    new StreamCommand(configManager, server, luckPerms, this)
             );
         }
         if (configManager.getBoolean("serverexecute.enabled")) {
@@ -867,6 +868,11 @@ public class VelocityUtils {
 
         for (Player player : server.getAllPlayers()) {
             for (String line : messages) {
+                if (line.startsWith("{center}")) {
+                    line = line.replaceFirst("^\\{center\\}\\s*", "");
+                    line = getCenteredMessage(line);
+                }
+
                 Component messageLine = legacy(line);
 
                 if (click_action.equalsIgnoreCase("OPEN_URL")) {
@@ -906,5 +912,62 @@ public class VelocityUtils {
         return player.getCurrentServer()
                 .map(s -> s.getServerInfo().getName())
                 .orElse(configManager.getMessage("server_unknown"));
+    }
+
+    private static final LegacyComponentSerializer LEGACY_HEX_SERIALIZER =
+            LegacyComponentSerializer.builder()
+                    .character('&')
+                    .hexColors()
+                    .useUnusualXRepeatedCharacterHexFormat()
+                    .build();
+
+    public static String getCenteredMessage(String message){
+        String original = message;
+
+        if (message.contains("<") && message.contains(">")) {
+            message = LegacyComponentSerializer.legacyAmpersand().serialize(
+                    MiniMessage.miniMessage().deserialize(message)
+            );
+        } else {
+            // Si es legacy (&), normalízalo (también soporta hex)
+            message = LEGACY_HEX_SERIALIZER.serialize(
+                    LEGACY_HEX_SERIALIZER.deserialize(message)
+            );
+        }
+
+        int CENTER_PX = 154;
+        int messagePxSize = 0;
+        boolean previousCode = false;
+        boolean isBold = false;
+
+        for(char c : message.toCharArray()){
+            if(c == '&'){
+                previousCode = true;
+                continue;
+            }
+
+            if(previousCode == true){
+                previousCode = false;
+                if(c == 'l' || c == 'L'){
+                    isBold = true;
+                    continue;
+                } else isBold = false;
+            }else{
+                DefaultFontInfo dFI = DefaultFontInfo.getDefaultFontInfo(c);
+                messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
+                messagePxSize++;
+            }
+        }
+
+        int halvedMessageSize = messagePxSize / 2;
+        int toCompensate = CENTER_PX - halvedMessageSize;
+        int spaceLength = DefaultFontInfo.SPACE.getLength() + 1;
+        int compensated = 0;
+        StringBuilder sb = new StringBuilder();
+        while(compensated < toCompensate){
+            sb.append(" ");
+            compensated += spaceLength;
+        }
+        return (sb.toString() + original);
     }
 }

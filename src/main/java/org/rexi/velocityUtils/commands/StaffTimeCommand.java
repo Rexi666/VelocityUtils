@@ -88,6 +88,9 @@ public class StaffTimeCommand implements SimpleCommand {
                 }
             }
 
+            boolean isPlayer = true;
+            if (!(source instanceof Player)) {isPlayer = false;}
+
             if (period.isEmpty()) {
                 List<String> lines = configManager.getStringList("stafftime.command.no_type");
                 for (String line : lines) {
@@ -96,6 +99,14 @@ public class StaffTimeCommand implements SimpleCommand {
                             .replace("{day}", formatSeconds(daySeconds))
                             .replace("{week}", formatSeconds(weekSeconds))
                             .replace("{month}", formatSeconds(monthSeconds));
+
+                    if (parsed.startsWith("{center}")) {
+                        parsed = parsed.replaceFirst("^\\{center\\}\\s*", "");
+                        if (isPlayer) {
+                            parsed = plugin.getCenteredMessage(parsed);
+                        }
+                    }
+
                     source.sendMessage(legacy(parsed));
                 }
             } else {
@@ -126,6 +137,15 @@ public class StaffTimeCommand implements SimpleCommand {
                             .replace("{player}", targetName)
                             .replace("{type}", typeLabel)
                             .replace("{time}", formatSeconds(seconds));
+
+                    if (parsed.startsWith("{center}")) {
+                        parsed = parsed.replaceFirst("^\\{center\\}\\s*", "");
+                        if (isPlayer) {
+                            parsed = plugin.getCenteredMessage(parsed);
+                        }
+                    }
+
+
                     source.sendMessage(legacy(parsed));
                 }
             }
