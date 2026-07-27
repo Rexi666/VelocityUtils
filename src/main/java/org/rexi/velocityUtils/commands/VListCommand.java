@@ -35,7 +35,7 @@ public class VListCommand implements SimpleCommand {
         String[] args = invocation.arguments();
 
         if (!source.hasPermission("velocityutils.vlist")) {
-            source.sendMessage(legacy(configManager.getMessage("no_permission")));
+            source.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
@@ -48,12 +48,11 @@ public class VListCommand implements SimpleCommand {
 
         int playerCount = server.getAllPlayers().size();
         if (playerCount == 0) {
-            source.sendMessage(legacy(configManager.getMessage("vlist_no_players")));
+            source.sendMessage(configManager.getMessage("vlist_no_players"));
             return;
         }
 
-        boolean isPlayer = true;
-        if (!(source instanceof Player)) {isPlayer = false;}
+        boolean isPlayer = source instanceof Player;
 
         if (mode.equals("rank")) {
             mostrarPorRangos(source, playerCount, isPlayer);

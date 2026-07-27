@@ -3,9 +3,6 @@ package org.rexi.velocityUtils.listeners;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.proxy.ProxyServer;
-import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.DiscordWebhook;
 import org.rexi.velocityUtils.VelocityUtils;
 
 public class ChatListener {

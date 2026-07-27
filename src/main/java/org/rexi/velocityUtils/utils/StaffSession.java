@@ -1,4 +1,4 @@
-package org.rexi.velocityUtils;
+package org.rexi.velocityUtils.utils;
 
 import java.time.Duration;
 import java.time.Instant;

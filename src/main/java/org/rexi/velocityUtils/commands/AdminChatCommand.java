@@ -12,7 +12,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
 import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.DiscordWebhook;
+import org.rexi.velocityUtils.utils.DiscordWebhook;
 import org.rexi.velocityUtils.VelocityUtils;
 
 import java.util.Set;
@@ -45,8 +45,7 @@ public class AdminChatCommand implements SimpleCommand {
         }
 
         if (!player.hasPermission("velocityutils.adminchat")) {
-            String no_permission = configManager.getMessage("no_permission");
-            player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(no_permission));
+            player.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
@@ -65,10 +64,10 @@ public class AdminChatCommand implements SimpleCommand {
             // Obtener el prefix como Component
             Component prefixComponent = deserializePrefix(prefixRaw);
 
-            String rawFormat = configManager.getMessage("adminchat_format")
-                    .replace("{player}", player.getUsername())
-                    .replace("{message}", message)
-                    .replace("{server}", serverName);
+            String rawFormat = configManager.getMessageString("adminchat_format",
+                            "{player}", player.getUsername(),
+                            "{message}", message,
+                            "{server}", serverName);
 
             Component adminMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(rawFormat)
                     .replaceText(TextReplacementConfig.builder()
@@ -99,12 +98,10 @@ public class AdminChatCommand implements SimpleCommand {
         // Alternar el modo toggle adminchat
         if (toggled.contains(uuid)) {
             toggled.remove(uuid);
-            String adminchat_disabled = configManager.getMessage("adminchat_disabled");
-            player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(adminchat_disabled));
+            player.sendMessage(configManager.getMessage("adminchat_disabled"));
         } else {
             toggled.add(uuid);
-            String adminchat_enabled = configManager.getMessage("adminchat_enabled");
-            player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(adminchat_enabled));
+            player.sendMessage(configManager.getMessage("adminchat_enabled"));
         }
     }
 

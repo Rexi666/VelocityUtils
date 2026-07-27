@@ -30,14 +30,14 @@ public class MoveCommand implements SimpleCommand {
     @Override
     public void execute(Invocation invocation) {
         if (!(invocation.source() instanceof Player player)) {
-            invocation.source().sendMessage(legacy(configManager.getMessage("no_console")));
+            invocation.source().sendMessage(configManager.getMessage("no_console"));
             return;
         }
 
         String permission = "velocityutils.movecommand." + commandName.toLowerCase();
 
         if (!player.hasPermission(permission)) {
-            player.sendMessage(legacy(configManager.getMessage("no_permission")));
+            player.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
@@ -46,7 +46,7 @@ public class MoveCommand implements SimpleCommand {
         String message = configManager.getString("movecommands." + commandName + ".message");
 
         if (servers.isEmpty()) {
-            player.sendMessage(legacy(configManager.getMessage("movecommands_no_servers")));
+            player.sendMessage(configManager.getMessage("movecommands_no_servers"));
             return;
         }
 
@@ -62,7 +62,7 @@ public class MoveCommand implements SimpleCommand {
             String currentServer = player.getCurrentServer().get().getServerInfo().getName();
             for (String serverName : shuffledServers) {
                 if (currentServer.equalsIgnoreCase(serverName)) {
-                    player.sendMessage(legacy(configManager.getMessage("movecommands_already_connected")));
+                    player.sendMessage(configManager.getMessage("movecommands_already_connected"));
                     return;
                 }
             }
@@ -84,18 +84,18 @@ public class MoveCommand implements SimpleCommand {
                                 player.sendMessage(legacy(finalmessage));
                             }
                         } else {
-                            player.sendMessage(legacy(configManager.getMessage("movecommands_server_not_found")));
+                            player.sendMessage(configManager.getMessage("movecommands_server_not_found"));
                         }
                     });
                 }).exceptionally(ex -> {
-                    player.sendMessage(legacy(configManager.getMessage("movecommands_server_not_found")));
+                    player.sendMessage(configManager.getMessage("movecommands_server_not_found"));
                     return null;
                 });
-                return; // Intentamos solo el primero disponible
+                return; // Intentamos solo el primer disponible
             }
         }
 
-        player.sendMessage(legacy(configManager.getMessage("movecommands_server_not_found")));
+        player.sendMessage(configManager.getMessage("movecommands_server_not_found"));
     }
 
 

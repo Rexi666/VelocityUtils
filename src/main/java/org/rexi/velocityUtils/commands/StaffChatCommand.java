@@ -12,7 +12,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
 import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.DiscordWebhook;
+import org.rexi.velocityUtils.utils.DiscordWebhook;
 import org.rexi.velocityUtils.VelocityUtils;
 
 import java.util.Set;
@@ -44,8 +44,7 @@ public class StaffChatCommand implements SimpleCommand {
         }
 
         if (!player.hasPermission("velocityutils.staffchat")) {
-            String no_permission = configManager.getMessage("no_permission");
-            player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(no_permission));
+            player.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
@@ -64,10 +63,10 @@ public class StaffChatCommand implements SimpleCommand {
             // Obtener el prefix como Component
             Component prefixComponent = deserializePrefix(prefixRaw);
 
-            String rawFormat = configManager.getMessage("staffchat_format")
-                    .replace("{player}", player.getUsername())
-                    .replace("{message}", message)
-                    .replace("{server}", serverName);
+            String rawFormat = configManager.getMessageString("staffchat_format",
+                            "{player}", player.getUsername(),
+                            "{message}", message,
+                            "{server}", serverName);
 
             Component staffMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(rawFormat)
                     .replaceText(TextReplacementConfig.builder()
@@ -98,12 +97,10 @@ public class StaffChatCommand implements SimpleCommand {
         // Alternar el modo toggle staffchat
         if (toggled.contains(uuid)) {
             toggled.remove(uuid);
-            String staffchat_disabled = configManager.getMessage("staffchat_disabled");
-            player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(staffchat_disabled));
+            player.sendMessage(configManager.getMessage("staffchat_disabled"));
         } else {
             toggled.add(uuid);
-            String staffchat_enabled = configManager.getMessage("staffchat_enabled");
-            player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(staffchat_enabled));
+            player.sendMessage(configManager.getMessage("staffchat_enabled"));
         }
     }
 

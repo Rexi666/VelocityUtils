@@ -9,7 +9,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.DiscordWebhook;
+import org.rexi.velocityUtils.utils.DiscordWebhook;
 import org.rexi.velocityUtils.VelocityUtils;
 
 import java.util.*;
@@ -38,21 +38,18 @@ public class HelpopCommand implements SimpleCommand {
 
         /* ──────────── 1. Permisos ──────────── */
         if (!source.hasPermission("velocityutils.helpop.use")) {
-            String no_permission = configManager.getMessage("no_permission");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(no_permission));
+            source.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
         if (!(source instanceof Player)) {
-            String no_console = configManager.getMessage("no_console");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(no_console));
+            source.sendMessage(configManager.getMessage("no_console"));
             return;
         }
 
         /* ──────────── 2. Sintaxis ──────────── */
         if (args.length < 1) {
-            String report_usage = configManager.getMessage("helpop_usage");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(report_usage));
+            source.sendMessage(configManager.getMessage("helpop_usage"));
             return;
         }
 
@@ -61,7 +58,7 @@ public class HelpopCommand implements SimpleCommand {
         /* ──────────── 3. Jugador reportador ──────────── */
         Player player = (Player) source;
         String reportername = player.getUsername();
-        String serverName = player.getCurrentServer().map(s -> s.getServerInfo().getName()).orElse(configManager.getMessage("server_unknown"));
+        String serverName = player.getCurrentServer().map(s -> s.getServerInfo().getName()).orElse(configManager.getMessageString("server_unknown"));
 
         /* ──────────── 4. Cooldown ──────────── */
 
@@ -72,9 +69,8 @@ public class HelpopCommand implements SimpleCommand {
             long lastUsed = cooldowns.get(uuid);
             if (now - lastUsed < COOLDOWN_MILLIS) {
                 long secondsLeft = (COOLDOWN_MILLIS - (now - lastUsed)) / 1000;
-                String helpop_cooldown = configManager.getMessage("helpop_cooldown");
-                helpop_cooldown = helpop_cooldown.replace("{time}", String.valueOf(secondsLeft));
-                source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(helpop_cooldown));
+                source.sendMessage(configManager.getMessage("helpop_cooldown",
+                        "{time}", String.valueOf(secondsLeft)));
                 return;
             }
         }
@@ -109,11 +105,10 @@ public class HelpopCommand implements SimpleCommand {
                 }
 
                 if (configManager.getBoolean("helpop.teleport_on_click")) {
-                    String helpop_hover = configManager.getMessage("helpop_hover");
                     Component tpLine = legacy(parsed)
                             .clickEvent(ClickEvent.runCommand("/goto " + reportername))
                             .hoverEvent(HoverEvent.showText(
-                                    LegacyComponentSerializer.legacyAmpersand().deserialize(helpop_hover)));
+                                    configManager.getMessage("helpop_hover")));
                     online.sendMessage(tpLine);
                 } else {
                     online.sendMessage(legacy(parsed));
@@ -135,8 +130,7 @@ public class HelpopCommand implements SimpleCommand {
         }
 
         /* ──────────── 7. Confirmación al reportador ──────────── */
-        String helpop_sent = configManager.getMessage("helpop_sent");
-        source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(helpop_sent));
+        source.sendMessage(configManager.getMessage("helpop_sent"));
     }
 
     /* Utilidad para traducir códigos & */

@@ -34,13 +34,12 @@ public class BanIpCommand implements SimpleCommand {
         CommandSource source = invocation.source();
         String[] args = invocation.arguments();
         if (!(source.hasPermission("velocityutils.bansystem.vbanip"))) {
-            source.sendMessage(deserializeLegacy(configManager.getMessage("no_permission")));
+            source.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
         if (args.length < 1) {
-            String usage = configManager.getMessage("usage_banip");
-            source.sendMessage(deserializeLegacy(usage));
+            source.sendMessage(configManager.getMessage("usage_banip"));
             return;
         }
 
@@ -49,9 +48,8 @@ public class BanIpCommand implements SimpleCommand {
         BanData checkban = plugin.loadBan(targetName, null);
 
         if (checkban != null) {
-            String already_banned = configManager.getMessage("already_banned");
-            already_banned = already_banned.replace("{player}", targetName);
-            source.sendMessage(deserializeLegacy(already_banned));
+            source.sendMessage(configManager.getMessage("already_banned",
+                    "{player}", targetName));
             return;
         }
 
@@ -81,8 +79,8 @@ public class BanIpCommand implements SimpleCommand {
         }
 
         if (playerIp == null) {
-            source.sendMessage(deserializeLegacy(configManager.getMessage("not_ip_registered")
-                    .replace("{player}", targetName)));
+            source.sendMessage(configManager.getMessage("not_ip_registered",
+                    "{player}", targetName));
             return;
         }
 
@@ -108,14 +106,14 @@ public class BanIpCommand implements SimpleCommand {
             });
         });
 
-        source.sendMessage(deserializeLegacy(configManager.getMessage("banip_success")
-                .replace("{player}", targetName).replace("{reason}", reason)));
+        source.sendMessage(configManager.getMessage("banip_success",
+                "{player}", targetName,
+                "{reason}", reason));
 
-        String message = configManager.getMessage("banip_notify");
-        message = message.replace("{player}", targetName)
-                .replace("{reason}", reason)
-                .replace("{banned_by}", fromName);
-        Component finalMessage = deserializeLegacy(message);
+        Component finalMessage = configManager.getMessage("banip_notify",
+                "{player}", targetName,
+                "{reason}", reason,
+                "{banned_by}", fromName);
         server.getConsoleCommandSource().sendMessage(finalMessage);
         for (Player player : server.getAllPlayers()) {
             if (player.hasPermission("velocityutils.bansystem.notify")) {

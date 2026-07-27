@@ -33,14 +33,12 @@ public class FindCommand implements SimpleCommand {
 
         // Verificar permiso opcional
         if (!source.hasPermission("velocityutils.find")) {
-            String no_permission = configManager.getMessage("no_permission");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(no_permission));
+            source.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
         if (args.length != 1) {
-            String find_usage = configManager.getMessage("find_usage");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(find_usage));
+            source.sendMessage(configManager.getMessage("find_usage"));
             return;
         }
 
@@ -52,10 +50,9 @@ public class FindCommand implements SimpleCommand {
             Player player = target.get();
             String serverName = plugin.getServerName(player);
 
-            String find_where = configManager.getMessage("find_where");
-            find_where = find_where.replace("{player}", player.getUsername());
-            find_where = find_where.replace("{server}", serverName);
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(find_where));
+            source.sendMessage(configManager.getMessage("find_where",
+                    "{player}", player.getUsername(),
+                    "{server}", serverName));
             return;
         }
 
@@ -83,20 +80,16 @@ public class FindCommand implements SimpleCommand {
 
                     String formatted = formatDuration(diff);
 
-                    String message = configManager.getMessage("find_last_seen");
-                    message = message.replace("{player}", targetName);
-                    message = message.replace("{time}", formatted);
-
-                    source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(message));
+                    source.sendMessage(configManager.getMessage("find_last_seen",
+                            "{player}", targetName,
+                            "{time}", formatted));
                 } else {
-                    String not_found = configManager.getMessage("find_player_not_found")
-                            .replace("{player}", targetName);
-                    source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(not_found));
+                    source.sendMessage(configManager.getMessage("find_player_not_found",
+                            "{player}", targetName));
                 }
             } else {
-                String not_found = configManager.getMessage("find_player_not_found")
-                        .replace("{player}", targetName);
-                source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(not_found));
+                source.sendMessage(configManager.getMessage("find_player_not_found",
+                        "{player}", targetName));
             }
 
         } catch (SQLException e) {
@@ -111,9 +104,9 @@ public class FindCommand implements SimpleCommand {
         long hours = duration.toHours() % 24;
         long minutes = duration.toMinutes() % 60;
 
-        String day_simbol = configManager.getMessage("day_simbol");
-        String hour_simbol = configManager.getMessage("hour_simbol");
-        String minute_simbol = configManager.getMessage("minute_simbol");
+        String day_simbol = configManager.getMessageString("day_simbol");
+        String hour_simbol = configManager.getMessageString("hour_simbol");
+        String minute_simbol = configManager.getMessageString("minute_simbol");
 
         StringBuilder sb = new StringBuilder();
         if (days > 0) sb.append(days).append(day_simbol).append(" ");
@@ -121,7 +114,7 @@ public class FindCommand implements SimpleCommand {
         if (minutes > 0) sb.append(minutes).append(minute_simbol).append(" ");
 
         if (sb.length() == 0) {
-            return configManager.getMessage("find_less_minute");
+            return configManager.getMessageString("find_less_minute");
         }
         return sb.toString().trim();
     }

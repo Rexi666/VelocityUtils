@@ -26,7 +26,7 @@ public class PluginMessageListenerAlerts {
     public void onPluginMessage(PluginMessageEvent event) {
         if (!event.getIdentifier().equals(ALERT_CHANNEL)) return;
 
-        if (!(event.getSource() instanceof ServerConnection serverConn)) return;
+        if (!(event.getSource() instanceof ServerConnection)) return;
 
         String alertPrefix = configManager.getString("alert.prefix");
 

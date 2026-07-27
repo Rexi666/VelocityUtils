@@ -5,7 +5,6 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
 import org.rexi.velocityUtils.VelocityUtils;
 
@@ -31,13 +30,12 @@ public class KickCommand implements SimpleCommand {
         CommandSource source = invocation.source();
         String[] args = invocation.arguments();
         if (!(source.hasPermission("velocityutils.bansystem.vkick"))) {
-            source.sendMessage(deserializeLegacy(configManager.getMessage("no_permission")));
+            source.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
         if (args.length < 1) {
-            String usage = configManager.getMessage("usage_kick");
-            source.sendMessage(deserializeLegacy(usage));
+            source.sendMessage(configManager.getMessage("usage_kick"));
             return;
         }
 
@@ -48,8 +46,8 @@ public class KickCommand implements SimpleCommand {
         String fromName = source instanceof Player ? ((Player) source).getUsername() : configManager.getString("ban_system.console");
 
         if (!server.getPlayer(targetName).isPresent()) {
-            source.sendMessage(deserializeLegacy(configManager.getMessage("not_connected")
-                    .replace("{player}", targetName)));
+            source.sendMessage(configManager.getMessage("not_connected",
+                    "{player}", targetName));
             return;
         }
 
@@ -57,24 +55,20 @@ public class KickCommand implements SimpleCommand {
                 player.disconnect(plugin.kickDenyMessage(player.getUsername(), fromName, reason))
         );
 
-        source.sendMessage(deserializeLegacy(configManager.getMessage("kick_success")
-                .replace("{player}", targetName).replace("{reason}", reason)));
+        source.sendMessage(configManager.getMessage("kick_success",
+                "{player}", targetName,
+                "{reason}", reason));
 
-        String message = configManager.getMessage("kick_notify");
-        message = message.replace("{player}", targetName)
-                .replace("{reason}", reason)
-                .replace("{kicked_by}", fromName);
-        Component finalMessage = deserializeLegacy(message);
+        Component finalMessage = configManager.getMessage("kick_notify",
+                "{player}", targetName,
+                "{reason}", reason,
+                "{kicked_by}", fromName);
         server.getConsoleCommandSource().sendMessage(finalMessage);
         for (Player player : server.getAllPlayers()) {
             if (player.hasPermission("velocityutils.bansystem.notify")) {
                 player.sendMessage(finalMessage);
             }
         }
-    }
-
-    private Component deserializeLegacy(String input) {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
     }
 
     @Override

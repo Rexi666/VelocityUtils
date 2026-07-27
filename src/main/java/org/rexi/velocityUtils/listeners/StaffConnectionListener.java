@@ -12,6 +12,9 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
 import org.rexi.velocityUtils.*;
+import org.rexi.velocityUtils.utils.DateUtils;
+import org.rexi.velocityUtils.utils.DiscordWebhook;
+import org.rexi.velocityUtils.utils.StaffSession;
 
 import java.sql.SQLException;
 import java.time.Duration;
@@ -139,20 +142,14 @@ public class StaffConnectionListener {
         return player.hasPermission("velocityutils.stafftime.exclude");
     }
 
-    private String getCurrentServerName(Player player) {
-        return player.getCurrentServer()
-                .map(srv -> srv.getServerInfo().getName())
-                .orElse(configManager.getMessage("server_unknown"));
-    }
-
     private String formatDuration(Duration duration) {
         long hours = duration.toHours();
         long minutes = duration.toMinutesPart();
         long seconds = duration.toSecondsPart();
 
-        String hour_simbol = configManager.getMessage("hour_simbol");
-        String minute_simbol = configManager.getMessage("minute_simbol");
-        String second_simbol = configManager.getMessage("second_simbol");
+        String hour_simbol = configManager.getMessageString("hour_simbol");
+        String minute_simbol = configManager.getMessageString("minute_simbol");
+        String second_simbol = configManager.getMessageString("second_simbol");
 
 
         return String.format("%02d"+ hour_simbol + " %02d" + minute_simbol + " %02d" + second_simbol, hours, minutes, seconds);

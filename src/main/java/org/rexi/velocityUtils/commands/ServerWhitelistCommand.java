@@ -3,7 +3,6 @@ package org.rexi.velocityUtils.commands;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
 
 import java.util.ArrayList;
@@ -25,14 +24,12 @@ public class ServerWhitelistCommand implements SimpleCommand {
         String[] args = invocation.arguments();
 
         if (!source.hasPermission("velocityutils.serverwhitelist.command")) {
-            String no_permission = configManager.getMessage("no_permission");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(no_permission));
+            source.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
         if (args.length == 0) {
-            String serverwhitelist_usage = configManager.getMessage("serverwhitelist_usage");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(serverwhitelist_usage));
+            source.sendMessage(configManager.getMessage("serverwhitelist_usage"));
             return;
         }
 
@@ -40,74 +37,61 @@ public class ServerWhitelistCommand implements SimpleCommand {
             String serverName = args[1];
 
             if (server.getServer(serverName).isEmpty()) {
-                source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(
-                        configManager.getMessage("serverwhitelist_server_not_found")
-                                .replace("{server}", serverName)
-                ));
+                source.sendMessage(configManager.getMessage("serverwhitelist_server_not_found",
+                        "{server}", serverName)
+                );
                 return;
             }
 
             List<String> servers = configManager.getStringList("serverwhitelist.active_servers");
 
             if (servers.contains(serverName)) {
-                source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(
-                        configManager.getMessage("serverwhitelist_already_on_list")
-                                .replace("{server}", serverName)
-                ));
+                source.sendMessage(configManager.getMessage("serverwhitelist_already_on_list",
+                        "{server}", serverName)
+                );
                 return;
             }
 
             servers.add(serverName);
             configManager.setList("serverwhitelist.active_servers", servers);
 
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(
-                    configManager.getMessage("serverwhitelist_server_added")
-                            .replace("{server}", serverName)
-            ));
+            source.sendMessage(configManager.getMessage("serverwhitelist_server_added",
+                    "{server}", serverName)
+            );
         } else if (args[0].equalsIgnoreCase("remove") && args.length == 2) {
             String serverName = args[1];
 
             List<String> servers = configManager.getStringList("serverwhitelist.active_servers");
 
             if (!servers.contains(serverName)) {
-                source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(
-                        configManager.getMessage("serverwhitelist_server_not_on_list")
-                                .replace("{server}", serverName)
-                ));
+                source.sendMessage(configManager.getMessage("serverwhitelist_server_not_on_list",
+                        "{server}", serverName)
+                );
                 return;
             }
 
             servers.remove(serverName);
             configManager.setList("serverwhitelist.active_servers", servers);
 
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(
-                    configManager.getMessage("serverwhitelist_server_removed")
-                            .replace("{server}", serverName)
-            ));
+            source.sendMessage(configManager.getMessage("serverwhitelist_server_removed",
+                    "{server}", serverName)
+            );
         } else if (args[0].equalsIgnoreCase("list") && args.length == 1) {
             List<String> servers = configManager.getStringList("serverwhitelist.active_servers");
 
             if (servers.isEmpty()) {
-                source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(
-                        configManager.getMessage("serverwhitelist_list_empty")
-                ));
+                source.sendMessage(configManager.getMessage("serverwhitelist_list_empty"));
                 return;
             }
 
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(
-                    configManager.getMessage("serverwhitelist_list_header")
-            ));
+            source.sendMessage(configManager.getMessage("serverwhitelist_list_header"));
 
             for (String serverName : servers) {
-                source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(
-                        configManager.getMessage("serverwhitelist_list_format")
-                                .replace("{server}", serverName)
-                ));
+                source.sendMessage(configManager.getMessage("serverwhitelist_list_format",
+                        "{server}", serverName));
             }
         } else {
-            String serverwhitelist_usage = configManager.getMessage("serverwhitelist_usage");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(serverwhitelist_usage));
-            return;
+            source.sendMessage(configManager.getMessage("serverwhitelist_usage"));
         }
     }
 

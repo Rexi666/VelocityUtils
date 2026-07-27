@@ -1,6 +1,6 @@
-package org.rexi.velocityUtils;
+package org.rexi.velocityUtils.utils;
 
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.rexi.velocityUtils.ConfigManager;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -59,8 +59,7 @@ public class DiscordWebhook {
 
             connection.getResponseCode(); // fuerza la ejecución
         } catch (Exception e) {
-            String errorMessage = configManager.getMessage("report_webhook_error");
-            System.err.println(LegacyComponentSerializer.legacyAmpersand().deserialize(errorMessage));
+            System.err.println(configManager.getMessage("report_webhook_error"));
             e.printStackTrace();
         }
     }

@@ -39,12 +39,12 @@ public class StreamCommand implements SimpleCommand {
         String[] args = invocation.arguments();
 
         if (!(source instanceof Player player)) {
-            source.sendMessage(legacy(configManager.getMessage("no_console")));
+            source.sendMessage(configManager.getMessage("no_console"));
             return;
         }
 
         if (!player.hasPermission("velocityutils.stream")) {
-            player.sendMessage(legacy(configManager.getMessage("no_permission")));
+            player.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
@@ -57,8 +57,8 @@ public class StreamCommand implements SimpleCommand {
             long minutes = remaining / 60;
             long seconds = remaining % 60;
 
-            String minute_simbol = configManager.getMessage("minute_simbol");
-            String second_simbol = configManager.getMessage("second_simbol");
+            String minute_simbol = configManager.getMessageString("minute_simbol");
+            String second_simbol = configManager.getMessageString("second_simbol");
 
             String cooldownFormatted;
             if (minutes > 0) {
@@ -67,13 +67,13 @@ public class StreamCommand implements SimpleCommand {
                 cooldownFormatted = seconds + second_simbol;
             }
 
-            player.sendMessage(legacy(configManager.getMessage("stream_cooldown")
-                    .replace("{cooldown}", cooldownFormatted)));
+            player.sendMessage(configManager.getMessage("stream_cooldown",
+                    "{cooldown}", cooldownFormatted));
             return;
         }
 
         if (args.length < 1) {
-            player.sendMessage(legacy(configManager.getMessage("stream_usage")));
+            player.sendMessage(configManager.getMessage("stream_usage"));
             return;
         }
 
@@ -91,7 +91,7 @@ public class StreamCommand implements SimpleCommand {
                 streamCooldowns.put(player.getUniqueId(), now);
                 sendMessage(player, url);
             } else {
-                player.sendMessage(legacy(configManager.getMessage("stream_invalid_url")));
+                player.sendMessage(configManager.getMessage("stream_invalid_url"));
             }
         } else {
             sendMessage(player, url);

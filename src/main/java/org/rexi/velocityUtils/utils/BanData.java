@@ -1,7 +1,6 @@
 package org.rexi.velocityUtils.utils;
 
 import java.time.Instant;
-import java.util.UUID;
 
 public class BanData {
 

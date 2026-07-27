@@ -10,7 +10,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
-import net.luckperms.api.cacheddata.CachedMetaData;
 import org.rexi.velocityUtils.ConfigManager;
 import org.rexi.velocityUtils.VelocityUtils;
 
@@ -37,18 +36,18 @@ public class StaffListCommand implements SimpleCommand {
 
         // Comprobar permiso de uso
         if (!(source.hasPermission("velocityutils.stafflist.use"))) {
-            source.sendMessage(deserializeLegacy(configManager.getMessage("no_permission")));
+            source.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
         List<Player> staffOnline = getStaffOnline();
 
         if (staffOnline.isEmpty()) {
-            source.sendMessage(deserializeLegacy(configManager.getMessage("stafflist_no_staff")));
+            source.sendMessage(configManager.getMessage("stafflist_no_staff"));
             return;
         }
 
-        source.sendMessage(deserializeLegacy(configManager.getMessage("stafflist_header")));
+        source.sendMessage(configManager.getMessage("stafflist_header"));
 
         for (Player player : staffOnline) {
             String prefixRaw = obtenerRango(player);
@@ -57,11 +56,9 @@ public class StaffListCommand implements SimpleCommand {
 
             String serverName = plugin.getServerName(player);
 
-            String rawMessage = configManager.getMessage("stafflist_staff")
-                    .replace("{player}", player.getUsername())
-                    .replace("{server}", serverName);
-
-            Component message = LegacyComponentSerializer.legacyAmpersand().deserialize(rawMessage);
+            Component message = configManager.getMessage("stafflist_staff",
+                    "{player}", player.getUsername(),
+                    "{server}", serverName);
 
             message = message.replaceText(TextReplacementConfig.builder()
                     .matchLiteral("{prefix}")
@@ -70,10 +67,6 @@ public class StaffListCommand implements SimpleCommand {
 
             source.sendMessage(message);
         }
-    }
-
-    private Component deserializeLegacy(String input) {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
     }
 
     public Component deserializePrefix(String input) {

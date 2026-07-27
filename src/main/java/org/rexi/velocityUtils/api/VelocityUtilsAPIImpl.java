@@ -2,10 +2,10 @@ package org.rexi.velocityUtils.api;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.Component;
 import net.luckperms.api.LuckPerms;
 import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.DiscordWebhook;
+import org.rexi.velocityUtils.utils.DiscordWebhook;
 import org.rexi.velocityUtils.VelocityUtils;
 import org.rexi.velocityUtils.commands.AdminChatCommand;
 import org.rexi.velocityUtils.commands.AlertCommand;
@@ -51,7 +51,7 @@ public class VelocityUtilsAPIImpl implements VelocityUtilsAPI {
 
             String serverName = player.getCurrentServer()
                     .map(s -> s.getServerInfo().getName())
-                    .orElse(configManager.getMessage("server_unknown"));
+                    .orElse(configManager.getMessageString("server_unknown"));
 
             staffList.put(player.getUsername(), new String[]{rank, serverName});
         }
@@ -85,7 +85,7 @@ public class VelocityUtilsAPIImpl implements VelocityUtilsAPI {
                     ));
         } else {
             for (Player player : server.getAllPlayers()) {
-                String serverName = player.getCurrentServer().map(s -> s.getServerInfo().getName()).orElse(configManager.getMessage("server_unknown"));
+                String serverName = player.getCurrentServer().map(s -> s.getServerInfo().getName()).orElse(configManager.getMessageString("server_unknown"));
                 finalList.computeIfAbsent(serverName, k -> new ArrayList<>()).add(player.getUsername());
             }
         }
@@ -93,52 +93,52 @@ public class VelocityUtilsAPIImpl implements VelocityUtilsAPI {
     }
 
     public void sendStaffChatMessage(String playerName, String message, @Nullable String serverName) {
-        String format = configManager.getMessage("staffchat_format")
-                .replace("{player}", playerName)
-                .replace("{message}", message)
-                .replace("{server}", serverName != null ? serverName : configManager.getMessage("server_unknown"))
-                .replace("{prefix}", "");
+        Component format = configManager.getMessage("staffchat_format",
+                        "{player}", playerName,
+                        "{message}", message,
+                        "{server}", serverName != null ? serverName : configManager.getMessageString("server_unknown"),
+                        "{prefix}", "");
 
         server.getAllPlayers().forEach(target -> {
             if (target.hasPermission("velocityutils.staffchat")) {
-                target.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(format));
+                target.sendMessage(format);
             }
         });
 
-        server.getConsoleCommandSource().sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(format));
+        server.getConsoleCommandSource().sendMessage(format);
 
         if (configManager.getBoolean("staffchat.discord_hook.enabled")) {
             String raw = configManager.getString("staffchat.discord_hook.message");
             String msgToSend = raw
                     .replace("{player}", playerName)
                     .replace("{message}", message)
-                    .replace("{server}", serverName != null ? serverName : configManager.getMessage("server_unknown"));
+                    .replace("{server}", serverName != null ? serverName : configManager.getMessageString("server_unknown"));
 
             new StaffChatCommand(plugin, configManager, server, webhook, luckperms).sendStaffChatWebhook(playerName, msgToSend);
         }
     }
 
     public void sendAdminChatMessage(String playerName, String message, @Nullable String serverName) {
-        String format = configManager.getMessage("adminchat_format")
-                .replace("{player}", playerName)
-                .replace("{message}", message)
-                .replace("{server}", serverName != null ? serverName : configManager.getMessage("server_unknown"))
-                .replace("{prefix}", "");
+        Component format = configManager.getMessage("adminchat_format",
+                "{player}", playerName,
+                "{message}", message,
+                "{server}", serverName != null ? serverName : configManager.getMessageString("server_unknown"),
+                "{prefix}", "");
 
         server.getAllPlayers().forEach(target -> {
             if (target.hasPermission("velocityutils.adminchat")) {
-                target.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(format));
+                target.sendMessage(format);
             }
         });
 
-        server.getConsoleCommandSource().sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(format));
+        server.getConsoleCommandSource().sendMessage(format);
 
         if (configManager.getBoolean("adminchat.discord_hook.enabled")) {
             String raw = configManager.getString("adminchat.discord_hook.message");
             String msgToSend = raw
                     .replace("{player}", playerName)
                     .replace("{message}", message)
-                    .replace("{server}", serverName != null ? serverName : configManager.getMessage("server_unknown"));
+                    .replace("{server}", serverName != null ? serverName : configManager.getMessageString("server_unknown"));
 
             new AdminChatCommand(plugin, configManager, server, webhook, luckperms).sendAdminChatWebhook(playerName, msgToSend);
         }

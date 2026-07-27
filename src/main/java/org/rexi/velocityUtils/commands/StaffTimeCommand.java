@@ -7,8 +7,8 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.DateUtils;
-import org.rexi.velocityUtils.StaffSession;
+import org.rexi.velocityUtils.utils.DateUtils;
+import org.rexi.velocityUtils.utils.StaffSession;
 import org.rexi.velocityUtils.VelocityUtils;
 
 import java.sql.Connection;
@@ -40,12 +40,12 @@ public class StaffTimeCommand implements SimpleCommand {
         String[] args = invocation.arguments();
 
         if (!source.hasPermission("velocityutils.stafftime.use")) {
-            source.sendMessage(legacy(configManager.getMessage("no_permission")));
+            source.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
         if (args.length < 1) {
-            source.sendMessage(legacy(configManager.getMessage("stafftime_usage")));
+            source.sendMessage(configManager.getMessage("stafftime_usage"));
             return;
         }
 
@@ -62,20 +62,19 @@ public class StaffTimeCommand implements SimpleCommand {
             } else {
                 uuid = getUUIDFromDatabase(conn, targetName);
                 if (uuid == null) {
-                    String notFound = configManager.getMessage("stafftime_not_found").replace("{player}", targetName);
-                    source.sendMessage(legacy(notFound));
+                    source.sendMessage(configManager.getMessage("stafftime_not_found",
+                            "{player}", targetName));
                     return;
                 }
             }
 
             // Obtener el tiempo ya registrado en base de datos
             long daySeconds = getSecondsForDay(conn, uuid, LocalDate.now());
-            long weekSeconds = getSecondsForWeek(conn, uuid, LocalDate.now());
-            long monthSeconds = getSecondsForMonth(conn, uuid, LocalDate.now());
+            long weekSeconds = getSecondsForWeek(conn, uuid);
+            long monthSeconds = getSecondsForMonth(conn, uuid);
 
             // Si el jugador está online, sumamos el tiempo que lleva conectado en esta sesión
             if (targetOpt.isPresent()) {
-                Player target = targetOpt.get();
                 StaffSession session = plugin.getStaffSessions().get(uuid);  // Asumo que tienes acceso a las sesiones aquí
                 if (session != null) {
                     Duration connectedDuration = Duration.between(session.getStartTime(), Instant.now());
@@ -88,8 +87,7 @@ public class StaffTimeCommand implements SimpleCommand {
                 }
             }
 
-            boolean isPlayer = true;
-            if (!(source instanceof Player)) {isPlayer = false;}
+            boolean isPlayer = source instanceof Player;
 
             if (period.isEmpty()) {
                 List<String> lines = configManager.getStringList("stafftime.command.no_type");
@@ -127,7 +125,7 @@ public class StaffTimeCommand implements SimpleCommand {
                         typeLabel = configManager.getString("stafftime.command.month");
                         break;
                     default:
-                        source.sendMessage(legacy(configManager.getMessage("stafftime_invalid_type")));
+                        source.sendMessage(configManager.getMessage("stafftime_invalid_type"));
                         return;
                 }
 
@@ -167,7 +165,7 @@ public class StaffTimeCommand implements SimpleCommand {
         }
     }
 
-    private long getSecondsForWeek(Connection conn, UUID uuid, LocalDate date) throws SQLException {
+    private long getSecondsForWeek(Connection conn, UUID uuid) throws SQLException {
         LocalDate startOfWeek = dateUtils.getStartOfWeek();
         LocalDate endOfWeek = dateUtils.getEndOfWeek();
 
@@ -182,7 +180,7 @@ public class StaffTimeCommand implements SimpleCommand {
         }
     }
 
-    private long getSecondsForMonth(Connection conn, UUID uuid, LocalDate date) throws SQLException {
+    private long getSecondsForMonth(Connection conn, UUID uuid) throws SQLException {
         LocalDate firstDay = dateUtils.getStartOfMonth();
         LocalDate lastDay = dateUtils.getEndOfMonth();
 
@@ -202,9 +200,9 @@ public class StaffTimeCommand implements SimpleCommand {
         long m = (seconds % 3600) / 60;
         long s = seconds % 60;
 
-        String hour_simbol = configManager.getMessage("hour_simbol");
-        String minute_simbol = configManager.getMessage("minute_simbol");
-        String second_simbol = configManager.getMessage("second_simbol");
+        String hour_simbol = configManager.getMessageString("hour_simbol");
+        String minute_simbol = configManager.getMessageString("minute_simbol");
+        String second_simbol = configManager.getMessageString("second_simbol");
 
         return String.format("%02d"+ hour_simbol + " %02d" + minute_simbol + " %02d" + second_simbol, h, m, s);
     }

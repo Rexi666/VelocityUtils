@@ -9,7 +9,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.DiscordWebhook;
+import org.rexi.velocityUtils.utils.DiscordWebhook;
 import org.rexi.velocityUtils.VelocityUtils;
 
 import java.util.*;
@@ -40,21 +40,18 @@ public class ReportCommand implements SimpleCommand {
 
         /* ──────────── 1. Permisos ──────────── */
         if (!source.hasPermission("velocityutils.report.use")) {
-            String no_permission = configManager.getMessage("no_permission");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(no_permission));
+            source.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
         if (!(source instanceof Player)) {
-            String no_console = configManager.getMessage("no_console");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(no_console));
+            source.sendMessage(configManager.getMessage("no_console"));
             return;
         }
 
         /* ──────────── 2. Sintaxis ──────────── */
         if (args.length < 2) {
-            String report_usage = configManager.getMessage("report_usage");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(report_usage));
+            source.sendMessage(configManager.getMessage("report_usage"));
             return;
         }
 
@@ -64,42 +61,38 @@ public class ReportCommand implements SimpleCommand {
         /* ──────────── 3. Jugador reportado ──────────── */
         Optional<Player> targetOpt = server.getPlayer(targetName);
         if (targetOpt.isEmpty()) {
-            String report_player_not_found = configManager.getMessage("report_player_not_found");
-            report_player_not_found = report_player_not_found.replace("{player}", targetName);
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(report_player_not_found));
+            source.sendMessage(configManager.getMessage("report_player_not_found",
+                    "{player}", targetName));
             return;
         }
 
         Player target = targetOpt.get();
-        String reporterName = (source instanceof Player p) ? p.getUsername() : "Unknown";
+        Player player = (Player) source;
+        String reporterName = player.getUsername();
 
         if (targetName.equals(reporterName)) {
-            String report_not_own = configManager.getMessage("report_not_own");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(report_not_own));
+            source.sendMessage(configManager.getMessage("report_not_own"));
             return;
         }
 
-        String serverName = target.getCurrentServer().map(s -> s.getServerInfo().getName()).orElse(configManager.getMessage("server_unknown"));
+        String serverName = target.getCurrentServer().map(s -> s.getServerInfo().getName()).orElse(configManager.getMessageString("server_unknown"));
 
         /* ──────────── 4. Cooldown ──────────── */
 
-        if (source instanceof Player player) {
-            UUID uuid = player.getUniqueId();
-            long now = System.currentTimeMillis();
+        UUID uuid = player.getUniqueId();
+        long now = System.currentTimeMillis();
 
-            if (cooldowns.containsKey(uuid)) {
-                long lastUsed = cooldowns.get(uuid);
-                if (now - lastUsed < COOLDOWN_MILLIS) {
-                    long secondsLeft = (COOLDOWN_MILLIS - (now - lastUsed)) / 1000;
-                    String report_cooldown = configManager.getMessage("report_cooldown");
-                    report_cooldown = report_cooldown.replace("{time}", String.valueOf(secondsLeft));
-                    source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(report_cooldown));
-                    return;
-                }
+        if (cooldowns.containsKey(uuid)) {
+            long lastUsed = cooldowns.get(uuid);
+            if (now - lastUsed < COOLDOWN_MILLIS) {
+                long secondsLeft = (COOLDOWN_MILLIS - (now - lastUsed)) / 1000;
+                source.sendMessage(configManager.getMessage("report_cooldown",
+                        "{time}", String.valueOf(secondsLeft)));
+                return;
             }
-
-            cooldowns.put(uuid, now);
         }
+
+        cooldowns.put(uuid, now);
 
         /* ──────────── 5. Preparar líneas del mensaje ──────────── */
         List<String> rawLines = configManager.getStringList("report.message");
@@ -131,11 +124,9 @@ public class ReportCommand implements SimpleCommand {
                 }
 
                 if (configManager.getBoolean("report.teleport_on_click")) {
-                    String report_hover = configManager.getMessage("report_hover");
                     Component tpLine = legacy(parsed)
                             .clickEvent(ClickEvent.runCommand("/goto " + targetName))
-                            .hoverEvent(HoverEvent.showText(
-                                    LegacyComponentSerializer.legacyAmpersand().deserialize(report_hover)));
+                            .hoverEvent(HoverEvent.showText(configManager.getMessage("report_hover")));
                     online.sendMessage(tpLine);
                 } else {
                     online.sendMessage(legacy(parsed));
@@ -158,9 +149,8 @@ public class ReportCommand implements SimpleCommand {
         }
 
         /* ──────────── 7. Confirmación al reportador ──────────── */
-        String report_sent = configManager.getMessage("report_sent");
-        report_sent = report_sent.replace("{target}", targetName);
-        source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(report_sent));
+        source.sendMessage(configManager.getMessage("report_sent",
+                "{target}", targetName));
     }
 
     /* Utilidad para traducir códigos & */

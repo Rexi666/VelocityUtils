@@ -4,7 +4,6 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
 
 import java.util.ArrayList;
@@ -26,14 +25,12 @@ public class MaintenanceCommand implements SimpleCommand {
 
         // Verificar si el usuario tiene permisos para ejecutar el comando
         if (!source.hasPermission("velocityutils.maintenance")) {
-            String no_permission = configManager.getMessage("no_permission");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(no_permission));
+            source.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
         if (args.length == 0) {
-            String maintenance_usage = configManager.getMessage("maintenance_usage");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(maintenance_usage));
+            source.sendMessage(configManager.getMessage("maintenance_usage"));
             return;
         }
 
@@ -45,32 +42,27 @@ public class MaintenanceCommand implements SimpleCommand {
 
             for (Player player : players) {
                 if (!player.hasPermission("velocityutils.maintenance.bypass")) {
-                    String under_maintenance = configManager.getMessage("maintenance_not_on_list");
-                    player.disconnect(LegacyComponentSerializer.legacyAmpersand().deserialize(under_maintenance));
+                    player.disconnect(configManager.getMessage("maintenance_not_on_list"));
                 }
             }
 
-            String maintenance_activated = configManager.getMessage("maintenance_activated");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(maintenance_activated));
+            source.sendMessage(configManager.getMessage("maintenance_activated"));
         }
         // Comando: /maintenance off
         else if (args[0].equalsIgnoreCase("off")) {
             configManager.setBoolean("maintenance.active", false);
 
-            String maintenance_deactivated = configManager.getMessage("maintenance_deactivated");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(maintenance_deactivated));
+            source.sendMessage(configManager.getMessage("maintenance_deactivated"));
         }
         // Comando no reconocido
         else {
-            String maintenance_usage = configManager.getMessage("maintenance_usage");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(maintenance_usage));
+            source.sendMessage(configManager.getMessage("maintenance_usage"));
         }
     }
 
     @Override
     public List<String> suggest(Invocation invocation) {
         String[] args = invocation.arguments();
-        List<String> allowedPlayers = configManager.getStringList("maintenance.allowed");
         List<String> suggestions = new ArrayList<>();
 
         if (args.length == 0) {

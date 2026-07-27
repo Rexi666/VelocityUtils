@@ -1,5 +1,7 @@
 package org.rexi.velocityUtils;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.yaml.NodeStyle;
@@ -18,7 +20,11 @@ public class ConfigManager {
     private final YamlConfigurationLoader configLoader;
     private final YamlConfigurationLoader messagesLoader;
 
-    public ConfigManager() {
+    private final VelocityUtils plugin;
+
+    public ConfigManager(VelocityUtils plugin) {
+        this.plugin = plugin;
+
         // Define la carpeta del plugin dentro de "plugins/"
         Path pluginFolder = Paths.get("plugins", "VelocityUtils");
 
@@ -1615,7 +1621,7 @@ public class ConfigManager {
         }
     }
     
-    public String getMessage(String key) {
+    public Component getMessage(String key, String... replacements) {
         try {
             ConfigurationNode node = messagesLoader.load();
             
@@ -1623,10 +1629,58 @@ public class ConfigManager {
                 node = node.node(part);
             }
 
-            return node.getString("&cMessage not found: " + key);
+            String line = node.getString("&cMessage not found: " + key);
+
+            for (int i = 0; i + 1 < replacements.length; i += 2) {
+                line = line.replace(replacements[i], replacements[i + 1]);
+            }
+
+            if (line.startsWith("{center}")) {
+                line = line.replaceFirst("^\\{center\\}\\s*", "");
+                line = plugin.getCenteredMessage(line);
+            }
+
+            return legacy(line);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return legacy("&cError loading message: " + key);
+        }
+    }
+
+    public String getMessageString(String key, String... replacements) {
+        try {
+            ConfigurationNode node = messagesLoader.load();
+
+            for (String part : key.split("\\.")) {
+                node = node.node(part);
+            }
+
+            String line = node.getString("&cMessage not found: " + key);
+
+            for (int i = 0; i + 1 < replacements.length; i += 2) {
+                line = line.replace(replacements[i], replacements[i + 1]);
+            }
+
+            if (line.startsWith("{center}")) {
+                line = line.replaceFirst("^\\{center\\}\\s*", "");
+                line = plugin.getCenteredMessage(line);
+            }
+
+            return line;
         } catch (IOException e) {
             e.printStackTrace();
             return "&cError loading message: " + key;
         }
+    }
+
+    private static final LegacyComponentSerializer LEGACY_HEX_SERIALIZER =
+            LegacyComponentSerializer.builder()
+                    .character('&')
+                    .hexColors()
+                    .useUnusualXRepeatedCharacterHexFormat()
+                    .build();
+
+    private Component legacy(String text) {
+        return LEGACY_HEX_SERIALIZER.deserialize(text);
     }
 }

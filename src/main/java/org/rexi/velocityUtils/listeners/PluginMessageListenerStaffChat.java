@@ -12,7 +12,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
 import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.DiscordWebhook;
+import org.rexi.velocityUtils.utils.DiscordWebhook;
 import org.rexi.velocityUtils.VelocityUtils;
 
 import java.io.*;
@@ -72,10 +72,10 @@ public class PluginMessageListenerStaffChat {
 
                 Component prefixComponent = deserializePrefix(prefixRaw);
 
-                String format = configManager.getMessage("staffchat_format")
-                        .replace("{player}", username)
-                        .replace("{message}", message)
-                        .replace("{server}", serverName);
+                String format = configManager.getMessageString("staffchat_format",
+                                "{player}", username,
+                                "{message}", message,
+                                "{server}", serverName);
 
                 Component staffMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(format)
                         .replaceText(TextReplacementConfig.builder()

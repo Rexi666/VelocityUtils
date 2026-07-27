@@ -5,7 +5,6 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
 import org.rexi.velocityUtils.VelocityUtils;
 import org.rexi.velocityUtils.utils.BanData;
@@ -29,13 +28,12 @@ public class UnbanCommand implements SimpleCommand {
         CommandSource source = invocation.source();
         String[] args = invocation.arguments();
         if (!(source.hasPermission("velocityutils.bansystem.vunban"))) {
-            source.sendMessage(deserializeLegacy(configManager.getMessage("no_permission")));
+            source.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
         if (args.length != 1) {
-            String usage = configManager.getMessage("usage_unban");
-            source.sendMessage(deserializeLegacy(usage));
+            source.sendMessage(configManager.getMessage("usage_unban"));
             return;
         }
 
@@ -44,9 +42,8 @@ public class UnbanCommand implements SimpleCommand {
         BanData checkban = plugin.loadBan(targetName, null);
 
         if (checkban == null) {
-            String not_banned = configManager.getMessage("not_banned");
-            not_banned = not_banned.replace("{player}", targetName);
-            source.sendMessage(deserializeLegacy(not_banned));
+            source.sendMessage(configManager.getMessage("not_banned",
+                    "{player}", targetName));
             return;
         }
 
@@ -60,24 +57,19 @@ public class UnbanCommand implements SimpleCommand {
             }
         }
 
-        source.sendMessage(deserializeLegacy(configManager.getMessage("unban_success")
-                .replace("{player}", targetName)));
+        source.sendMessage(configManager.getMessage("unban_success",
+                "{player}", targetName));
 
         String fromName = source instanceof Player ? ((Player) source).getUsername() : configManager.getString("ban_system.console");
 
-        String message = configManager.getMessage("unban_notify");
-        message = message.replace("{player}", targetName)
-                .replace("{unbanned_by}", fromName);
-        Component finalMessage = deserializeLegacy(message);
+        Component finalMessage = configManager.getMessage("unban_notify",
+                "{player}", targetName,
+                "{unbanned_by}", fromName);
         server.getConsoleCommandSource().sendMessage(finalMessage);
         for (Player player : server.getAllPlayers()) {
             if (player.hasPermission("velocityutils.bansystem.notify")) {
                 player.sendMessage(finalMessage);
             }
         }
-    }
-
-    private Component deserializeLegacy(String input) {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
     }
 }

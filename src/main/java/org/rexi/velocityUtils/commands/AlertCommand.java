@@ -32,15 +32,13 @@ public class AlertCommand implements SimpleCommand {
 
         // Verifica si el usuario tiene permiso
         if (!source.hasPermission("velocityutils.alert") && !(source instanceof ConsoleCommandSource)) {
-            String no_permission = configManager.getMessage("no_permission");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(no_permission));
+            source.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
         // Verifica si hay argumentos (evita enviar solo el prefix)
         if (invocation.arguments().length == 0) {
-            String alert_usage = configManager.getMessage("alert_usage");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(alert_usage));
+            source.sendMessage(configManager.getMessage("alert_usage"));
             return;
         }
 

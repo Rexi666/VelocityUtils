@@ -1,4 +1,6 @@
-package org.rexi.velocityUtils;
+package org.rexi.velocityUtils.utils;
+
+import org.rexi.velocityUtils.ConfigManager;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -9,7 +11,7 @@ public class DateUtils {
     private final ConfigManager configManager;
 
     public DateUtils(ConfigManager configManager) {
-        this.configManager = new ConfigManager();
+        this.configManager = configManager;
     }
 
     public LocalDate getStartOfWeek() {

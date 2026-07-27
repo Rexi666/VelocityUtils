@@ -5,8 +5,6 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
 import org.rexi.velocityUtils.VelocityUtils;
 
@@ -32,12 +30,12 @@ public class ServerExecuteCommand implements SimpleCommand {
         String[] args = invocation.arguments();
 
         if (source instanceof Player player && !player.hasPermission("velocityutils.serverexecute")) {
-            player.sendMessage(legacy(configManager.getMessage("no_permission")));
+            player.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
         if (args.length < 2) {
-            source.sendMessage(legacy(configManager.getMessage("serverexecute_usage")));
+            source.sendMessage(configManager.getMessage("serverexecute_usage"));
             return;
         }
 
@@ -47,7 +45,8 @@ public class ServerExecuteCommand implements SimpleCommand {
         Optional<RegisteredServer> optServer = server.getServer(serverName);
 
         if (optServer.isEmpty()) {
-            source.sendMessage(legacy(configManager.getMessage("serverexecute_server_not_found").replace("{server}", serverName)));
+            source.sendMessage(configManager.getMessage("serverexecute_server_not_found",
+                    "{server}", serverName));
             return;
         }
 
@@ -60,17 +59,8 @@ public class ServerExecuteCommand implements SimpleCommand {
             plugin.sendCommandToServer(server, command);
         }
 
-        source.sendMessage(legacy(configManager.getMessage("serverexecute_sent")
-                .replace("{server}", serverName)
-                .replace("{command}", command)));
-    }
-
-    private static final LegacyComponentSerializer LEGACY_HEX_SERIALIZER = LegacyComponentSerializer.builder()
-            .character('&')
-            .hexColors() // Habilita el soporte de hex
-            .useUnusualXRepeatedCharacterHexFormat() // Soporta &x&r&r&g&g&b&b
-            .build();
-    private Component legacy(String s) {
-        return LEGACY_HEX_SERIALIZER.deserialize(s);
+        source.sendMessage(configManager.getMessage("serverexecute_sent",
+                        "{server}", serverName,
+                "{command}", command));
     }
 }

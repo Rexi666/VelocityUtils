@@ -3,8 +3,6 @@ package org.rexi.velocityUtils.commands;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -31,14 +29,14 @@ public class MessagesCommand implements SimpleCommand {
     @Override
     public void execute(Invocation invocation) {
         if (!(invocation.source() instanceof Player player)) {
-            invocation.source().sendMessage(legacy(configManager.getMessage("no_console")));
+            invocation.source().sendMessage(configManager.getMessage("no_console"));
             return;
         }
 
         String permission = "velocityutils.messagescommand." + commandName.toLowerCase();
 
         if (!player.hasPermission(permission)) {
-            player.sendMessage(legacy(configManager.getMessage("no_permission")));
+            player.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
@@ -46,10 +44,9 @@ public class MessagesCommand implements SimpleCommand {
         List<String> message = configManager.getStringList("messagescommands." + commandName + ".message");
 
         if (message.isEmpty()) {
-            String messagescommands_no_message = configManager.getMessage("messagescommands_no_message_console")
-                    .replace("{command}", commandName);
-            server.getConsoleCommandSource().sendMessage(legacy(messagescommands_no_message));
-            player.sendMessage(legacy(configManager.getMessage("messagescommands_error_player")));
+            server.getConsoleCommandSource().sendMessage(configManager.getMessage("messagescommands_no_message_console",
+                    "{command}", commandName));
+            player.sendMessage(configManager.getMessage("messagescommands_error_player"));
             return;
         }
 
@@ -65,8 +62,8 @@ public class MessagesCommand implements SimpleCommand {
 
         if (click_action.equalsIgnoreCase("OPEN_URL") || click_action.equalsIgnoreCase("RUN_COMMAND")) {
             if (action == null || action.isEmpty() || hover == null || hover.isEmpty()) {
-                server.getConsoleCommandSource().sendMessage(legacy(configManager.getMessage("messagescommands_no_action_or_hover_console")));
-                player.sendMessage(legacy(configManager.getMessage("messagescommands_error_player")));
+                server.getConsoleCommandSource().sendMessage(configManager.getMessage("messagescommands_no_action_or_hover_console"));
+                player.sendMessage(configManager.getMessage("messagescommands_error_player"));
                 return;
             }
         }

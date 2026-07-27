@@ -3,27 +3,20 @@ package org.rexi.velocityUtils.commands;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.ConsoleCommandSource;
-import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.proxy.ProxyServer;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
 import org.rexi.velocityUtils.VelocityUtils;
 import org.rexi.velocityUtils.listeners.BrandListener;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class VelocityUtilsCommand implements SimpleCommand {
 
     private final ConfigManager configManager;
-    private final ProxyServer server;
     private final VelocityUtils plugin;
     private final BrandListener brandListener;
 
-    public VelocityUtilsCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin, BrandListener brandListener) {
+    public VelocityUtilsCommand(ConfigManager configManager, VelocityUtils plugin, BrandListener brandListener) {
         this.configManager = configManager;
-        this.server = server;
         this.plugin = plugin;
         this.brandListener = brandListener;
     }
@@ -42,15 +35,12 @@ public class VelocityUtilsCommand implements SimpleCommand {
                 brandListener.sendBrandToAll();
                 plugin.startRegularAlerts();
                 plugin.refreshTebex();
-                String configuration_reloaded = configManager.getMessage("configuration_reloaded");
-                source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(configuration_reloaded));
+                source.sendMessage(configManager.getMessage("configuration_reloaded"));
             } else {
-                String no_permission = configManager.getMessage("no_permission");
-                source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(no_permission));
+                source.sendMessage(configManager.getMessage("no_permission"));
             }
         } else {
-            String velocityutils_usage = configManager.getMessage("velocityutils_usage");
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(velocityutils_usage));
+            source.sendMessage(configManager.getMessage("velocityutils_usage"));
         }
     }
 

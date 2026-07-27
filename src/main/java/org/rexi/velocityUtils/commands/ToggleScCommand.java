@@ -2,13 +2,9 @@ package org.rexi.velocityUtils.commands;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.luckperms.api.LuckPerms;
 import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.DiscordWebhook;
 import org.rexi.velocityUtils.VelocityUtils;
 
 import java.util.UUID;
@@ -33,8 +29,7 @@ public class ToggleScCommand implements SimpleCommand {
         }
 
         if (!player.hasPermission("velocityutils.togglesc")) {
-            String no_permission = configManager.getMessage("no_permission");
-            player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(no_permission));
+            player.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
@@ -42,12 +37,10 @@ public class ToggleScCommand implements SimpleCommand {
 
         if (plugin.disabledSC.contains(uuid)) {
             plugin.disabledSC.remove(uuid);
-            String sc_enabled = configManager.getMessage("togglesc_enabled");
-            player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(sc_enabled));
+            player.sendMessage(configManager.getMessage("togglesc_enabled"));
         } else {
             plugin.disabledSC.add(uuid);
-            String sc_disabled = configManager.getMessage("togglesc_disabled");
-            player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(sc_disabled));
+            player.sendMessage(configManager.getMessage("togglesc_disabled"));
         }
     }
 }

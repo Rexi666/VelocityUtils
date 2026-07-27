@@ -1,12 +1,11 @@
-package org.rexi.velocityUtils;
+package org.rexi.velocityUtils.utils;
 
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.rexi.velocityUtils.ConfigManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -39,8 +38,9 @@ public class UpdateChecker {
                 reader.close();
 
                 if (!latestVersion.equalsIgnoreCase(currentVersion)) {
-                    String message = configManager.getMessage("new_version_available").replace("{version}", latestVersion).replace("{url}", "https://modrinth.com/plugin/velocityutils-rexi/");
-                    server.getConsoleCommandSource().sendMessage(legacy(message));
+                    server.getConsoleCommandSource().sendMessage(configManager.getMessage("new_version_available",
+                            "{version}", latestVersion,
+                            "{url}", "https://modrinth.com/plugin/velocityutils-rexi/"));
                 }
             } catch (IOException e) {
                 server.getConsoleCommandSource().sendMessage(
@@ -58,8 +58,9 @@ public class UpdateChecker {
                 reader.close();
 
                 if (!latestVersion.equalsIgnoreCase(currentVersion)) {
-                    String message = configManager.getMessage("new_version_available").replace("{version}", latestVersion).replace("{url}", "https://modrinth.com/plugin/velocityutils-rexi/");
-                    Component tpLine = legacy(message)
+                    Component tpLine = configManager.getMessage("new_version_available",
+                                    "{version}", latestVersion,
+                                    "{url}", "https://modrinth.com/plugin/velocityutils-rexi/")
                             .clickEvent(ClickEvent.openUrl("https://modrinth.com/plugin/velocityutils-rexi/"));
                     player.sendMessage(tpLine);
                 }
@@ -68,10 +69,6 @@ public class UpdateChecker {
                         Component.text("§6[VelocityUtils] §cError validating updates."));
             }
         }).delay(3, TimeUnit.SECONDS).schedule();
-    }
-
-    private Component legacy(String s) {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(s);
     }
 }
 

@@ -5,7 +5,6 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.rexi.velocityUtils.ConfigManager;
 import org.rexi.velocityUtils.VelocityUtils;
 import org.rexi.velocityUtils.utils.BanData;
@@ -32,13 +31,12 @@ public class BanCommand implements SimpleCommand {
         CommandSource source = invocation.source();
         String[] args = invocation.arguments();
         if (!(source.hasPermission("velocityutils.bansystem.vban"))) {
-            source.sendMessage(deserializeLegacy(configManager.getMessage("no_permission")));
+            source.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
 
         if (args.length < 1) {
-            String usage = configManager.getMessage("usage_ban");
-            source.sendMessage(deserializeLegacy(usage));
+            source.sendMessage(configManager.getMessage("usage_ban"));
             return;
         }
 
@@ -47,9 +45,8 @@ public class BanCommand implements SimpleCommand {
         BanData checkban = plugin.loadBan(targetName, null);
 
         if (checkban != null) {
-            String already_banned = configManager.getMessage("already_banned");
-            already_banned = already_banned.replace("{player}", targetName);
-            source.sendMessage(deserializeLegacy(already_banned));
+            source.sendMessage(configManager.getMessage("already_banned",
+                    "{player}", targetName));
             return;
         }
 
@@ -67,24 +64,20 @@ public class BanCommand implements SimpleCommand {
                 player.disconnect(plugin.banDenyMessage(banData, player.getUsername()))
         );
 
-        source.sendMessage(deserializeLegacy(configManager.getMessage("ban_success")
-                .replace("{player}", targetName).replace("{reason}", reason)));
+        source.sendMessage(configManager.getMessage("ban_success",
+                        "{player}", targetName,
+                        "{reason}", reason));
 
-        String message = configManager.getMessage("ban_notify");
-        message = message.replace("{player}", targetName)
-                .replace("{reason}", reason)
-                .replace("{banned_by}", fromName);
-        Component finalMessage = deserializeLegacy(message);
+        Component finalMessage = configManager.getMessage("ban_notify",
+                "{player}", targetName,
+                "{reason}", reason,
+                "{banned_by}", fromName);
         server.getConsoleCommandSource().sendMessage(finalMessage);
         for (Player player : server.getAllPlayers()) {
             if (player.hasPermission("velocityutils.bansystem.notify")) {
                 player.sendMessage(finalMessage);
             }
         }
-    }
-
-    private Component deserializeLegacy(String input) {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
     }
 
     @Override

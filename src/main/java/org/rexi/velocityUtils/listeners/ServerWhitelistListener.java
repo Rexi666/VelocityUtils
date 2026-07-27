@@ -129,9 +129,9 @@ public class ServerWhitelistListener {
         }
 
         // Consola
-        server.getConsoleCommandSource().sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(
-                configManager.getMessage("serverwhitelist_tried").replace("{player}", player.getUsername()).replace("{server}", serverName)
-        ));
+        server.getConsoleCommandSource().sendMessage(configManager.getMessage("serverwhitelist_tried",
+                "{player}", player.getUsername(),
+                "{server}", serverName));
     }
 
     private BossBar.Color parseColor(String color) {

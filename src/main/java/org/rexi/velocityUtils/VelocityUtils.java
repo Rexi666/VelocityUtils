@@ -31,8 +31,7 @@ import org.rexi.velocityUtils.api.VelocityUtilsProvider;
 import org.rexi.velocityUtils.commands.*;
 import org.rexi.velocityUtils.commands.banSystem.*;
 import org.rexi.velocityUtils.listeners.*;
-import org.rexi.velocityUtils.utils.BanData;
-import org.rexi.velocityUtils.utils.DefaultFontInfo;
+import org.rexi.velocityUtils.utils.*;
 import org.rexi.velocityUtils.utils.tebex.TebexService;
 import org.slf4j.Logger;
 import net.luckperms.api.LuckPerms;
@@ -72,11 +71,11 @@ public class VelocityUtils {
     private LuckPerms luckPerms = null;
     private VelocityUtilsAPI api;
 
-    private DiscordWebhook webhook;
+    private final DiscordWebhook webhook;
 
     private ScheduledTask alertsTask;
     private int currentAlertIndex = 0;
-    private List<String> alertList = new ArrayList<>();
+    private final List<String> alertList = new ArrayList<>();
 
     private final ChannelIdentifier STAFFCHAT_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "staffchat");
     private final ChannelIdentifier ADMINCHAT_CHANNEL = MinecraftChannelIdentifier.create("velocityutils", "adminchat");
@@ -102,7 +101,7 @@ public class VelocityUtils {
     public VelocityUtils(ProxyServer server, PluginContainer plugin) {
         this.server = server;
         this.plugin = plugin;
-        this.configManager = new ConfigManager();
+        this.configManager = new ConfigManager(this);
         this.brandListener = new BrandListener(configManager, server);
         this.webhook = new DiscordWebhook(configManager);
     }
@@ -209,11 +208,11 @@ public class VelocityUtils {
     public void registerCommands() {
         server.getCommandManager().register(
                 server.getCommandManager().metaBuilder("velocityutils").build(),
-                new VelocityUtilsCommand(configManager, server, this, brandListener));
+                new VelocityUtilsCommand(configManager, this, brandListener));
 
         server.getCommandManager().register(
                 server.getCommandManager().metaBuilder("vu").build(),
-                new VelocityUtilsCommand(configManager, server, this, brandListener));
+                new VelocityUtilsCommand(configManager, this, brandListener));
 
         if (configManager.getBoolean("alert.enabled")) {
             server.getCommandManager().register("alert", new AlertCommand(configManager,server,this));
@@ -325,7 +324,7 @@ public class VelocityUtils {
         if (configManager.getBoolean("ban_system.enabled") && configManager.getBoolean("ban_system.commands.vcheckban")) {
             server.getCommandManager().register(
                     server.getCommandManager().metaBuilder("vcheckban").build(),
-                    new CheckBanCommand(configManager, server, this)
+                    new CheckBanCommand(configManager, this)
             );
         }
         if (configManager.getBoolean("serverwhitelist.enabled")) {
@@ -379,15 +378,14 @@ public class VelocityUtils {
             BanData cached = banCache.get(playerName);
             if (cached != null) {
                 event.setResult(PreLoginEvent.PreLoginComponentResult.denied(banDenyMessage(cached, event.getUsername())));
-                String message = configManager.getMessage("try_join_ban");
-                message = message.replace("{player}", event.getUsername())
-                        .replace("{reason}", cached.getReason());
-                Component finalMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(message);
-                server.getConsoleCommandSource().sendMessage(finalMessage);
+                Component message = configManager.getMessage("try_join_ban",
+                        "{player}", event.getUsername(),
+                        "{reason}", cached.getReason());
+                server.getConsoleCommandSource().sendMessage(message);
 
                 for (Player player : server.getAllPlayers()) {
                     if (player.hasPermission("velocityutils.bansystem.notify")) {
-                        player.sendMessage(finalMessage);
+                        player.sendMessage(message);
                     }
                 }
                 return;
@@ -412,32 +410,29 @@ public class VelocityUtils {
                     }
                     subIpBanCache.put(bannedName, subIpBans);
 
-                    String message = configManager.getMessage("try_join_banip");
-                    message = message.replace("{player}", event.getUsername())
-                            .replace("{ip_playername}", bannedName)
-                            .replace("{reason}", ban.getReason());
-                    Component finalMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(message);
-                    server.getConsoleCommandSource().sendMessage(finalMessage);
+                    Component message = configManager.getMessage("try_join_banip",
+                            "{player}", event.getUsername(),
+                            "{ip_playername}", bannedName,
+                            "{reason}", ban.getReason());
+                    server.getConsoleCommandSource().sendMessage(message);
 
                     for (Player player : server.getAllPlayers()) {
                         if (player.hasPermission("velocityutils.bansystem.notify")) {
-                            player.sendMessage(finalMessage);
+                            player.sendMessage(message);
                         }
                     }
                 } else {
-                    String message = configManager.getMessage("try_join_ban");
-                    message = message.replace("{player}", event.getUsername())
-                            .replace("{reason}", ban.getReason());
-                    Component finalMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(message);
-                    server.getConsoleCommandSource().sendMessage(finalMessage);
+                    Component message = configManager.getMessage("try_join_ban",
+                            "{player}", event.getUsername(),
+                            "{reason}", ban.getReason());
+                    server.getConsoleCommandSource().sendMessage(message);
 
                     for (Player player : server.getAllPlayers()) {
                         if (player.hasPermission("velocityutils.bansystem.notify")) {
-                            player.sendMessage(finalMessage);
+                            player.sendMessage(message);
                         }
                     }
                 }
-                return;
             }
         }
     }
@@ -446,8 +441,8 @@ public class VelocityUtils {
     public void onLogin(LoginEvent event) {
         if (configManager.getBoolean("maintenance.active")) {
             if (!event.getPlayer().hasPermission("velocityutils.maintenance.bypass")) {
-                String under_maintenance = configManager.getMessage("maintenance_not_on_list");
-                event.setResult(LoginEvent.ComponentResult.denied(LegacyComponentSerializer.legacyAmpersand().deserialize(under_maintenance)));
+                Component message = configManager.getMessage("maintenance_not_on_list");
+                event.setResult(LoginEvent.ComponentResult.denied(message));
             }
         }
     }
@@ -911,7 +906,7 @@ public class VelocityUtils {
         // Si no, el servidor normal de Velocity
         return player.getCurrentServer()
                 .map(s -> s.getServerInfo().getName())
-                .orElse(configManager.getMessage("server_unknown"));
+                .orElse(configManager.getMessageString("server_unknown"));
     }
 
     private static final LegacyComponentSerializer LEGACY_HEX_SERIALIZER =
@@ -921,7 +916,7 @@ public class VelocityUtils {
                     .useUnusualXRepeatedCharacterHexFormat()
                     .build();
 
-    public static String getCenteredMessage(String message){
+    public String getCenteredMessage(String message){
         String original = message;
 
         if (message.contains("<") && message.contains(">")) {
@@ -946,12 +941,13 @@ public class VelocityUtils {
                 continue;
             }
 
-            if(previousCode == true){
+            if(previousCode){
                 previousCode = false;
-                if(c == 'l' || c == 'L'){
+                if (c == 'l' || c == 'L') {
                     isBold = true;
-                    continue;
-                } else isBold = false;
+                } else {
+                    isBold = false;
+                }
             }else{
                 DefaultFontInfo dFI = DefaultFontInfo.getDefaultFontInfo(c);
                 messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
