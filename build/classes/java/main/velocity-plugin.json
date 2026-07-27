@@ -1,1 +1,0 @@
-{"id":"velocityutils","name":"VelocityUtils","version":"4.1","authors":["Rexi666"],"dependencies":[{"id":"luckperms","optional":true},{"id":"limboapi","optional":true}],"main":"org.rexi.velocityUtils.VelocityUtils"}
