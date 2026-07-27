@@ -174,16 +174,16 @@ vlist:
     message:
       - "{center} &f-----------------------------"
       - "{center} &eThere are {count} players online"
-      - "{center} {servercount}"
+      - "{servercount}"
       - "{center} &f-----------------------------"
-    servercount: "&7[&b{server} &7(&b{count}&7)] - &f{players}"
+    servercount: "{center} &7[&b{server} &7(&b{count}&7)] - &f{players}"
   rank:
     message:
       - "{center} &f-----------------------------"
       - "{center} &eThere are {count} players online"
-      - "{center} {rankcount}"
+      - "{rankcount}"
       - "{center} &f-----------------------------"
-    rankcount: "&7[&b{rank} &7(&b{count}&7)] - &f{players}"
+    rankcount: "{center} &7[&b{rank} &7(&b{count}&7)] - &f{players}"
 movecommands:
   enabled: true
   lobby:
