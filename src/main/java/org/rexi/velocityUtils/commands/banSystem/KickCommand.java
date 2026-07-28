@@ -5,8 +5,8 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
-import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.VelocityUtils;
+import org.rexi.velocityUtils.managers.BanManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,12 +17,12 @@ public class KickCommand implements SimpleCommand {
 
     private final ConfigManager configManager;
     private final ProxyServer server;
-    private final VelocityUtils plugin;
+    private final BanManager banManager;
 
-    public KickCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin) {
+    public KickCommand(ConfigManager configManager, ProxyServer server, BanManager banManager) {
         this.configManager = configManager;
         this.server = server;
-        this.plugin = plugin;
+        this.banManager = banManager;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class KickCommand implements SimpleCommand {
         }
 
         server.getPlayer(targetName).ifPresent(player ->
-                player.disconnect(plugin.kickDenyMessage(player.getUsername(), fromName, reason))
+                player.disconnect(banManager.kickDenyMessage(player.getUsername(), fromName, reason))
         );
 
         source.sendMessage(configManager.getMessage("kick_success",

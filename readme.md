@@ -20,7 +20,7 @@
 ### ⚙️ Dependencies
 - ☕ Java JDK 17
 - 📚 [Luckperms Velocity](https://luckperms.net/download)
-- 🔁 [VelocityUtilsLink (backend plugin)](https://www.spigotmc.org/resources/velocityutilslink.127649/) only needed if you want to use StaffChat and AdminChat features, or you want to use PlaceholderAPI placeholders.
+- 🔁 [VelocityUtilsLink (backend plugin)](https://modrinth.com/plugin/velocityutilslink) only needed if you want to use StaffChat and AdminChat features, or you want to use PlaceholderAPI placeholders.
 
 ### 📸 Screenshots
 |                                                                                                                  |                         |
@@ -34,7 +34,7 @@
 
 ### 🧪 Commands:
 #### Admin commands
-- `/velocityutils reload` | `/vu reload` - Reload the config
+- `/velocityutils <reload|version>` | `/vu <reload|version>` - Reload the config
 - `/stafftime <jugador> [day|week|month]` - See how long a staff member has been online on the network.
 - `/serverexecute <server> <command>` - Execute a command on a specific server from the proxy console.
 - `/serverwhitelist` 

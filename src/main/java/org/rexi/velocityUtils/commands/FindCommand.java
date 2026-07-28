@@ -4,9 +4,9 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
 import org.rexi.velocityUtils.VelocityUtils;
+import org.rexi.velocityUtils.managers.DatabaseManager;
 
 import java.sql.*;
 import java.time.*;
@@ -19,11 +19,13 @@ public class FindCommand implements SimpleCommand {
     private final ConfigManager configManager;
     private final ProxyServer server;
     private final VelocityUtils plugin;
+    private final DatabaseManager databaseManager;
 
-    public FindCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin) {
+    public FindCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin,  DatabaseManager databaseManager) {
         this.configManager = configManager;
         this.server = server;
         this.plugin = plugin;
+        this.databaseManager = databaseManager;
     }
 
     @Override
@@ -57,7 +59,7 @@ public class FindCommand implements SimpleCommand {
         }
 
         // 🔹 Si no está online → buscar en la DB
-        try (Connection conn = plugin.getConnection();
+        try (Connection conn = databaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
                      "SELECT last_join FROM player_info WHERE LOWER(name) = LOWER(?)")) {
             stmt.setString(1, targetName);
@@ -94,8 +96,7 @@ public class FindCommand implements SimpleCommand {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            source.sendMessage(LegacyComponentSerializer.legacyAmpersand()
-                    .deserialize("&cError trying to reach database."));
+            source.sendMessage(configManager.legacy("&cError trying to reach database."));
         }
     }
 

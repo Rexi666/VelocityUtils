@@ -4,7 +4,8 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.LuckPerms;
-import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
+import org.rexi.velocityUtils.managers.PluginMessageManager;
 import org.rexi.velocityUtils.utils.DiscordWebhook;
 import org.rexi.velocityUtils.VelocityUtils;
 import org.rexi.velocityUtils.commands.AdminChatCommand;
@@ -23,18 +24,20 @@ public class VelocityUtilsAPIImpl implements VelocityUtilsAPI {
     private final ConfigManager configManager;
     private final LuckPerms luckperms;
     private final DiscordWebhook webhook;
+    private final PluginMessageManager pluginMessageManager;
 
-    public VelocityUtilsAPIImpl(VelocityUtils plugin, ProxyServer server, ConfigManager configManager, LuckPerms luckPerms, DiscordWebhook webhook) {
+    public VelocityUtilsAPIImpl(VelocityUtils plugin, ProxyServer server, ConfigManager configManager, LuckPerms luckPerms, DiscordWebhook webhook, PluginMessageManager pluginMessageManager) {
         this.plugin = plugin;
         this.server = server;
         this.configManager = configManager;
         this.luckperms = luckPerms;
         this.webhook = webhook;
+        this.pluginMessageManager = pluginMessageManager;
     }
 
     @Override
     public void sendAlert(String message) {
-        new AlertCommand(configManager, server, plugin).sendAlert(message);
+        new AlertCommand(configManager, server, plugin, pluginMessageManager).sendAlert(message);
     }
 
     public Map<String, String[]> getStaffList() {

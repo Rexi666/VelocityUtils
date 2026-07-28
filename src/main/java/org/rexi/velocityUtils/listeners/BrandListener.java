@@ -12,10 +12,10 @@ import com.velocitypowered.proxy.connection.client.ConnectedPlayer;
 import com.velocitypowered.proxy.protocol.ProtocolUtils;
 import com.velocitypowered.proxy.protocol.packet.PluginMessagePacket;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.rexi.velocityUtils.ConfigManager;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.rexi.velocityUtils.managers.ConfigManager;
 
 import java.nio.charset.StandardCharsets;
 
@@ -36,7 +36,7 @@ public class BrandListener {
 
         String text = configManager.getString("brand.text");
 
-        Component brandText = LegacyComponentSerializer.legacyAmpersand().deserialize(text);
+        Component brandText = configManager.legacy(text);
 
         sendBrand(player, brandText);
     }
@@ -66,7 +66,7 @@ public class BrandListener {
 
     public void sendBrandToAll() {
         if (!configManager.getBoolean("brand.enabled")) return;
-        Component brandText = LegacyComponentSerializer.legacyAmpersand().deserialize(configManager.getString("brand.text"));
+        Component brandText = configManager.legacy(configManager.getString("brand.text"));
         for (Player player : server.getAllPlayers()) {
             sendBrand(player, brandText);
         }

@@ -5,8 +5,8 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
-import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.VelocityUtils;
+import org.rexi.velocityUtils.managers.BanManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
 import org.rexi.velocityUtils.utils.BanData;
 
 import java.util.Arrays;
@@ -18,12 +18,12 @@ public class BanCommand implements SimpleCommand {
 
     private final ConfigManager configManager;
     private final ProxyServer server;
-    private final VelocityUtils plugin;
+    private final BanManager banManager;
 
-    public BanCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin) {
+    public BanCommand(ConfigManager configManager, ProxyServer server, BanManager banManager) {
         this.configManager = configManager;
         this.server = server;
-        this.plugin = plugin;
+        this.banManager = banManager;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class BanCommand implements SimpleCommand {
 
         String targetName = args[0].toLowerCase();
 
-        BanData checkban = plugin.loadBan(targetName, null);
+        BanData checkban = banManager.loadBan(targetName, null);
 
         if (checkban != null) {
             source.sendMessage(configManager.getMessage("already_banned",
@@ -58,10 +58,10 @@ public class BanCommand implements SimpleCommand {
 
         BanData banData = new BanData(targetName, null, false, fromName, java.time.Instant.now(), reason);
 
-        plugin.saveBan(banData);
+        banManager.saveBan(banData);
 
         server.getPlayer(targetName).ifPresent(player ->
-                player.disconnect(plugin.banDenyMessage(banData, player.getUsername()))
+                player.disconnect(banManager.banDenyMessage(banData, player.getUsername()))
         );
 
         source.sendMessage(configManager.getMessage("ban_success",

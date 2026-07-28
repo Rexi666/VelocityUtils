@@ -5,9 +5,9 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.VelocityUtils;
+import org.rexi.velocityUtils.managers.BanManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
+import org.rexi.velocityUtils.managers.DatabaseManager;
 import org.rexi.velocityUtils.utils.BanData;
 
 import java.sql.Connection;
@@ -21,12 +21,14 @@ public class BanIpCommand implements SimpleCommand {
 
     private final ConfigManager configManager;
     private final ProxyServer server;
-    private final VelocityUtils plugin;
+    private final DatabaseManager databaseManager;
+    private final BanManager banManager;
 
-    public BanIpCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin) {
+    public BanIpCommand(ConfigManager configManager, ProxyServer server, DatabaseManager databaseManager, BanManager banManager) {
         this.configManager = configManager;
         this.server = server;
-        this.plugin = plugin;
+        this.databaseManager = databaseManager;
+        this.banManager = banManager;
     }
 
     @Override
@@ -45,7 +47,7 @@ public class BanIpCommand implements SimpleCommand {
 
         String targetName = args[0].toLowerCase();
 
-        BanData checkban = plugin.loadBan(targetName, null);
+        BanData checkban = banManager.loadBan(targetName, null);
 
         if (checkban != null) {
             source.sendMessage(configManager.getMessage("already_banned",
@@ -61,7 +63,7 @@ public class BanIpCommand implements SimpleCommand {
                     .getAddress()
                     .getHostAddress();
         } else {
-            try (Connection conn = plugin.getConnection();
+            try (Connection conn = databaseManager.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(
                          "SELECT player_ip FROM player_info WHERE LOWER(name) = LOWER(?)")) {
                 stmt.setString(1, targetName);
@@ -74,7 +76,7 @@ public class BanIpCommand implements SimpleCommand {
             } catch (SQLException e) {
                 playerIp = null;
                 e.printStackTrace();
-                source.sendMessage(deserializeLegacy("&cError trying to reach database."));
+                source.sendMessage(configManager.legacy("&cError trying to reach database."));
             }
         }
 
@@ -92,7 +94,7 @@ public class BanIpCommand implements SimpleCommand {
 
         BanData banData = new BanData(targetName, playerIp, true, fromName, java.time.Instant.now(), reason);
 
-        plugin.saveBan(banData);
+        banManager.saveBan(banData);
 
         target.ifPresent(targetPlayer -> {
             String ip = targetPlayer.getRemoteAddress().getAddress().getHostAddress();
@@ -101,7 +103,7 @@ public class BanIpCommand implements SimpleCommand {
                 String ipPlayer = player.getRemoteAddress().getAddress().getHostAddress();
 
                 if (ipPlayer.equals(ip)) {
-                    player.disconnect(plugin.banDenyMessage(banData, player.getUsername()));
+                    player.disconnect(banManager.banDenyMessage(banData, player.getUsername()));
                 }
             });
         });
@@ -120,10 +122,6 @@ public class BanIpCommand implements SimpleCommand {
                 player.sendMessage(finalMessage);
             }
         }
-    }
-
-    private Component deserializeLegacy(String input) {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
     }
 
     @Override

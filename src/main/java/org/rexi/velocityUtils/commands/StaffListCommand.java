@@ -7,10 +7,9 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
-import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
 import org.rexi.velocityUtils.VelocityUtils;
 
 import java.util.List;
@@ -81,7 +80,7 @@ public class StaffListCommand implements SimpleCommand {
         }
 
         // Si no, asumimos que es con códigos &
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
+        return configManager.legacy(input);
     }
 
     public List<Player> getStaffOnline() {

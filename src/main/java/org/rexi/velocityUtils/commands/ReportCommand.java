@@ -7,10 +7,8 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
 import org.rexi.velocityUtils.utils.DiscordWebhook;
-import org.rexi.velocityUtils.VelocityUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,17 +18,15 @@ public class ReportCommand implements SimpleCommand {
     private final ConfigManager configManager;
     private final ProxyServer server;
     private final DiscordWebhook webhook;
-    private final VelocityUtils plugin;
 
     // Mapa para cooldowns: UUID -> timestamp del último uso
     private final Map<UUID, Long> cooldowns = new HashMap<>();
     private static final long COOLDOWN_MILLIS = 30 * 1000;
 
-    public ReportCommand(ConfigManager configManager, ProxyServer server, DiscordWebhook webhook, VelocityUtils plugin) {
+    public ReportCommand(ConfigManager configManager, ProxyServer server, DiscordWebhook webhook) {
         this.configManager = configManager;
         this.server = server;
         this.webhook = webhook;
-        this.plugin = plugin;
     }
 
     @Override
@@ -44,7 +40,7 @@ public class ReportCommand implements SimpleCommand {
             return;
         }
 
-        if (!(source instanceof Player)) {
+        if (!(source instanceof Player player)) {
             source.sendMessage(configManager.getMessage("no_console"));
             return;
         }
@@ -67,7 +63,6 @@ public class ReportCommand implements SimpleCommand {
         }
 
         Player target = targetOpt.get();
-        Player player = (Player) source;
         String reporterName = player.getUsername();
 
         if (targetName.equals(reporterName)) {
@@ -120,16 +115,16 @@ public class ReportCommand implements SimpleCommand {
 
                 if (parsed.startsWith("{center}")) {
                     parsed = parsed.replaceFirst("^\\{center\\}\\s*", "");
-                    parsed = plugin.getCenteredMessage(parsed);
+                    parsed = configManager.getCenteredMessage(parsed);
                 }
 
                 if (configManager.getBoolean("report.teleport_on_click")) {
-                    Component tpLine = legacy(parsed)
+                    Component tpLine = configManager.legacy(parsed)
                             .clickEvent(ClickEvent.runCommand("/goto " + targetName))
                             .hoverEvent(HoverEvent.showText(configManager.getMessage("report_hover")));
                     online.sendMessage(tpLine);
                 } else {
-                    online.sendMessage(legacy(parsed));
+                    online.sendMessage(configManager.legacy(parsed));
                 }
             }
         }
@@ -144,18 +139,12 @@ public class ReportCommand implements SimpleCommand {
 
             parsed = parsed.replaceFirst("^\\{center\\}\\s*", "");
 
-            server.getConsoleCommandSource().sendMessage(LegacyComponentSerializer.legacyAmpersand()
-                    .deserialize(parsed));
+            server.getConsoleCommandSource().sendMessage(configManager.legacy(parsed));
         }
 
         /* ──────────── 7. Confirmación al reportador ──────────── */
         source.sendMessage(configManager.getMessage("report_sent",
                 "{target}", targetName));
-    }
-
-    /* Utilidad para traducir códigos & */
-    private Component legacy(String s) {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(s);
     }
 
     @Override

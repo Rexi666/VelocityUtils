@@ -8,8 +8,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
 
 public class PluginMessageListenerAlerts {
 
@@ -33,7 +32,7 @@ public class PluginMessageListenerAlerts {
         ByteArrayDataInput in = ByteStreams.newDataInput(event.getData());
         String message = in.readUTF();
 
-        Component alertMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(alertPrefix + " " + message);
+        Component alertMessage = configManager.legacy(alertPrefix + " " + message);
 
         server.getAllPlayers().forEach(player -> player.sendMessage(alertMessage));
         server.getConsoleCommandSource().sendMessage(alertMessage);

@@ -7,10 +7,8 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
 import org.rexi.velocityUtils.utils.DiscordWebhook;
-import org.rexi.velocityUtils.VelocityUtils;
 
 import java.util.*;
 
@@ -19,16 +17,14 @@ public class HelpopCommand implements SimpleCommand {
     private final ConfigManager configManager;
     private final ProxyServer server;
     private final DiscordWebhook webhook;
-    private final VelocityUtils plugin;
 
     private final Map<UUID, Long> cooldowns = new HashMap<>();
     private static final long COOLDOWN_MILLIS = 30 * 1000;
 
-    public HelpopCommand (ConfigManager configManager, ProxyServer server, DiscordWebhook webhook, VelocityUtils plugin) {
+    public HelpopCommand (ConfigManager configManager, ProxyServer server, DiscordWebhook webhook) {
         this.configManager = configManager;
         this.server = server;
         this.webhook = webhook;
-        this.plugin = plugin;
     }
 
     @Override
@@ -42,7 +38,7 @@ public class HelpopCommand implements SimpleCommand {
             return;
         }
 
-        if (!(source instanceof Player)) {
+        if (!(source instanceof Player player)) {
             source.sendMessage(configManager.getMessage("no_console"));
             return;
         }
@@ -56,7 +52,6 @@ public class HelpopCommand implements SimpleCommand {
         String reason = String.join(" ", java.util.Arrays.copyOfRange(args, 0, args.length));
 
         /* ──────────── 3. Jugador reportador ──────────── */
-        Player player = (Player) source;
         String reportername = player.getUsername();
         String serverName = player.getCurrentServer().map(s -> s.getServerInfo().getName()).orElse(configManager.getMessageString("server_unknown"));
 
@@ -101,17 +96,17 @@ public class HelpopCommand implements SimpleCommand {
 
                 if (parsed.startsWith("{center}")) {
                     parsed = parsed.replaceFirst("^\\{center\\}\\s*", "");
-                    parsed = plugin.getCenteredMessage(parsed);
+                    parsed = configManager.getCenteredMessage(parsed);
                 }
 
                 if (configManager.getBoolean("helpop.teleport_on_click")) {
-                    Component tpLine = legacy(parsed)
+                    Component tpLine = configManager.legacy(parsed)
                             .clickEvent(ClickEvent.runCommand("/goto " + reportername))
                             .hoverEvent(HoverEvent.showText(
                                     configManager.getMessage("helpop_hover")));
                     online.sendMessage(tpLine);
                 } else {
-                    online.sendMessage(legacy(parsed));
+                    online.sendMessage(configManager.legacy(parsed));
                 }
             }
         }
@@ -125,17 +120,11 @@ public class HelpopCommand implements SimpleCommand {
 
             parsed = parsed.replaceFirst("^\\{center\\}\\s*", "");
 
-            server.getConsoleCommandSource().sendMessage(LegacyComponentSerializer.legacyAmpersand()
-                    .deserialize(parsed));
+            server.getConsoleCommandSource().sendMessage(configManager.legacy(parsed));
         }
 
         /* ──────────── 7. Confirmación al reportador ──────────── */
         source.sendMessage(configManager.getMessage("helpop_sent"));
-    }
-
-    /* Utilidad para traducir códigos & */
-    private Component legacy(String s) {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(s);
     }
 
     private void sendHelpopWebhook(String playerName, String message) {

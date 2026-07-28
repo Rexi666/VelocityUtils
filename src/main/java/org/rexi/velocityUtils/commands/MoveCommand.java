@@ -3,9 +3,7 @@ package org.rexi.velocityUtils.commands;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.VelocityUtils;
+import org.rexi.velocityUtils.managers.ConfigManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,13 +16,11 @@ public class MoveCommand implements SimpleCommand {
     private final ProxyServer server;
     private final String commandName;
     private final Random random = new Random();
-    private final VelocityUtils plugin;
 
-    public MoveCommand(ConfigManager configManager, ProxyServer server, String commandName, VelocityUtils plugin) {
+    public MoveCommand(ConfigManager configManager, ProxyServer server, String commandName) {
         this.configManager = configManager;
         this.server = server;
         this.commandName = commandName;
-        this.plugin = plugin;
     }
 
     @Override
@@ -79,9 +75,9 @@ public class MoveCommand implements SimpleCommand {
                                 String finalmessage = message;
                                 if (finalmessage.startsWith("{center}")) {
                                     finalmessage = finalmessage.replaceFirst("^\\{center\\}\\s*", "");
-                                    finalmessage = plugin.getCenteredMessage(finalmessage);
+                                    finalmessage = configManager.getCenteredMessage(finalmessage);
                                 }
-                                player.sendMessage(legacy(finalmessage));
+                                player.sendMessage(configManager.legacy(finalmessage));
                             }
                         } else {
                             player.sendMessage(configManager.getMessage("movecommands_server_not_found"));
@@ -96,11 +92,5 @@ public class MoveCommand implements SimpleCommand {
         }
 
         player.sendMessage(configManager.getMessage("movecommands_server_not_found"));
-    }
-
-
-
-    private net.kyori.adventure.text.Component legacy(String text) {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(text);
     }
 }

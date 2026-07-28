@@ -6,10 +6,10 @@ import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.title.Title;
-import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
 import org.rexi.velocityUtils.VelocityUtils;
+import org.rexi.velocityUtils.managers.PluginMessageManager;
 
 import java.time.Duration;
 import java.util.List;
@@ -19,11 +19,13 @@ public class AlertCommand implements SimpleCommand {
     private final ProxyServer server;
     private final ConfigManager configManager;
     private final VelocityUtils plugin;
+    private final PluginMessageManager pluginMessageManager;
 
-    public AlertCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin) {
+    public AlertCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin, PluginMessageManager pluginMessageManager) {
         this.server = server;
         this.configManager = configManager;
         this.plugin = plugin;
+        this.pluginMessageManager = pluginMessageManager;
     }
 
     @Override
@@ -31,7 +33,7 @@ public class AlertCommand implements SimpleCommand {
         CommandSource source = invocation.source();
 
         // Verifica si el usuario tiene permiso
-        if (!source.hasPermission("velocityutils.alert") && !(source instanceof ConsoleCommandSource)) {
+        if (!source.hasPermission("velocityutils.alert")) {
             source.sendMessage(configManager.getMessage("no_permission"));
             return;
         }
@@ -71,10 +73,8 @@ public class AlertCommand implements SimpleCommand {
         // Title
 
         Title title = Title.title(
-                LegacyComponentSerializer.legacyAmpersand().deserialize(
-                        titleText.replace("{message}", message)),
-                LegacyComponentSerializer.legacyAmpersand().deserialize(
-                        subtitleText.replace("{message}", message)),
+                configManager.legacy(titleText.replace("{message}", message)),
+                configManager.legacy(subtitleText.replace("{message}", message)),
                 Title.Times.times(
                         Duration.ofMillis(fade_in * 50L),
                         Duration.ofMillis(stay * 50L),
@@ -84,8 +84,7 @@ public class AlertCommand implements SimpleCommand {
 
         // ActionBar
 
-        Component actionBar = LegacyComponentSerializer.legacyAmpersand()
-                .deserialize(actionBarText.replace("{message}", message));
+        Component actionBar = configManager.legacy(actionBarText.replace("{message}", message));
 
         // BossBar
         final BossBar.Color color = parseColor(bossBarColor);
@@ -115,11 +114,10 @@ public class AlertCommand implements SimpleCommand {
 
                 if (line.startsWith("{center}")) {
                     line = line.replaceFirst("^\\{center\\}\\s*", "");
-                    line = plugin.getCenteredMessage(line);
+                    line = configManager.getCenteredMessage(line);
                 }
 
-                player.sendMessage(LegacyComponentSerializer.legacyAmpersand()
-                        .deserialize(line));
+                player.sendMessage(configManager.legacy(line));
             }
 
             // Title
@@ -135,8 +133,7 @@ public class AlertCommand implements SimpleCommand {
             // BossBar
             if (bossBarEnabled) {
                 BossBar bossBar = BossBar.bossBar(
-                        LegacyComponentSerializer.legacyAmpersand()
-                                .deserialize(bossBarText.replace("{message}", message)),
+                        configManager.legacy(bossBarText.replace("{message}", message)),
                         1.0f,
                         color,
                         overlay
@@ -153,7 +150,7 @@ public class AlertCommand implements SimpleCommand {
 
         // Sonido
         if (soundName != null && !soundName.isEmpty()) {
-            plugin.sendSoundToAll(soundName);
+            pluginMessageManager.sendSoundToAll(soundName);
         }
 
         // Consola
@@ -161,8 +158,7 @@ public class AlertCommand implements SimpleCommand {
             line = line.replace("{message}", message);
             line = line.replaceFirst("^\\{center\\}\\s*", "");
 
-            server.getConsoleCommandSource().sendMessage(LegacyComponentSerializer.legacyAmpersand()
-                    .deserialize(line));
+            server.getConsoleCommandSource().sendMessage(configManager.legacy(line));
         }
     }
 

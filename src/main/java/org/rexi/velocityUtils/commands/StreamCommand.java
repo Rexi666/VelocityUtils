@@ -12,8 +12,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
-import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.VelocityUtils;
+import org.rexi.velocityUtils.managers.ConfigManager;
 
 import java.util.*;
 
@@ -22,13 +21,11 @@ public class StreamCommand implements SimpleCommand {
     private final ConfigManager configManager;
     private final ProxyServer server;
     private final LuckPerms luckPerms;
-    private final VelocityUtils plugin;
 
-    public StreamCommand(ConfigManager configManager, ProxyServer server, LuckPerms luckPerms, VelocityUtils plugin) {
+    public StreamCommand(ConfigManager configManager, ProxyServer server, LuckPerms luckPerms) {
         this.configManager = configManager;
         this.server = server;
         this.luckPerms = luckPerms;
-        this.plugin = plugin;
     }
 
     private final Map<UUID, Long> streamCooldowns = new HashMap<>();
@@ -99,15 +96,6 @@ public class StreamCommand implements SimpleCommand {
         }
     }
 
-    private static final LegacyComponentSerializer LEGACY_HEX_SERIALIZER = LegacyComponentSerializer.builder()
-            .character('&')
-            .hexColors() // Habilita el soporte de hex
-            .useUnusualXRepeatedCharacterHexFormat() // Soporta &x&r&r&g&g&b&b
-            .build();
-    private Component legacy(String s) {
-        return LEGACY_HEX_SERIALIZER.deserialize(s);
-    }
-
     private void sendMessage(Player player, String url) {
         String rangoRaw = obtenerRango(player);
 
@@ -120,7 +108,7 @@ public class StreamCommand implements SimpleCommand {
         boolean hoverEnabled = configManager.getBoolean("stream.hover_enabled");
 
         Component hoverComponent = hoverEnabled
-                ? legacy(configManager.getString("stream.hover"))
+                ? configManager.legacy(configManager.getString("stream.hover"))
                 : null;
 
         Collection<Player> players = server.getAllPlayers();
@@ -132,10 +120,10 @@ public class StreamCommand implements SimpleCommand {
 
             if (line.startsWith("{center}")) {
                 line = line.replaceFirst("^\\{center\\}\\s*", "");
-                line = plugin.getCenteredMessage(line);
+                line = configManager.getCenteredMessage(line);
             }
 
-            Component base = legacy(line);
+            Component base = configManager.legacy(line);
 
             base = base.replaceText(TextReplacementConfig.builder()
                     .matchLiteral(rankPlain)
@@ -163,8 +151,7 @@ public class StreamCommand implements SimpleCommand {
                     .replace("{url}", url)
                     .replace("{rank}", rankPlain);
             line = line.replaceFirst("^\\{center\\}\\s*", "");
-            server.getConsoleCommandSource().sendMessage(LegacyComponentSerializer.legacyAmpersand()
-                    .deserialize(line));
+            server.getConsoleCommandSource().sendMessage(configManager.legacy(line));
         }
     }
 
@@ -206,6 +193,6 @@ public class StreamCommand implements SimpleCommand {
         }
 
         // Si no, asumimos que es con códigos &
-        return LEGACY_HEX_SERIALIZER.deserialize(input);
+        return configManager.legacy(input);
     }
 }

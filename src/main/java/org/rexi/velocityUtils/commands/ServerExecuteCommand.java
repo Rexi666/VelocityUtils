@@ -5,8 +5,9 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
 import org.rexi.velocityUtils.VelocityUtils;
+import org.rexi.velocityUtils.managers.PluginMessageManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,11 +18,13 @@ public class ServerExecuteCommand implements SimpleCommand {
     private final ConfigManager configManager;
     private final ProxyServer server;
     private final VelocityUtils plugin;
+    private final PluginMessageManager pluginMessageManager;
 
-    public ServerExecuteCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin) {
+    public ServerExecuteCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin, PluginMessageManager pluginMessageManager) {
         this.configManager = configManager;
         this.server = server;
         this.plugin = plugin;
+        this.pluginMessageManager = pluginMessageManager;
     }
 
     @Override
@@ -56,7 +59,7 @@ public class ServerExecuteCommand implements SimpleCommand {
             // No hay jugadores -> almacenamos el comando
             plugin.pendingCommands.computeIfAbsent(serverName, k -> new ArrayList<>()).add(command);
         } else {
-            plugin.sendCommandToServer(server, command);
+            pluginMessageManager.sendCommandToServer(server, command);
         }
 
         source.sendMessage(configManager.getMessage("serverexecute_sent",

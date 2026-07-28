@@ -6,9 +6,8 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.VelocityUtils;
+import org.rexi.velocityUtils.managers.ConfigManager;
+import org.rexi.velocityUtils.managers.PluginMessageManager;
 
 import java.util.List;
 
@@ -17,13 +16,13 @@ public class MessagesCommand implements SimpleCommand {
     private final ConfigManager configManager;
     private final ProxyServer server;
     private final String commandName;
-    private final VelocityUtils plugin;
+    private final PluginMessageManager pluginMessageManager;
 
-    public MessagesCommand(ConfigManager configManager, ProxyServer server, String commandName, VelocityUtils plugin) {
+    public MessagesCommand(ConfigManager configManager, ProxyServer server, String commandName, PluginMessageManager pluginMessageManager) {
         this.configManager = configManager;
         this.server = server;
         this.commandName = commandName;
-        this.plugin = plugin;
+        this.pluginMessageManager = pluginMessageManager;
     }
 
     @Override
@@ -71,31 +70,27 @@ public class MessagesCommand implements SimpleCommand {
         for (String line : message) {
             if (line.startsWith("{center}")) {
                 line = line.replaceFirst("^\\{center\\}\\s*", "");
-                line = plugin.getCenteredMessage(line);
+                line = configManager.getCenteredMessage(line);
             }
 
-            Component messageLine = legacy(line);
+            Component messageLine = configManager.legacy(line);
 
             if (click_action.equalsIgnoreCase("OPEN_URL")) {
                 messageLine = messageLine
                         .clickEvent(ClickEvent.openUrl(action))
-                        .hoverEvent(HoverEvent.showText(legacy(hover)));
+                        .hoverEvent(HoverEvent.showText(configManager.legacy(hover)));
             } else if (click_action.equalsIgnoreCase("RUN_COMMAND")) {
                 messageLine = messageLine
                         .clickEvent(ClickEvent.runCommand(action))
-                        .hoverEvent(HoverEvent.showText(legacy(hover)));
+                        .hoverEvent(HoverEvent.showText(configManager.legacy(hover)));
             }
 
             player.sendMessage(messageLine);
 
             if (soundName != null && !soundName.isEmpty()) {
-                plugin.sendSoundToPlayer(player, soundName);
+                pluginMessageManager.sendSoundToPlayer(player, soundName);
             }
         }
 
-    }
-
-    private net.kyori.adventure.text.Component legacy(String text) {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(text);
     }
 }

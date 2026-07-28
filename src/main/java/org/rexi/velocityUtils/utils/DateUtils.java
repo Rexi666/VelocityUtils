@@ -1,6 +1,6 @@
 package org.rexi.velocityUtils.utils;
 
-import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;

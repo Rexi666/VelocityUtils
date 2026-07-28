@@ -8,7 +8,7 @@ import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
-import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
 import org.rexi.velocityUtils.utils.tebex.DonorStats;
 import org.rexi.velocityUtils.utils.tebex.TebexService;
 import org.rexi.velocityUtils.utils.tebex.TopDonor;

@@ -2,8 +2,8 @@ package org.rexi.velocityUtils.commands.banSystem;
 
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
-import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.VelocityUtils;
+import org.rexi.velocityUtils.managers.BanManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
 import org.rexi.velocityUtils.utils.BanData;
 
 import java.util.List;
@@ -12,11 +12,11 @@ import java.util.Map;
 public class CheckBanCommand implements SimpleCommand {
 
     private final ConfigManager configManager;
-    private final VelocityUtils plugin;
+    private final BanManager banManager;
 
-    public CheckBanCommand(ConfigManager configManager, VelocityUtils plugin) {
+    public CheckBanCommand(ConfigManager configManager, BanManager banManager) {
         this.configManager = configManager;
-        this.plugin = plugin;
+        this.banManager = banManager;
     }
 
     @Override
@@ -35,7 +35,7 @@ public class CheckBanCommand implements SimpleCommand {
 
         String targetName = args[0].toLowerCase();
 
-        BanData checkban = plugin.loadBan(targetName, null);
+        BanData checkban = banManager.loadBan(targetName, null);
 
         if (checkban != null) {
             source.sendMessage(configManager.getMessage("checkban_banned",
@@ -43,14 +43,14 @@ public class CheckBanCommand implements SimpleCommand {
                     "{banned_by}", checkban.getBannedBy(),
                     "{reason}", checkban.getReason()));
         } else {
-            if (plugin.banCache.containsKey(targetName)) {
-                for (Map.Entry<String, List<String>> entry : plugin.subIpBanCache.entrySet()) {
+            if (banManager.getBanCache().containsKey(targetName)) {
+                for (Map.Entry<String, List<String>> entry : banManager.getSubIpBanCache().entrySet()) {
                     if (entry.getValue().contains(targetName)) {
                         source.sendMessage(configManager.getMessage("checkban_banned_ip",
                                 "{ip_playername}", entry.getKey(),
                                 "{player}", targetName,
-                                "{banned_by}", plugin.banCache.get(entry.getKey()).getBannedBy(),
-                                "{reason}", plugin.banCache.get(entry.getKey()).getReason()));
+                                "{banned_by}", banManager.getBanCache().get(entry.getKey()).getBannedBy(),
+                                "{reason}", banManager.getBanCache().get(entry.getKey()).getReason()));
                         return;
                     }
                 }

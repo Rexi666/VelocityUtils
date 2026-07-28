@@ -1,6 +1,6 @@
 package org.rexi.velocityUtils.utils;
 
-import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -111,10 +111,9 @@ public class DiscordWebhook {
 
     public String getPlayerAvatar(String playerName) {
         String uuid = getUuidFromName(playerName);
-        String avatar = (uuid != null)
+        return (uuid != null)
                 ? "https://minotar.net/helm/" + uuid + "/64.png"
                 : "https://i.pinimg.com/564x/54/f4/b5/54f4b55a59ff9ddf2a2655c7f35e4356.jpg";
-        return avatar;
     }
 
     public void setColorRGB(String color) {

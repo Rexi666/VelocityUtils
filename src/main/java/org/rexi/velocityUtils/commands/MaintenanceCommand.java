@@ -4,7 +4,8 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.listeners.MotdListener;
+import org.rexi.velocityUtils.managers.ConfigManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +13,12 @@ import java.util.List;
 public class MaintenanceCommand implements SimpleCommand {
     private final ConfigManager configManager;
     private final ProxyServer server;
+    private final MotdListener motdListener;
 
-    public MaintenanceCommand(ConfigManager configManager, ProxyServer server) {
+    public MaintenanceCommand(ConfigManager configManager, ProxyServer server, MotdListener motdListener) {
         this.configManager = configManager;
         this.server = server;
+        this.motdListener = motdListener;
     }
 
     @Override
@@ -37,6 +40,7 @@ public class MaintenanceCommand implements SimpleCommand {
         // Comando: /maintenance on
         if (args[0].equalsIgnoreCase("on")) {
             configManager.setBoolean("maintenance.active", true);
+            motdListener.changeMaintenanceActive(true);
 
             List<Player> players = server.getAllPlayers().stream().toList();
 
@@ -51,6 +55,7 @@ public class MaintenanceCommand implements SimpleCommand {
         // Comando: /maintenance off
         else if (args[0].equalsIgnoreCase("off")) {
             configManager.setBoolean("maintenance.active", false);
+            motdListener.changeMaintenanceActive(false);
 
             source.sendMessage(configManager.getMessage("maintenance_deactivated"));
         }

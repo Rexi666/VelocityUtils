@@ -5,8 +5,8 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
+import org.rexi.velocityUtils.managers.DatabaseManager;
 import org.rexi.velocityUtils.utils.DateUtils;
 import org.rexi.velocityUtils.utils.StaffSession;
 import org.rexi.velocityUtils.VelocityUtils;
@@ -26,12 +26,14 @@ public class StaffTimeCommand implements SimpleCommand {
     private final ProxyServer server;
     private final VelocityUtils plugin;
     private final DateUtils dateUtils;
+    private final DatabaseManager databaseManager;
 
-    public StaffTimeCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin, DateUtils dateUtils) {
+    public StaffTimeCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin, DateUtils dateUtils,  DatabaseManager databaseManager) {
         this.configManager = configManager;
         this.server = server;
         this.plugin = plugin;
         this.dateUtils = dateUtils;
+        this.databaseManager = databaseManager;
     }
 
     @Override
@@ -53,7 +55,7 @@ public class StaffTimeCommand implements SimpleCommand {
         String period = args.length >= 2 ? args[1].toLowerCase(Locale.ROOT) : "";
 
         UUID uuid;
-        try (Connection conn = plugin.getConnection()) {
+        try (Connection conn = databaseManager.getConnection()) {
             Optional<Player> targetOpt = server.getPlayer(targetName);
 
             if (targetOpt.isPresent()) {
@@ -101,11 +103,11 @@ public class StaffTimeCommand implements SimpleCommand {
                     if (parsed.startsWith("{center}")) {
                         parsed = parsed.replaceFirst("^\\{center\\}\\s*", "");
                         if (isPlayer) {
-                            parsed = plugin.getCenteredMessage(parsed);
+                            parsed = configManager.getCenteredMessage(parsed);
                         }
                     }
 
-                    source.sendMessage(legacy(parsed));
+                    source.sendMessage(configManager.legacy(parsed));
                 }
             } else {
                 long seconds;
@@ -139,17 +141,17 @@ public class StaffTimeCommand implements SimpleCommand {
                     if (parsed.startsWith("{center}")) {
                         parsed = parsed.replaceFirst("^\\{center\\}\\s*", "");
                         if (isPlayer) {
-                            parsed = plugin.getCenteredMessage(parsed);
+                            parsed = configManager.getCenteredMessage(parsed);
                         }
                     }
 
 
-                    source.sendMessage(legacy(parsed));
+                    source.sendMessage(configManager.legacy(parsed));
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            source.sendMessage(legacy("&cError trying to reach database."));
+            source.sendMessage(configManager.legacy("&cError trying to reach database."));
         }
     }
 
@@ -205,10 +207,6 @@ public class StaffTimeCommand implements SimpleCommand {
         String second_simbol = configManager.getMessageString("second_simbol");
 
         return String.format("%02d"+ hour_simbol + " %02d" + minute_simbol + " %02d" + second_simbol, h, m, s);
-    }
-
-    private Component legacy(String s) {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(s);
     }
 
     @Override

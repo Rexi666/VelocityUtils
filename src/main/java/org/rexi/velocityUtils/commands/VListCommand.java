@@ -10,7 +10,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
-import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
 import org.rexi.velocityUtils.VelocityUtils;
 
 import java.util.*;
@@ -81,21 +81,21 @@ public class VListCommand implements SimpleCommand {
                     if (formatted.startsWith("{center}")) {
                         formatted = formatted.replaceFirst("^\\{center\\}\\s*", "");
                         if (isPlayer) {
-                            formatted = plugin.getCenteredMessage(formatted);
+                            formatted = configManager.getCenteredMessage(formatted);
                         }
                     }
 
-                    source.sendMessage(legacy(formatted));
+                    source.sendMessage(configManager.legacy(formatted));
                 }
             } else {
                 line = line.replace("{count}", String.valueOf(totalPlayers));
                 if (line.startsWith("{center}")) {
                     line = line.replaceFirst("^\\{center\\}\\s*", "");
                     if (isPlayer) {
-                        line = plugin.getCenteredMessage(line);
+                        line = configManager.getCenteredMessage(line);
                     }
                 }
-                source.sendMessage(legacy(line));
+                source.sendMessage(configManager.legacy(line));
             }
         }
     }
@@ -139,11 +139,11 @@ public class VListCommand implements SimpleCommand {
                             if (semiFormatted.startsWith("{center}")) {
                                 semiFormatted = semiFormatted.replaceFirst("^\\{center\\}\\s*", "");
                                 if (isPlayer) {
-                                    semiFormatted = plugin.getCenteredMessage(semiFormatted);
+                                    semiFormatted = configManager.getCenteredMessage(semiFormatted);
                                 }
                             }
 
-                            Component formatted = legacy(semiFormatted);
+                            Component formatted = configManager.legacy(semiFormatted);
 
                             formatted = formatted.replaceText(TextReplacementConfig.builder()
                                     .matchLiteral(rankPlain)
@@ -157,10 +157,10 @@ public class VListCommand implements SimpleCommand {
                 if (line.startsWith("{center}")) {
                     line = line.replaceFirst("^\\{center\\}\\s*", "");
                     if (isPlayer) {
-                        line = plugin.getCenteredMessage(line);
+                        line = configManager.getCenteredMessage(line);
                     }
                 }
-                source.sendMessage(legacy(line));
+                source.sendMessage(configManager.legacy(line));
             }
         }
     }
@@ -204,11 +204,6 @@ public class VListCommand implements SimpleCommand {
         return 0; // Default weight
     }
 
-
-    private Component legacy(String s) {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(s);
-    }
-
     @Override
     public List<String> suggest(Invocation invocation) {
         String[] args = invocation.arguments();
@@ -245,7 +240,7 @@ public class VListCommand implements SimpleCommand {
         }
 
         // Si no, asumimos que es con códigos &
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
+        return configManager.legacy(input);
     }
 
 }

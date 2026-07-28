@@ -2,45 +2,78 @@ package org.rexi.velocityUtils.commands;
 
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
-import com.velocitypowered.api.proxy.ConsoleCommandSource;
-import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.VelocityUtils;
+import org.rexi.velocityUtils.listeners.MotdListener;
+import org.rexi.velocityUtils.managers.AlertManager;
+import org.rexi.velocityUtils.managers.CommandManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
 import org.rexi.velocityUtils.listeners.BrandListener;
+import org.rexi.velocityUtils.utils.tebex.TebexService;
 
 import java.util.List;
 
 public class VelocityUtilsCommand implements SimpleCommand {
 
     private final ConfigManager configManager;
-    private final VelocityUtils plugin;
     private final BrandListener brandListener;
+    private final CommandManager commandManager;
+    private final AlertManager alertManager;
+    private final TebexService tebexService;
+    private final MotdListener motdListener;
 
-    public VelocityUtilsCommand(ConfigManager configManager, VelocityUtils plugin, BrandListener brandListener) {
+    private String version;
+    private String author;
+
+    public VelocityUtilsCommand(ConfigManager configManager, BrandListener brandListener, CommandManager commandManager, AlertManager alertManager, TebexService tebexService, MotdListener motdListener, String version, String author) {
         this.configManager = configManager;
-        this.plugin = plugin;
         this.brandListener = brandListener;
+        this.commandManager = commandManager;
+        this.alertManager = alertManager;
+        this.tebexService = tebexService;
+        this.motdListener = motdListener;
+
+        this.version = version;
+        this.author = author;
     }
 
     @Override
     public void execute(Invocation invocation) {
         CommandSource source = invocation.source();
+        String[] args = invocation.arguments();
 
-        if (invocation.arguments().length > 0 && invocation.arguments()[0].equalsIgnoreCase("reload")) {
-            if (source.hasPermission("velocityutils.admin") || source instanceof ConsoleCommandSource) {
-                configManager.loadConfig();
-                configManager.loadMessages();
-                plugin.registerMoveCommands();
-                plugin.registerCommands();
-                plugin.registerMessagesCommands();
-                brandListener.sendBrandToAll();
-                plugin.startRegularAlerts();
-                plugin.refreshTebex();
-                source.sendMessage(configManager.getMessage("configuration_reloaded"));
-            } else {
-                source.sendMessage(configManager.getMessage("no_permission"));
+        if (!source.hasPermission("velocityutils.admin")) {
+            source.sendMessage(configManager.getMessage("no_permission"));
+        }
+
+        if (args.length == 0) {
+            source.sendMessage(configManager.getMessage("velocityutils_usage"));
+            return;
+        }
+
+        if (args[0].equalsIgnoreCase("reload")) {
+            configManager.loadConfig();
+            configManager.loadMessages();
+            commandManager.registerMoveCommands();
+            commandManager.registerCommands();
+            commandManager.registerMessagesCommands();
+            brandListener.sendBrandToAll();
+            alertManager.startRegularAlerts();
+            motdListener.reload();
+
+            if (configManager.getBoolean("tebex_link.enabled")
+                    && !configManager.getString("tebex_link.secret").equalsIgnoreCase("YOUR_TEBEX_SECRET_KEY")) {
+                tebexService.refresh();
             }
+
+            source.sendMessage(configManager.getMessage("configuration_reloaded"));
+            return;
+        } else if (args[0].equalsIgnoreCase("version")) {
+            source.sendMessage(configManager.getMessage("velocityutils_version",
+                    "{version}", version,
+                    "{author}", author));
+            return;
         } else {
             source.sendMessage(configManager.getMessage("velocityutils_usage"));
+            return;
         }
     }
 

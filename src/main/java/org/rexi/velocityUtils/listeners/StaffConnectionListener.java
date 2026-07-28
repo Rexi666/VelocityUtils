@@ -8,10 +8,11 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
 import org.rexi.velocityUtils.*;
+import org.rexi.velocityUtils.managers.ConfigManager;
+import org.rexi.velocityUtils.managers.DatabaseManager;
 import org.rexi.velocityUtils.utils.DateUtils;
 import org.rexi.velocityUtils.utils.DiscordWebhook;
 import org.rexi.velocityUtils.utils.StaffSession;
@@ -26,21 +27,21 @@ import java.util.UUID;
 public class StaffConnectionListener {
 
     private final ConfigManager configManager;
-    private final VelocityUtils plugin;
     private final Map<UUID, StaffSession> sessions;
     private final ProxyServer server;
     private final LuckPerms luckPerms;
     private final DiscordWebhook webhook;
     private final DateUtils dateUtils;
+    private final DatabaseManager databaseManager;
 
-    public StaffConnectionListener(VelocityUtils plugin, Map<UUID, StaffSession> sessions, ConfigManager configManager, ProxyServer server, LuckPerms luckPerms, DiscordWebhook webhook, DateUtils dateUtils) {
-        this.plugin = plugin;
+    public StaffConnectionListener(Map<UUID, StaffSession> sessions, ConfigManager configManager, ProxyServer server, LuckPerms luckPerms, DiscordWebhook webhook, DateUtils dateUtils, DatabaseManager databaseManager) {
         this.sessions = sessions;
         this.configManager = configManager;
         this.server = server;
         this.luckPerms = luckPerms;
         this.webhook = webhook;
         this.dateUtils = dateUtils;
+        this.databaseManager = databaseManager;
     }
 
     @Subscribe
@@ -157,7 +158,7 @@ public class StaffConnectionListener {
 
     public void saveSessionDurationDaily(UUID uuid, LocalDate date, Duration duration) {
         String sql;
-        if (plugin.isUsingMySQL()) {
+        if (databaseManager.isUsingMySQL()) {
             sql = """
             INSERT INTO staff_time_daily (uuid, date, duration_seconds)
             VALUES (?, ?, ?)
@@ -172,7 +173,7 @@ public class StaffConnectionListener {
             duration_seconds = duration_seconds + excluded.duration_seconds;
             """;
         }
-        try (var conn = plugin.getConnection();
+        try (var conn = databaseManager.getConnection();
              var pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, uuid.toString());
             pstmt.setString(2, date.toString()); // yyyy-MM-dd
@@ -188,7 +189,7 @@ public class StaffConnectionListener {
         SELECT SUM(duration_seconds) FROM staff_time_daily
         WHERE uuid = ? AND date BETWEEN ? AND ?
         """;
-        try (var conn = plugin.getConnection();
+        try (var conn = databaseManager.getConnection();
              var pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, uuid.toString());
             pstmt.setString(2, startDate.toString());
@@ -211,7 +212,7 @@ public class StaffConnectionListener {
                 .getHostAddress();
 
         String sql;
-        if (plugin.isUsingMySQL()) {
+        if (databaseManager.isUsingMySQL()) {
             sql = """
         INSERT INTO player_info (uuid, name, last_join, player_ip)
         VALUES (?, ?, NOW(), ?)
@@ -231,7 +232,7 @@ public class StaffConnectionListener {
         """;
         }
 
-        try (var conn = plugin.getConnection();
+        try (var conn = databaseManager.getConnection();
              var pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, player.getUniqueId().toString());
             pstmt.setString(2, player.getUsername());
@@ -253,7 +254,7 @@ public class StaffConnectionListener {
                     String format = configManager.getString("staffjoin.join_message")
                             .replace("{player}", player.getUsername());
 
-                    Component joinMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(format)
+                    Component joinMessage = configManager.legacy(format)
                             .replaceText(TextReplacementConfig.builder()
                                     .matchLiteral("{rank}")
                                     .replacement(prefix)
@@ -270,7 +271,7 @@ public class StaffConnectionListener {
                             .replace("{server}", newServer)
                             .replace("{from}", previousServer);
 
-                    Component changeMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(format)
+                    Component changeMessage = configManager.legacy(format)
                             .replaceText(TextReplacementConfig.builder()
                                     .matchLiteral("{rank}")
                                     .replacement(prefix)
@@ -297,7 +298,7 @@ public class StaffConnectionListener {
                 String format = configManager.getString("staffjoin.leave_message")
                         .replace("{player}", player.getUsername());
 
-                Component leaveMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(format)
+                Component leaveMessage = configManager.legacy(format)
                         .replaceText(TextReplacementConfig.builder()
                                 .matchLiteral("{rank}")
                                 .replacement(prefix)
@@ -325,7 +326,7 @@ public class StaffConnectionListener {
         }
 
         // Si no, asumimos que es con códigos &
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
+        return configManager.legacy(input);
     }
 
     private String obtenerRango(Player player) {

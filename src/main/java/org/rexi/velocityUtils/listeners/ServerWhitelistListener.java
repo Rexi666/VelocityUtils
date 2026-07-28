@@ -6,10 +6,10 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.title.Title;
-import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
 import org.rexi.velocityUtils.VelocityUtils;
+import org.rexi.velocityUtils.managers.PluginMessageManager;
 
 import java.time.Duration;
 import java.util.List;
@@ -19,11 +19,13 @@ public class ServerWhitelistListener {
     private final ConfigManager configManager;
     private final ProxyServer server;
     private final VelocityUtils plugin;
+    private final PluginMessageManager pluginMessageManager;
 
-    public ServerWhitelistListener(ConfigManager configManager, ProxyServer server, VelocityUtils plugin) {
+    public ServerWhitelistListener(ConfigManager configManager, ProxyServer server, VelocityUtils plugin, PluginMessageManager pluginMessageManager) {
         this.configManager = configManager;
         this.server = server;
         this.plugin = plugin;
+        this.pluginMessageManager = pluginMessageManager;
     }
 
     @Subscribe
@@ -60,12 +62,10 @@ public class ServerWhitelistListener {
         for (String line : message) {
             if (line.startsWith("{center}")) {
                 line = line.replaceFirst("^\\{center\\}\\s*", "");
-                line = plugin.getCenteredMessage(line);
+                line = configManager.getCenteredMessage(line);
             }
 
-            player.sendMessage(
-                    LegacyComponentSerializer.legacyAmpersand().deserialize(line)
-            );
+            player.sendMessage(configManager.legacy(line));
         }
 
         // Title
@@ -77,8 +77,8 @@ public class ServerWhitelistListener {
             int fade_out = configManager.getInt("serverwhitelist.title.durations.fade_out");
 
             Title title = Title.title(
-                    LegacyComponentSerializer.legacyAmpersand().deserialize(titleText),
-                    LegacyComponentSerializer.legacyAmpersand().deserialize(subtitleText),
+                    configManager.legacy(titleText),
+                    configManager.legacy(subtitleText),
                     Title.Times.times(
                             Duration.ofMillis(fade_in * 50L),
                             Duration.ofMillis(stay * 50L),
@@ -93,7 +93,7 @@ public class ServerWhitelistListener {
         if (actionBarEnabled) {
             String actionBarText = configManager.getString("serverwhitelist.actionbar.message");
 
-            Component actionBar = LegacyComponentSerializer.legacyAmpersand().deserialize(actionBarText);
+            Component actionBar = configManager.legacy(actionBarText);
 
             player.sendActionBar(actionBar);
         }
@@ -109,7 +109,7 @@ public class ServerWhitelistListener {
             final BossBar.Overlay overlay = parseOverlay(bossBarOverlay);
 
             BossBar bossBar = BossBar.bossBar(
-                    LegacyComponentSerializer.legacyAmpersand().deserialize(bossBarText),
+                    configManager.legacy(bossBarText),
                     1.0f,
                     color,
                     overlay
@@ -125,7 +125,7 @@ public class ServerWhitelistListener {
 
         // Sonido
         if (soundName != null && !soundName.isEmpty()) {
-            plugin.sendSoundToPlayer(player, soundName);
+            pluginMessageManager.sendSoundToPlayer(player, soundName);
         }
 
         // Consola

@@ -8,10 +8,9 @@ import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
-import org.rexi.velocityUtils.ConfigManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
 import org.rexi.velocityUtils.utils.DiscordWebhook;
 import org.rexi.velocityUtils.VelocityUtils;
 
@@ -77,7 +76,7 @@ public class PluginMessageListenerStaffChat {
                                 "{message}", message,
                                 "{server}", serverName);
 
-                Component staffMessage = LegacyComponentSerializer.legacyAmpersand().deserialize(format)
+                Component staffMessage = configManager.legacy(format)
                         .replaceText(TextReplacementConfig.builder()
                                 .matchLiteral("{prefix}")
                                 .replacement(prefixComponent)
@@ -119,7 +118,7 @@ public class PluginMessageListenerStaffChat {
         }
 
         // Si no, asumimos que es con códigos &
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(input);
+        return configManager.legacy(input);
     }
 
     private String obtenerRangoFromUUID(UUID uuid) {

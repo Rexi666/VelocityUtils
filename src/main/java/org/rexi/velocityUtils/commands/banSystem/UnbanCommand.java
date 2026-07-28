@@ -5,8 +5,8 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
-import org.rexi.velocityUtils.ConfigManager;
-import org.rexi.velocityUtils.VelocityUtils;
+import org.rexi.velocityUtils.managers.BanManager;
+import org.rexi.velocityUtils.managers.ConfigManager;
 import org.rexi.velocityUtils.utils.BanData;
 
 import java.util.List;
@@ -15,12 +15,12 @@ public class UnbanCommand implements SimpleCommand {
 
     private final ConfigManager configManager;
     private final ProxyServer server;
-    private final VelocityUtils plugin;
+    private final BanManager banManager;
 
-    public UnbanCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin) {
+    public UnbanCommand(ConfigManager configManager, ProxyServer server, BanManager banManager) {
         this.configManager = configManager;
         this.server = server;
-        this.plugin = plugin;
+        this.banManager = banManager;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class UnbanCommand implements SimpleCommand {
 
         String targetName = args[0].toLowerCase();
 
-        BanData checkban = plugin.loadBan(targetName, null);
+        BanData checkban = banManager.loadBan(targetName, null);
 
         if (checkban == null) {
             source.sendMessage(configManager.getMessage("not_banned",
@@ -47,13 +47,13 @@ public class UnbanCommand implements SimpleCommand {
             return;
         }
 
-        plugin.removeBan(checkban);
+        banManager.removeBan(checkban);
 
-        List<String> subIps = plugin.subIpBanCache.getOrDefault(targetName, null);
+        List<String> subIps = banManager.getSubIpBanCache().getOrDefault(targetName, null);
 
         if (subIps != null) {
             for (String subIp : subIps) {
-                plugin.banCache.remove(subIp);
+                banManager.getBanCache().remove(subIp);
             }
         }
 

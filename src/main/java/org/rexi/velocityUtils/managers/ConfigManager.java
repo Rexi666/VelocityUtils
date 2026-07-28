@@ -1,7 +1,9 @@
-package org.rexi.velocityUtils;
+package org.rexi.velocityUtils.managers;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.rexi.velocityUtils.utils.DefaultFontInfo;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.yaml.NodeStyle;
@@ -20,11 +22,7 @@ public class ConfigManager {
     private final YamlConfigurationLoader configLoader;
     private final YamlConfigurationLoader messagesLoader;
 
-    private final VelocityUtils plugin;
-
-    public ConfigManager(VelocityUtils plugin) {
-        this.plugin = plugin;
-
+    public ConfigManager() {
         // Define la carpeta del plugin dentro de "plugins/"
         Path pluginFolder = Paths.get("plugins", "VelocityUtils");
 
@@ -1212,7 +1210,10 @@ public class ConfigManager {
                     node.node("configuration_reloaded").set("&aConfiguration reloaded successfully! For some changes to take effect, you may need to restart the proxy.");
                 }
                 if (node.node("velocityutils_usage").empty()) {
-                    node.node("velocityutils_usage").set("&cUsage: /velocityutils reload");
+                    node.node("velocityutils_usage").set("&cUsage: /velocityutils <reload|version>");
+                }
+                if (node.node("velocityutils_version").empty()) {
+                    node.node("velocityutils_version").set("&eVelocityUtils version: &b{version} &eby &b{author}");
                 }
                 if (node.node("maintenance_not_on_list").empty()) {
                     node.node("maintenance_not_on_list").set("&cThe server is under maintenance!");
@@ -1517,7 +1518,8 @@ public class ConfigManager {
             node.node("new_version_available").set("&cA new version of VelocityUtils is available (&b{version}&c)! &e{url}");
             node.node("alert_usage").set("&cUsage: /alert <message>");
             node.node("configuration_reloaded").set("&aConfiguration reloaded successfully! For some changes to take effect, you may need to restart the proxy.");
-            node.node("velocityutils_usage").set("&cUsage: /velocityutils reload");
+            node.node("velocityutils_usage").set("&cUsage: /velocityutils <reload|version>");
+            node.node("velocityutils_version").set("&eVelocityUtils version: &b{version} &eby &b{author}");
             node.node("maintenance_not_on_list").set("&cThe server is under maintenance!");
             node.node("maintenance_usage").set("&cUsage: /maintenance <on|off>");
             node.node("maintenance_activated").set("&aMaintenance mode activated.");
@@ -1637,7 +1639,7 @@ public class ConfigManager {
 
             if (line.startsWith("{center}")) {
                 line = line.replaceFirst("^\\{center\\}\\s*", "");
-                line = plugin.getCenteredMessage(line);
+                line = getCenteredMessage(line);
             }
 
             return legacy(line);
@@ -1663,7 +1665,7 @@ public class ConfigManager {
 
             if (line.startsWith("{center}")) {
                 line = line.replaceFirst("^\\{center\\}\\s*", "");
-                line = plugin.getCenteredMessage(line);
+                line = getCenteredMessage(line);
             }
 
             return line;
@@ -1680,7 +1682,58 @@ public class ConfigManager {
                     .useUnusualXRepeatedCharacterHexFormat()
                     .build();
 
-    private Component legacy(String text) {
+    public Component legacy(String text) {
         return LEGACY_HEX_SERIALIZER.deserialize(text);
+    }
+
+    public String getCenteredMessage(String message){
+        String original = message;
+
+        if (message.contains("<") && message.contains(">")) {
+            message = LegacyComponentSerializer.legacyAmpersand().serialize(
+                    MiniMessage.miniMessage().deserialize(message)
+            );
+        } else {
+            // Si es legacy (&), normalízalo (también soporta hex)
+            message = LEGACY_HEX_SERIALIZER.serialize(
+                    LEGACY_HEX_SERIALIZER.deserialize(message)
+            );
+        }
+
+        int CENTER_PX = 154;
+        int messagePxSize = 0;
+        boolean previousCode = false;
+        boolean isBold = false;
+
+        for(char c : message.toCharArray()){
+            if(c == '&'){
+                previousCode = true;
+                continue;
+            }
+
+            if(previousCode){
+                previousCode = false;
+                if (c == 'l' || c == 'L') {
+                    isBold = true;
+                } else {
+                    isBold = false;
+                }
+            }else{
+                DefaultFontInfo dFI = DefaultFontInfo.getDefaultFontInfo(c);
+                messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
+                messagePxSize++;
+            }
+        }
+
+        int halvedMessageSize = messagePxSize / 2;
+        int toCompensate = CENTER_PX - halvedMessageSize;
+        int spaceLength = DefaultFontInfo.SPACE.getLength() + 1;
+        int compensated = 0;
+        StringBuilder sb = new StringBuilder();
+        while(compensated < toCompensate){
+            sb.append(" ");
+            compensated += spaceLength;
+        }
+        return (sb.toString() + original);
     }
 }
