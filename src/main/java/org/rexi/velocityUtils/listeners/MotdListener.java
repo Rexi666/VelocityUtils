@@ -2,9 +2,18 @@ package org.rexi.velocityUtils.listeners;
 
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
+import com.velocitypowered.api.proxy.server.ServerPing;
+import com.velocitypowered.api.util.Favicon;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.rexi.velocityUtils.managers.ConfigManager;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.io.File;
+import java.io.IOException;
 
 public class MotdListener {
 
@@ -14,6 +23,9 @@ public class MotdListener {
     private Component maintenanceMotd;
     private boolean motdEnabled;
     private boolean maintenanceEnabled;
+
+    private boolean serverIconEnabled;
+    private Favicon serverIconFavicon;
 
     public MotdListener(ConfigManager configManager) {
         this.configManager = configManager;
@@ -32,6 +44,28 @@ public class MotdListener {
                 configManager.getString("maintenance.motd.line1"),
                 configManager.getString("maintenance.motd.line2")
         );
+
+        serverIconEnabled = configManager.getBoolean("server_icon.enabled");
+        serverIconFavicon = null;
+        if (serverIconEnabled) {
+            try {
+                File icon = new File("plugins/VelocityUtils", configManager.getString("server_icon.file"));
+                if (icon.exists()) {
+                    BufferedImage image = ImageIO.read(icon);
+
+                    if (image != null) {
+                        if (image.getWidth() != 64 || image.getHeight() != 64) {
+                            image = resizeImage(image, 64, 64);
+                        }
+                        ImageIO.write(image, "png", icon);
+
+                        serverIconFavicon = Favicon.create(image);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private Component buildMotd(String line1, String line2) {
@@ -48,15 +82,23 @@ public class MotdListener {
 
     @Subscribe
     public void onProxyPing(ProxyPingEvent event) {
-        if (!motdEnabled && !maintenanceEnabled) {
-            return;
+        ServerPing.Builder builder = event.getPing().asBuilder();
+        if (motdEnabled || maintenanceEnabled) {
+            Component motd = maintenanceEnabled
+                    ? maintenanceMotd
+                    : normalMotd;
+
+                    builder.description(motd);
+        }
+        if (serverIconEnabled) {
+            if (serverIconFavicon != null) {
+                builder.favicon(serverIconFavicon);
+            }
         }
 
-        Component motd = maintenanceEnabled
-                ? maintenanceMotd
-                : normalMotd;
-
-        event.setPing(event.getPing().asBuilder().description(motd).build());
+        if (motdEnabled || maintenanceEnabled || serverIconEnabled) {
+            event.setPing(builder.build());
+        }
     }
 
     private static final MiniMessage MINI_MESSAGE =
@@ -68,5 +110,19 @@ public class MotdListener {
 
     public boolean getMaintenanceStatus() {
         return maintenanceEnabled;
+    }
+
+    private BufferedImage resizeImage(BufferedImage original, int width, int height) {
+        BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+        Graphics2D g = resized.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        g.drawImage(original, 0, 0, width, height, null);
+        g.dispose();
+
+        return resized;
     }
 }

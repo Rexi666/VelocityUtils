@@ -8,7 +8,11 @@ import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,6 +34,18 @@ public class ConfigManager {
         if (!Files.exists(pluginFolder)) {
             try {
                 Files.createDirectories(pluginFolder);
+
+                File file = new File("plugins/VelocityUtils", "server-icon.png");
+
+                if (!file.exists()) {
+                    try (InputStream in = getClass().getClassLoader().getResourceAsStream("server-icon.png")) {
+                        if (in == null) {
+                            throw new FileNotFoundException("server-icon.png");
+                        }
+
+                        Files.copy(in, file.toPath());
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -715,6 +731,13 @@ public class ConfigManager {
                     node.node("serverwhitelist", "bossbar", "duration").set(5);
                 }
 
+                if (node.node("server_icon", "enabled").empty()) {
+                    node.node("server_icon", "enabled").set(false);
+                }
+                if (node.node("server_icon", "file").empty()) {
+                    node.node("server_icon", "file").set("server-icon.png");
+                }
+
                 // Guardar en caso de que se hayan agregado valores predeterminados
                 configLoader.save(node);
             }
@@ -1053,6 +1076,8 @@ public class ConfigManager {
             node.node("serverwhitelist", "bossbar", "overlay").set("PROGRESS");
             node.node("serverwhitelist", "bossbar", "duration").set(5);
 
+            node.node("server_icon", "enabled").set(true);
+            node.node("server_icon", "file").set("server-icon.png");
 
             configLoader.save(node);
         } catch (SerializationException e) {

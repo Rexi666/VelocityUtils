@@ -338,3 +338,6 @@ serverwhitelist:
     color: RED
     overlay: PROGRESS
     duration: 5
+server_icon:
+  enabled: true
+  file: "server-icon.png"
