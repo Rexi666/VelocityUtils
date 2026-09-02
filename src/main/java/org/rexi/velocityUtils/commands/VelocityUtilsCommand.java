@@ -2,6 +2,8 @@ package org.rexi.velocityUtils.commands;
 
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
+import com.velocitypowered.api.proxy.Player;
+import org.rexi.velocityUtils.VelocityUtils;
 import org.rexi.velocityUtils.listeners.MotdListener;
 import org.rexi.velocityUtils.managers.AlertManager;
 import org.rexi.velocityUtils.managers.CommandManager;
@@ -19,17 +21,19 @@ public class VelocityUtilsCommand implements SimpleCommand {
     private final AlertManager alertManager;
     private final TebexService tebexService;
     private final MotdListener motdListener;
+    private final VelocityUtils plugin;
 
     private String version;
     private String author;
 
-    public VelocityUtilsCommand(ConfigManager configManager, BrandListener brandListener, CommandManager commandManager, AlertManager alertManager, TebexService tebexService, MotdListener motdListener, String version, String author) {
+    public VelocityUtilsCommand(ConfigManager configManager, BrandListener brandListener, CommandManager commandManager, AlertManager alertManager, TebexService tebexService, MotdListener motdListener, String version, String author, VelocityUtils plugin) {
         this.configManager = configManager;
         this.brandListener = brandListener;
         this.commandManager = commandManager;
         this.alertManager = alertManager;
         this.tebexService = tebexService;
         this.motdListener = motdListener;
+        this.plugin = plugin;
 
         this.version = version;
         this.author = author;
@@ -42,6 +46,11 @@ public class VelocityUtilsCommand implements SimpleCommand {
 
         if (!source.hasPermission("velocityutils.admin")) {
             source.sendMessage(configManager.getMessage("no_permission"));
+        }
+
+        if (source instanceof Player p && plugin.isPlayerInDisabledServer(p)) {
+            source.sendMessage(configManager.getMessage("disabled_features_servers"));
+            return;
         }
 
         if (args.length == 0) {

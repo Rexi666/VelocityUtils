@@ -37,6 +37,11 @@ public class ServerExecuteCommand implements SimpleCommand {
             return;
         }
 
+        if (source instanceof Player p && plugin.isPlayerInDisabledServer(p)) {
+            source.sendMessage(configManager.getMessage("disabled_features_servers"));
+            return;
+        }
+
         if (args.length < 2) {
             source.sendMessage(configManager.getMessage("serverexecute_usage"));
             return;

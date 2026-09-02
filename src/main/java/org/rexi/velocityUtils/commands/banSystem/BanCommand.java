@@ -5,6 +5,7 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
+import org.rexi.velocityUtils.VelocityUtils;
 import org.rexi.velocityUtils.managers.BanManager;
 import org.rexi.velocityUtils.managers.ConfigManager;
 import org.rexi.velocityUtils.utils.BanData;
@@ -19,11 +20,13 @@ public class BanCommand implements SimpleCommand {
     private final ConfigManager configManager;
     private final ProxyServer server;
     private final BanManager banManager;
+    private final VelocityUtils plugin;
 
-    public BanCommand(ConfigManager configManager, ProxyServer server, BanManager banManager) {
+    public BanCommand(ConfigManager configManager, ProxyServer server, BanManager banManager, VelocityUtils plugin) {
         this.configManager = configManager;
         this.server = server;
         this.banManager = banManager;
+        this.plugin = plugin;
     }
 
     @Override
@@ -32,6 +35,11 @@ public class BanCommand implements SimpleCommand {
         String[] args = invocation.arguments();
         if (!(source.hasPermission("velocityutils.bansystem.vban"))) {
             source.sendMessage(configManager.getMessage("no_permission"));
+            return;
+        }
+
+        if (source instanceof Player p && plugin.isPlayerInDisabledServer(p)) {
+            source.sendMessage(configManager.getMessage("disabled_features_servers"));
             return;
         }
 
@@ -74,7 +82,7 @@ public class BanCommand implements SimpleCommand {
                 "{banned_by}", fromName);
         server.getConsoleCommandSource().sendMessage(finalMessage);
         for (Player player : server.getAllPlayers()) {
-            if (player.hasPermission("velocityutils.bansystem.notify")) {
+            if (player.hasPermission("velocityutils.bansystem.notify") && !plugin.isPlayerInDisabledServer(player)) {
                 player.sendMessage(finalMessage);
             }
         }

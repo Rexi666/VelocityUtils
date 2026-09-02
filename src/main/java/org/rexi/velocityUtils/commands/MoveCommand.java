@@ -3,6 +3,7 @@ package org.rexi.velocityUtils.commands;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import org.rexi.velocityUtils.VelocityUtils;
 import org.rexi.velocityUtils.managers.ConfigManager;
 
 import java.util.ArrayList;
@@ -16,11 +17,13 @@ public class MoveCommand implements SimpleCommand {
     private final ProxyServer server;
     private final String commandName;
     private final Random random = new Random();
+    private final VelocityUtils plugin;
 
-    public MoveCommand(ConfigManager configManager, ProxyServer server, String commandName) {
+    public MoveCommand(ConfigManager configManager, ProxyServer server, String commandName, VelocityUtils plugin) {
         this.configManager = configManager;
         this.server = server;
         this.commandName = commandName;
+        this.plugin = plugin;
     }
 
     @Override
@@ -34,6 +37,11 @@ public class MoveCommand implements SimpleCommand {
 
         if (!player.hasPermission(permission)) {
             player.sendMessage(configManager.getMessage("no_permission"));
+            return;
+        }
+
+        if (plugin.isPlayerInDisabledServer(player)) {
+            player.sendMessage(configManager.getMessage("disabled_features_servers"));
             return;
         }
 

@@ -83,7 +83,7 @@ public class PluginMessageListenerAdminChat {
                                 .build());
 
                 server.getAllPlayers().forEach(target -> {
-                    if (target.hasPermission("velocityutils.adminchat") && !plugin.disabledSC.contains(target.getUniqueId())) {
+                    if (target.hasPermission("velocityutils.adminchat") && !plugin.disabledSC.contains(target.getUniqueId()) && !plugin.isPlayerInDisabledServer(target)) {
                         target.sendMessage(adminMessage);
                     }
                 });

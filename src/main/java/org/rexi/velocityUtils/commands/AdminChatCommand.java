@@ -48,6 +48,11 @@ public class AdminChatCommand implements SimpleCommand {
             return;
         }
 
+        if (plugin.isPlayerInDisabledServer(player)) {
+            player.sendMessage(configManager.getMessage("disabled_features_servers"));
+            return;
+        }
+
         String[] args = invocation.arguments();
         UUID uuid = player.getUniqueId();
         Set<UUID> toggled = plugin.getAdminChatToggled();
@@ -75,7 +80,7 @@ public class AdminChatCommand implements SimpleCommand {
                             .build());
 
             server.getAllPlayers().forEach(target -> {
-                if (target.hasPermission("velocityutils.adminchat") && !plugin.disabledSC.contains(target.getUniqueId())) {
+                if (target.hasPermission("velocityutils.adminchat") && !plugin.disabledSC.contains(target.getUniqueId()) && !plugin.isPlayerInDisabledServer(target)) {
                     target.sendMessage(adminMessage);
                 }
             });

@@ -68,11 +68,11 @@ public class CommandManager {
 
         commandManager.register(
                 commandManager.metaBuilder("velocityutils").build(),
-                new VelocityUtilsCommand(configManager, brandListener, this, alertManager, tebexService, motdListener, version, author));
+                new VelocityUtilsCommand(configManager, brandListener, this, alertManager, tebexService, motdListener, version, author, plugin));
 
         commandManager.register(
                 commandManager.metaBuilder("vu").build(),
-                new VelocityUtilsCommand(configManager, brandListener, this, alertManager, tebexService, motdListener, version, author));
+                new VelocityUtilsCommand(configManager, brandListener, this, alertManager, tebexService, motdListener, version, author, plugin));
 
         if (enabled("alert")) {
             commandManager.register("alert",
@@ -82,20 +82,20 @@ public class CommandManager {
         if (enabled("maintenance")) {
             commandManager.register(
                     commandManager.metaBuilder("maintenance").build(),
-                    new MaintenanceCommand(configManager, server, motdListener));
+                    new MaintenanceCommand(configManager, server, motdListener, plugin));
         }
 
         if (enabled("report")) {
             commandManager.register(
                     commandManager.metaBuilder("report").build(),
-                    new ReportCommand(configManager, server, webhook)
+                    new ReportCommand(configManager, server, webhook, plugin)
             );
         }
 
         if (enabled("goto")) {
             commandManager.register(
                     commandManager.metaBuilder("goto").build(),
-                    new GotoCommand(configManager, server));
+                    new GotoCommand(configManager, server, plugin));
         }
 
         if (enabled("find")) {
@@ -141,14 +141,14 @@ public class CommandManager {
         if (enabled("helpop")) {
             commandManager.register(
                     commandManager.metaBuilder("helpop").build(),
-                    new HelpopCommand(configManager, server, webhook)
+                    new HelpopCommand(configManager, server, webhook, plugin)
             );
         }
 
         if (enabled("stream")) {
             commandManager.register(
                     commandManager.metaBuilder("stream").build(),
-                    new StreamCommand(configManager, server, luckPerms)
+                    new StreamCommand(configManager, server, luckPerms, plugin)
             );
         }
         if (enabled("serverexecute")) {
@@ -167,35 +167,35 @@ public class CommandManager {
             if (configManager.getBoolean("ban_system.commands.vban")) {
                 commandManager.register(
                         commandManager.metaBuilder("vban").build(),
-                        new BanCommand(configManager, server, banManager)
+                        new BanCommand(configManager, server, banManager, plugin)
                 );
             }
 
             if (configManager.getBoolean("ban_system.commands.vbanip")) {
                 commandManager.register(
                         commandManager.metaBuilder("vbanip").build(),
-                        new BanIpCommand(configManager, server, databaseManager, banManager)
+                        new BanIpCommand(configManager, server, databaseManager, banManager, plugin)
                 );
             }
 
             if (configManager.getBoolean("ban_system.commands.vunban")) {
                 commandManager.register(
                         commandManager.metaBuilder("vunban").build(),
-                        new UnbanCommand(configManager, server, banManager)
+                        new UnbanCommand(configManager, server, banManager, plugin)
                 );
             }
 
             if (configManager.getBoolean("ban_system.commands.vkick")) {
                 commandManager.register(
                         commandManager.metaBuilder("vkick").build(),
-                        new KickCommand(configManager, server, banManager)
+                        new KickCommand(configManager, server, banManager, plugin)
                 );
             }
 
             if (configManager.getBoolean("ban_system.commands.vcheckban")) {
                 commandManager.register(
                         commandManager.metaBuilder("vcheckban").build(),
-                        new CheckBanCommand(configManager, banManager)
+                        new CheckBanCommand(configManager, banManager, plugin)
                 );
             }
         }
@@ -203,7 +203,36 @@ public class CommandManager {
         if (enabled("serverwhitelist")) {
             commandManager.register(
                     commandManager.metaBuilder("serverwhitelist").build(),
-                    new ServerWhitelistCommand(configManager, server));
+                    new ServerWhitelistCommand(configManager, server, plugin));
+        }
+
+        if (enabled("private_messages")) {
+            if (configManager.getBoolean("private_messages.vmsg")) {
+                commandManager.register(
+                        commandManager.metaBuilder("vmsg").build(),
+                        new VMsgCommand(configManager, server, plugin));
+                commandManager.register(
+                        commandManager.metaBuilder("vmessage").build(),
+                        new VMsgCommand(configManager, server, plugin));
+            }
+            if (configManager.getBoolean("private_messages.vreply")) {
+                commandManager.register(
+                        commandManager.metaBuilder("vr").build(),
+                        new VReplyCommand(configManager, server, plugin));
+                commandManager.register(
+                        commandManager.metaBuilder("vreply").build(),
+                        new VReplyCommand(configManager, server, plugin));
+            }
+            if (configManager.getBoolean("private_messages.vignore")) {
+                commandManager.register(
+                        commandManager.metaBuilder("vignore").build(),
+                        new VIgnoreCommand(configManager, server, plugin));
+            }
+            if (configManager.getBoolean("private_messages.vspy")) {
+                commandManager.register(
+                        commandManager.metaBuilder("vspy").build(),
+                        new VSpyCommand(configManager, server, plugin));
+            }
         }
     }
 
@@ -213,7 +242,7 @@ public class CommandManager {
             if (!moveCommandsNode.virtual()) {
                 for (ConfigurationNode commandNode : moveCommandsNode.childrenMap().values()) {
                     String commandName = commandNode.key().toString();
-                    server.getCommandManager().register(commandName, new MoveCommand(configManager, server, commandName));
+                    server.getCommandManager().register(commandName, new MoveCommand(configManager, server, commandName, plugin));
                 }
             }
         }
@@ -224,7 +253,7 @@ public class CommandManager {
             if (!messagesCommandsNode.virtual()) {
                 for (ConfigurationNode commandNode : messagesCommandsNode.childrenMap().values()) {
                     String commandName = commandNode.key().toString();
-                    server.getCommandManager().register(commandName, new MessagesCommand(configManager, server, commandName, pluginMessageManager));
+                    server.getCommandManager().register(commandName, new MessagesCommand(configManager, server, commandName, pluginMessageManager, plugin));
                 }
             }
         }

@@ -1,6 +1,9 @@
 package org.rexi.velocityUtils;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.event.connection.DisconnectEvent;
+import com.velocitypowered.api.event.connection.PostLoginEvent;
+import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.plugin.Dependency;
@@ -205,5 +208,92 @@ public class VelocityUtils {
         return player.getCurrentServer()
                 .map(s -> s.getServerInfo().getName())
                 .orElse(configManager.getMessageString("server_unknown"));
+    }
+
+    // Vmsg
+
+    public Map<UUID, UUID> messageReplies = new HashMap<>();
+    private Map<UUID, Set<UUID>> ignoredPlayers = new HashMap<>();
+    public Map<UUID, List<UUID>> spyPlayers = new HashMap<>(); // Target - List<UUID> of players spying on them
+    public List<UUID> spyGlobalPlayers = new ArrayList<>();
+
+    public void getIgnoredPlayersFromDB(Player player) {
+        try {
+            ignoredPlayers.put(
+                    player.getUniqueId(),
+                    databaseManager.getIgnoredPlayers(player.getUniqueId().toString())
+            );
+        } catch (SQLException e) {
+            logger.warn("Failed to load player ignored list on the database: " + e.getMessage());
+        }
+    }
+    public void setIgnoredPlayers(UUID player, UUID ignored, boolean active) {
+        if (active) {
+            ignoredPlayers.computeIfAbsent(player, k -> new HashSet<>()).add(ignored);
+            try {
+                databaseManager.addIgnoredPlayer(player.toString(), ignored.toString());
+            } catch (SQLException e) {
+                logger.warn("Failed to save player ignored status on the database: " + e.getMessage());
+            }
+        } else {
+            Set<UUID> ignoredSet = ignoredPlayers.get(player);
+            if (ignoredSet != null) {
+                ignoredSet.remove(ignored);
+            }
+            try {
+                databaseManager.removeIgnoredPlayer(player.toString(), ignored.toString());
+            } catch (SQLException e) {
+                logger.warn("Failed to save player ignored status on the database: " + e.getMessage());
+            }
+        }
+    }
+    public boolean checkIgnoredPlayers(UUID player, UUID ignored) {
+        return ignoredPlayers.getOrDefault(player, Collections.emptySet()).contains(ignored);
+    }
+    public void cacheRemoveIgnoredPlayers(Player player) {
+        ignoredPlayers.remove(player.getUniqueId());
+    }
+
+    public void removeSpy(UUID spyUUID) {
+        Iterator<Map.Entry<UUID, List<UUID>>> iterator = spyPlayers.entrySet().iterator();
+
+        while (iterator.hasNext()) {
+            Map.Entry<UUID, List<UUID>> entry = iterator.next();
+
+            List<UUID> spies = entry.getValue();
+            spies.remove(spyUUID);
+
+            if (spies.isEmpty()) {
+                iterator.remove();
+            }
+        }
+    }
+
+    @Subscribe
+    public void onJoin(PostLoginEvent event) {
+        Player player = event.getPlayer();
+
+        getIgnoredPlayersFromDB(player);
+    }
+
+    @Subscribe
+    public void onDisconnect(DisconnectEvent event) {
+        Player player = event.getPlayer();
+
+        cacheRemoveIgnoredPlayers(player);
+        UUID playerUUID = player.getUniqueId();
+        spyGlobalPlayers.remove(playerUUID);
+        removeSpy(playerUUID);
+    }
+
+    public boolean isPlayerInDisabledServer(Player player) {
+        String serverName = player.getCurrentServer()
+                .map(s -> s.getServerInfo().getName())
+                .orElse(configManager.getMessageString("server_unknown"));
+        if (configManager.getStringList("disabled_features_servers").contains(serverName)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

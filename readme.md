@@ -55,10 +55,14 @@
 - `/vunban <player>` - Unban a player from the entire network
 - `/vkick <player> [reason]` - Kick a player from the entire network
 - `/vcheckban <player>` - Check if a player is banned from the network
+- `/spy [player]` - See private messages sent with /vmsg and /vreply. If a player is specified, it will only show messages from that player.
 #### User commands
 - `/report <user> <reason>` - Report a user to the staff team
 - You can configure a MoveCommand to move players to another server, for example /lobby or /survival
 - `/stream <url>` - Send a message to the entire network with a link to your stream
+- `/vmsg <player> <message>` - Send a private message to a player across the network
+- `/vreply <message>` - Reply to the last private message received
+- `/vignore <player>` - Ignore private messages from a specific player
 
 ### 🔐 Permissions:
 #### Admin permissions
@@ -91,13 +95,16 @@
 - `velocityutils.bansystem.vunban` - access to /vunban
 - `velocityutils.bansystem.vkick` - access to /vkick
 - `velocityutils.bansystem.vcheckban` - access to /vcheckban
+- `velocityutils.vignore.bypass` - permission to bypass the /vignore command
+- `velocityutils.vspy` - permission to see private messages sent with /vmsg and /vreply
 #### User permissions
 - `velocityutils.report.use` - access to /report
 - `velocityutils.helpop.use` - access to /helpop
 - `velocityutils.movecommand.<command>` - permission to use a MoveCommand, e.g. `velocityutils.movecommand.lobby` to use the command /lobby. Use `velocityutils.movecommand.*` to grant all move commands.
 - `velocityutils.messagescommand.<command>` - permission to use a MessagesCommand, e.g. `velocityutils.messagescommand.discord` to use the command /discord. Use `velocityutils.messagescommand.*` to grant all messages commands.
 - `velocityutils.stream` - permission to use the /stream command.
-
+- `velocityutils.private_message` - permission to use the /vmsg and /vreply command.
+- `velocityutils.vignore` - permission to use the /vignore command.
 ### ✏️ Placeholders:
 [VelocityUtilsLink (backend plugin)](https://www.spigotmc.org/resources/velocityutilslink.127649/) + [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) needed to be installed on the backends to use these placeholders.
 - `%velocityutils_globalplayers%` - Total number of players across the network.

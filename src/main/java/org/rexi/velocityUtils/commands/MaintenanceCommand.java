@@ -4,6 +4,7 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import org.rexi.velocityUtils.VelocityUtils;
 import org.rexi.velocityUtils.listeners.MotdListener;
 import org.rexi.velocityUtils.managers.ConfigManager;
 
@@ -14,11 +15,13 @@ public class MaintenanceCommand implements SimpleCommand {
     private final ConfigManager configManager;
     private final ProxyServer server;
     private final MotdListener motdListener;
+    private final VelocityUtils plugin;
 
-    public MaintenanceCommand(ConfigManager configManager, ProxyServer server, MotdListener motdListener) {
+    public MaintenanceCommand(ConfigManager configManager, ProxyServer server, MotdListener motdListener, VelocityUtils plugin) {
         this.configManager = configManager;
         this.server = server;
         this.motdListener = motdListener;
+        this.plugin = plugin;
     }
 
     @Override
@@ -29,6 +32,11 @@ public class MaintenanceCommand implements SimpleCommand {
         // Verificar si el usuario tiene permisos para ejecutar el comando
         if (!source.hasPermission("velocityutils.maintenance")) {
             source.sendMessage(configManager.getMessage("no_permission"));
+            return;
+        }
+
+        if (source instanceof Player p && plugin.isPlayerInDisabledServer(p)) {
+            source.sendMessage(configManager.getMessage("disabled_features_servers"));
             return;
         }
 

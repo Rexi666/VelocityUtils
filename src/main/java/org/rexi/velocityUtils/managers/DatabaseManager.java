@@ -5,7 +5,12 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class DatabaseManager {
 
@@ -27,6 +32,7 @@ public class DatabaseManager {
         String staffTimeTable;
         String playerInfoTable;
         String playerBans;
+        String ignoredPlayers;
 
         if (dbType.equals("mysql")) {
             staffTimeTable = """
@@ -55,6 +61,14 @@ public class DatabaseManager {
             banned_by VARCHAR(20) NOT NULL,
             banned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             reason VARCHAR(16)
+        );
+        """;
+
+            ignoredPlayers = """
+        CREATE TABLE IF NOT EXISTS ignored_players (
+            player_uuid VARCHAR(36) NOT NULL,
+            ignored_uuid VARCHAR(36) NOT NULL,
+            PRIMARY KEY (player_uuid, ignored_uuid)
         );
         """;
         } else {
@@ -86,6 +100,14 @@ public class DatabaseManager {
             reason TEXT
         );
         """;
+
+            ignoredPlayers = """
+        CREATE TABLE IF NOT EXISTS ignored_players (
+            player_uuid TEXT NOT NULL,
+            ignored_uuid TEXT NOT NULL,
+            PRIMARY KEY (player_uuid, ignored_uuid)
+        );
+        """;
         }
 
         try (var conn = getConnection();
@@ -93,6 +115,7 @@ public class DatabaseManager {
             stmt.execute(staffTimeTable);
             stmt.execute(playerInfoTable);
             stmt.execute(playerBans);
+            stmt.execute(ignoredPlayers);
 
             try {
                 if (dbType.equals("mysql")) {
@@ -115,6 +138,46 @@ public class DatabaseManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void addIgnoredPlayer(String playerUUID, String ignoredUUID) throws SQLException {
+        String sql = "REPLACE INTO ignored_players (player_uuid, ignored_uuid) VALUES (?, ?)";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, playerUUID);
+            ps.setString(2, ignoredUUID);
+            ps.executeUpdate();
+        }
+    }
+
+    public void removeIgnoredPlayer(String playerUUID, String ignoredUUID) throws SQLException {
+        String sql = "DELETE FROM ignored_players WHERE player_uuid = ? AND ignored_uuid = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, playerUUID);
+            ps.setString(2, ignoredUUID);
+            ps.executeUpdate();
+        }
+    }
+
+    public Set<UUID> getIgnoredPlayers(String playerUUID) throws SQLException {
+        Set<UUID> ignored = new HashSet<>();
+        String sql = "SELECT ignored_uuid FROM ignored_players WHERE player_uuid = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, playerUUID);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ignored.add(UUID.fromString(rs.getString("ignored_uuid")));
+                }
+            }
+        }
+
+        return ignored;
     }
 
     public Connection getConnection() throws SQLException {

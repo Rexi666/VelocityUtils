@@ -341,3 +341,12 @@ serverwhitelist:
 server_icon:
   enabled: true
   file: "server-icon.png"
+private_messages:
+  enabled: true
+  vmsg: true
+  vreply: true
+  vignore: true
+  vspy: true
+disabled_features_servers:
+  - "auth1"
+  - "auth2"

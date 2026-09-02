@@ -2,6 +2,8 @@ package org.rexi.velocityUtils.commands.banSystem;
 
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
+import com.velocitypowered.api.proxy.Player;
+import org.rexi.velocityUtils.VelocityUtils;
 import org.rexi.velocityUtils.managers.BanManager;
 import org.rexi.velocityUtils.managers.ConfigManager;
 import org.rexi.velocityUtils.utils.BanData;
@@ -13,10 +15,12 @@ public class CheckBanCommand implements SimpleCommand {
 
     private final ConfigManager configManager;
     private final BanManager banManager;
+    private final VelocityUtils plugin;
 
-    public CheckBanCommand(ConfigManager configManager, BanManager banManager) {
+    public CheckBanCommand(ConfigManager configManager, BanManager banManager, VelocityUtils plugin) {
         this.configManager = configManager;
         this.banManager = banManager;
+        this.plugin = plugin;
     }
 
     @Override
@@ -25,6 +29,11 @@ public class CheckBanCommand implements SimpleCommand {
         String[] args = invocation.arguments();
         if (!(source.hasPermission("velocityutils.bansystem.vcheckban"))) {
             source.sendMessage(configManager.getMessage("no_permission"));
+            return;
+        }
+
+        if (source instanceof Player p && plugin.isPlayerInDisabledServer(p)) {
+            source.sendMessage(configManager.getMessage("disabled_features_servers"));
             return;
         }
 

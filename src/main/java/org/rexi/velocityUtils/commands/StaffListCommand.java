@@ -39,6 +39,11 @@ public class StaffListCommand implements SimpleCommand {
             return;
         }
 
+        if (source instanceof Player p && plugin.isPlayerInDisabledServer(p)) {
+            source.sendMessage(configManager.getMessage("disabled_features_servers"));
+            return;
+        }
+
         List<Player> staffOnline = getStaffOnline();
 
         if (staffOnline.isEmpty()) {

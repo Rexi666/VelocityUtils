@@ -2,7 +2,9 @@ package org.rexi.velocityUtils.commands;
 
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import org.rexi.velocityUtils.VelocityUtils;
 import org.rexi.velocityUtils.managers.ConfigManager;
 
 import java.util.ArrayList;
@@ -12,10 +14,12 @@ public class ServerWhitelistCommand implements SimpleCommand {
 
     private final ConfigManager configManager;
     private final ProxyServer server;
+    private final VelocityUtils plugin;
 
-    public ServerWhitelistCommand(ConfigManager configManager, ProxyServer server) {
+    public ServerWhitelistCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin) {
         this.configManager = configManager;
         this.server = server;
+        this.plugin = plugin;
     }
 
     @Override
@@ -25,6 +29,11 @@ public class ServerWhitelistCommand implements SimpleCommand {
 
         if (!source.hasPermission("velocityutils.serverwhitelist.command")) {
             source.sendMessage(configManager.getMessage("no_permission"));
+            return;
+        }
+
+        if (source instanceof Player p && plugin.isPlayerInDisabledServer(p)) {
+            source.sendMessage(configManager.getMessage("disabled_features_servers"));
             return;
         }
 

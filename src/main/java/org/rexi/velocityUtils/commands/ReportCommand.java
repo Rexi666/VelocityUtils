@@ -7,6 +7,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
+import org.rexi.velocityUtils.VelocityUtils;
 import org.rexi.velocityUtils.managers.ConfigManager;
 import org.rexi.velocityUtils.utils.DiscordWebhook;
 
@@ -18,15 +19,17 @@ public class ReportCommand implements SimpleCommand {
     private final ConfigManager configManager;
     private final ProxyServer server;
     private final DiscordWebhook webhook;
+    private final VelocityUtils plugin;
 
     // Mapa para cooldowns: UUID -> timestamp del último uso
     private final Map<UUID, Long> cooldowns = new HashMap<>();
     private static final long COOLDOWN_MILLIS = 30 * 1000;
 
-    public ReportCommand(ConfigManager configManager, ProxyServer server, DiscordWebhook webhook) {
+    public ReportCommand(ConfigManager configManager, ProxyServer server, DiscordWebhook webhook, VelocityUtils plugin) {
         this.configManager = configManager;
         this.server = server;
         this.webhook = webhook;
+        this.plugin = plugin;
     }
 
     @Override
@@ -105,6 +108,7 @@ public class ReportCommand implements SimpleCommand {
         /* ──────────── 6. Enviar a moderadores ──────────── */
         for (Player online : server.getAllPlayers()) {
             if (!online.hasPermission("velocityutils.report.see")) continue;
+            if (plugin.isPlayerInDisabledServer(online)) continue;
 
             for (String raw : rawLines) {
                 String parsed = raw

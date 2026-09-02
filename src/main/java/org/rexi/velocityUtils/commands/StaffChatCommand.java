@@ -47,6 +47,11 @@ public class StaffChatCommand implements SimpleCommand {
             return;
         }
 
+        if (plugin.isPlayerInDisabledServer(player)) {
+            source.sendMessage(configManager.getMessage("disabled_features_servers"));
+            return;
+        }
+
         String[] args = invocation.arguments();
         UUID uuid = player.getUniqueId();
         Set<UUID> toggled = plugin.getStaffChatToggled();
@@ -74,7 +79,7 @@ public class StaffChatCommand implements SimpleCommand {
                             .build());
 
             server.getAllPlayers().forEach(target -> {
-                if (target.hasPermission("velocityutils.staffchat") && !plugin.disabledSC.contains(target.getUniqueId())) {
+                if (target.hasPermission("velocityutils.staffchat") && !plugin.disabledSC.contains(target.getUniqueId()) && plugin.isPlayerInDisabledServer(target)) {
                     target.sendMessage(staffMessage);
                 }
             });

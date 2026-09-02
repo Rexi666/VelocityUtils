@@ -33,6 +33,11 @@ public class ToggleScCommand implements SimpleCommand {
             return;
         }
 
+        if (plugin.isPlayerInDisabledServer(player)) {
+            source.sendMessage(configManager.getMessage("disabled_features_servers"));
+            return;
+        }
+
         UUID uuid = player.getUniqueId();
 
         if (plugin.disabledSC.contains(uuid)) {

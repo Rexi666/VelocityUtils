@@ -5,6 +5,7 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
+import org.rexi.velocityUtils.VelocityUtils;
 import org.rexi.velocityUtils.managers.BanManager;
 import org.rexi.velocityUtils.managers.ConfigManager;
 
@@ -18,11 +19,13 @@ public class KickCommand implements SimpleCommand {
     private final ConfigManager configManager;
     private final ProxyServer server;
     private final BanManager banManager;
+    private final VelocityUtils plugin;
 
-    public KickCommand(ConfigManager configManager, ProxyServer server, BanManager banManager) {
+    public KickCommand(ConfigManager configManager, ProxyServer server, BanManager banManager, VelocityUtils plugin) {
         this.configManager = configManager;
         this.server = server;
         this.banManager = banManager;
+        this.plugin = plugin;
     }
 
     @Override
@@ -31,6 +34,11 @@ public class KickCommand implements SimpleCommand {
         String[] args = invocation.arguments();
         if (!(source.hasPermission("velocityutils.bansystem.vkick"))) {
             source.sendMessage(configManager.getMessage("no_permission"));
+            return;
+        }
+
+        if (source instanceof Player p && plugin.isPlayerInDisabledServer(p)) {
+            source.sendMessage(configManager.getMessage("disabled_features_servers"));
             return;
         }
 
@@ -65,7 +73,7 @@ public class KickCommand implements SimpleCommand {
                 "{kicked_by}", fromName);
         server.getConsoleCommandSource().sendMessage(finalMessage);
         for (Player player : server.getAllPlayers()) {
-            if (player.hasPermission("velocityutils.bansystem.notify")) {
+            if (player.hasPermission("velocityutils.bansystem.notify") && !plugin.isPlayerInDisabledServer(player)) {
                 player.sendMessage(finalMessage);
             }
         }

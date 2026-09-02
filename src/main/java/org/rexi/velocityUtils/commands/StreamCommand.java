@@ -12,6 +12,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
+import org.rexi.velocityUtils.VelocityUtils;
 import org.rexi.velocityUtils.managers.ConfigManager;
 
 import java.util.*;
@@ -21,11 +22,13 @@ public class StreamCommand implements SimpleCommand {
     private final ConfigManager configManager;
     private final ProxyServer server;
     private final LuckPerms luckPerms;
+    private final VelocityUtils plugin;
 
-    public StreamCommand(ConfigManager configManager, ProxyServer server, LuckPerms luckPerms) {
+    public StreamCommand(ConfigManager configManager, ProxyServer server, LuckPerms luckPerms, VelocityUtils plugin) {
         this.configManager = configManager;
         this.server = server;
         this.luckPerms = luckPerms;
+        this.plugin = plugin;
     }
 
     private final Map<UUID, Long> streamCooldowns = new HashMap<>();
@@ -37,6 +40,11 @@ public class StreamCommand implements SimpleCommand {
 
         if (!(source instanceof Player player)) {
             source.sendMessage(configManager.getMessage("no_console"));
+            return;
+        }
+
+        if (plugin.isPlayerInDisabledServer(player)) {
+            source.sendMessage(configManager.getMessage("disabled_features_servers"));
             return;
         }
 

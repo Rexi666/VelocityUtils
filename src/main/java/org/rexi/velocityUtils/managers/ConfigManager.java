@@ -738,6 +738,29 @@ public class ConfigManager {
                     node.node("server_icon", "file").set("server-icon.png");
                 }
 
+                if (node.node("private_messages", "enabled").empty()) {
+                    node.node("private_messages", "enabled").set(true);
+                }
+                if (node.node("private_messages", "vmsg").empty()) {
+                    node.node("private_messages", "vmsg").set(true);
+                }
+                if (node.node("private_messages", "vreply").empty()) {
+                    node.node("private_messages", "vreply").set(true);
+                }
+                if (node.node("private_messages", "vignore").empty()) {
+                    node.node("private_messages", "vignore").set(true);
+                }
+                if (node.node("private_messages", "vspy").empty()) {
+                    node.node("private_messages", "vspy").set(true);
+                }
+
+                if (node.node("disabled_features_servers").empty()) {
+                    node.node("disabled_features_servers").set(List.of(
+                            "auth1",
+                            "auth2"
+                    ));
+                }
+
                 // Guardar en caso de que se hayan agregado valores predeterminados
                 configLoader.save(node);
             }
@@ -1078,6 +1101,18 @@ public class ConfigManager {
 
             node.node("server_icon", "enabled").set(true);
             node.node("server_icon", "file").set("server-icon.png");
+
+            node.node("private_messages", "enabled").set(true);
+            node.node("private_messages", "vmsg").set(true);
+            node.node("private_messages", "vreply").set(true);
+            node.node("private_messages", "vignore").set(true);
+            node.node("private_messages", "vspy").set(true);
+
+            node.node("disabled_features_servers").set(List.of(
+                        "auth1",
+                        "auth2"
+            ));
+
 
             configLoader.save(node);
         } catch (SerializationException e) {
@@ -1508,6 +1543,66 @@ public class ConfigManager {
                 if (node.node("serverwhitelist_list_format").empty()) {
                     node.node("serverwhitelist_list_format").set("&7- &e{server}");
                 }
+                if (node.node("msg_usage").empty()) {
+                    node.node("msg_usage").set("&cUsage: /vmsg <player> <message>");
+                }
+                if (node.node("msg").empty()) {
+                    node.node("msg").set("&7[&b{player} &7({player_server}) &e> &b{target} &7({target_server})&7] &e{message}");
+                }
+                if (node.node("msg_offline").empty()) {
+                    node.node("msg_offline").set("&c{player} is currently offline.");
+                }
+                if (node.node("msg_self").empty()) {
+                    node.node("msg_self").set("&cYou cannot message yourself.");
+                }
+                if (node.node("msg_ignoring").empty()) {
+                    node.node("msg_ignoring").set("&c{player} is ignoring you.");
+                }
+                if (node.node("reply_usage").empty()) {
+                    node.node("reply_usage").set("&cUsage: /vreply <message>");
+                }
+                if (node.node("reply_offline").empty()) {
+                    node.node("reply_offline").set("&cYou have no one to reply to.");
+                }
+                if (node.node("ignore_usage").empty()) {
+                    node.node("ignore_usage").set("&cUsage: /vignore <player>");
+                }
+                if (node.node("ignore_self").empty()) {
+                    node.node("ignore_self").set("&cYou cannot ignore yourself.");
+                }
+                if (node.node("ignore_offline").empty()) {
+                    node.node("ignore_offline").set("&c{player} is currently offline.");
+                }
+                if (node.node("ignore_bypass").empty()) {
+                    node.node("ignore_bypass").set("&cYou cannot ignore {player}.");
+                }
+                if (node.node("ignore_added").empty()) {
+                    node.node("ignore_added").set("&aYou have ignored {player}.");
+                }
+                if (node.node("ignore_removed").empty()) {
+                    node.node("ignore_removed").set("&aYou have unignored {player}.");
+                }
+                if (node.node("spy_self").empty()) {
+                    node.node("spy_self").set("&cYou cannot spy on yourself.");
+                }
+                if (node.node("spy_offline").empty()) {
+                    node.node("spy_offline").set("&c{player} is currently offline.");
+                }
+                if (node.node("spy_enabled").empty()) {
+                    node.node("spy_enabled").set("&aYou have enabled spy mode.");
+                }
+                if (node.node("spy_disabled").empty()) {
+                    node.node("spy_disabled").set("&cYou have disabled spy mode.");
+                }
+                if (node.node("spy_player_enabled").empty()) {
+                    node.node("spy_player_enabled").set("&aYou have enabled spy mode for {player}.");
+                }
+                if (node.node("spy_player_disabled").empty()) {
+                    node.node("spy_player_disabled").set("&cYou have disabled spy mode for {player}.");
+                }
+                if (node.node("disabled_features_servers").empty()) {
+                    node.node("disabled_features_servers").set("&cThat action is disabled on this server.");
+                }
                 if (node.node("day_simbol").empty()) {
                     node.node("day_simbol").set("d");
                 }
@@ -1632,6 +1727,26 @@ public class ConfigManager {
             node.node("serverwhitelist_list_header").set("&6Whitelisted servers:");
             node.node("serverwhitelist_list_format").set("&7- &e{server}");
 
+            node.node("msg_usage").set("&cUsage: /vmsg <player> <message>");
+            node.node("msg").set("&7[&b{player} &7({player_server}) &e> &b{target} &7({target_server})&7] &e{message}");
+            node.node("msg_offline").set("&c{player} is currently offline.");
+            node.node("msg_self").set("&cYou cannot message yourself.");
+            node.node("msg_ignoring").set("&c{player} is ignoring you.");
+            node.node("reply_usage").set("&cUsage: /vreply <message>");
+            node.node("reply_offline").set("&cYou have no one to reply to.");
+            node.node("ignore_usage").set("&cUsage: /vignore <player>");
+            node.node("ignore_self").set("&cYou cannot ignore yourself.");
+            node.node("ignore_offline").set("&c{player} is currently offline.");
+            node.node("ignore_bypass").set("&cYou cannot ignore {player}.");
+            node.node("ignore_added").set("&aYou have ignored {player}.");
+            node.node("ignore_removed").set("&aYou have unignored {player}.");
+            node.node("spy_self").set("&cYou cannot spy on yourself.");
+            node.node("spy_offline").set("&c{player} is currently offline.");
+            node.node("spy_enabled").set("&aYou have enabled spy mode.");
+            node.node("spy_disabled").set("&cYou have disabled spy mode.");
+            node.node("spy_player_enabled").set("&aYou have enabled spy mode for {player}.");
+            node.node("spy_player_disabled").set("&cYou have disabled spy mode for {player}.");
+            node.node("disabled_features_servers").set("&cThat action is disabled on this server.");
 
             node.node("day_simbol").set("d");
             node.node("hour_simbol").set("h");

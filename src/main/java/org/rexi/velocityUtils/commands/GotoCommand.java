@@ -4,6 +4,7 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import org.rexi.velocityUtils.VelocityUtils;
 import org.rexi.velocityUtils.managers.ConfigManager;
 
 import java.util.List;
@@ -15,10 +16,12 @@ public class GotoCommand implements SimpleCommand {
 
     private final ConfigManager configManager;
     private final ProxyServer server;
+    private final VelocityUtils plugin;
 
-    public GotoCommand(ConfigManager configManager, ProxyServer server) {
+    public GotoCommand(ConfigManager configManager, ProxyServer server, VelocityUtils plugin) {
         this.configManager = configManager;
         this.server = server;
+        this.plugin = plugin;
     }
 
     @Override
@@ -35,6 +38,11 @@ public class GotoCommand implements SimpleCommand {
         // Verificar permiso opcional
         if (!player.hasPermission("velocityutils.goto")) {
             source.sendMessage(configManager.getMessage("no_permission"));
+            return;
+        }
+
+        if (plugin.isPlayerInDisabledServer(player)) {
+            player.sendMessage(configManager.getMessage("disabled_features_servers"));
             return;
         }
 

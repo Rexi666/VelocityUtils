@@ -39,6 +39,11 @@ public class FindCommand implements SimpleCommand {
             return;
         }
 
+        if (source instanceof Player p && plugin.isPlayerInDisabledServer(p)) {
+            source.sendMessage(configManager.getMessage("disabled_features_servers"));
+            return;
+        }
+
         if (args.length != 1) {
             source.sendMessage(configManager.getMessage("find_usage"));
             return;

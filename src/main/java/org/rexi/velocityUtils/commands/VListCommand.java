@@ -39,6 +39,11 @@ public class VListCommand implements SimpleCommand {
             return;
         }
 
+        if (source instanceof Player p && plugin.isPlayerInDisabledServer(p)) {
+            source.sendMessage(configManager.getMessage("disabled_features_servers"));
+            return;
+        }
+
         String mode;
         if (args.length > 0 && (args[0].equalsIgnoreCase("server") || args[0].equalsIgnoreCase("rank"))) {
             mode = args[0].toLowerCase();
