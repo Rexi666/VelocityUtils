@@ -63,6 +63,7 @@
 - `/vmsg <player> <message>` - Send a private message to a player across the network
 - `/vreply <message>` - Reply to the last private message received
 - `/vignore <player>` - Ignore private messages from a specific player
+- `/ping [player]` - Check your ping to the proxy server
 
 ### 🔐 Permissions:
 #### Admin permissions
@@ -105,6 +106,8 @@
 - `velocityutils.stream` - permission to use the /stream command.
 - `velocityutils.private_message` - permission to use the /vmsg and /vreply command.
 - `velocityutils.vignore` - permission to use the /vignore command.
+- `velocityutils.ping` - permission to use the /ping command.
+- `velocityutils.ping.others` - permission to check the ping of other players with /ping <player>
 ### ✏️ Placeholders:
 [VelocityUtilsLink (backend plugin)](https://www.spigotmc.org/resources/velocityutilslink.127649/) + [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) needed to be installed on the backends to use these placeholders.
 - `%velocityutils_globalplayers%` - Total number of players across the network.

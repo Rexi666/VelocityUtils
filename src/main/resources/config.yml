@@ -350,3 +350,5 @@ private_messages:
 disabled_features_servers:
   - "auth1"
   - "auth2"
+ping:
+  enabled: true

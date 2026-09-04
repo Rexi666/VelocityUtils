@@ -761,6 +761,10 @@ public class ConfigManager {
                     ));
                 }
 
+                if (node.node("ping", "enabled").empty()) {
+                    node.node("ping", "enabled").set(true);
+                }
+
                 // Guardar en caso de que se hayan agregado valores predeterminados
                 configLoader.save(node);
             }
@@ -1113,6 +1117,7 @@ public class ConfigManager {
                         "auth2"
             ));
 
+            node.node("ping", "enabled").set(true);
 
             configLoader.save(node);
         } catch (SerializationException e) {
@@ -1603,6 +1608,23 @@ public class ConfigManager {
                 if (node.node("disabled_features_servers").empty()) {
                     node.node("disabled_features_servers").set("&cThat action is disabled on this server.");
                 }
+
+                if (node.node("ping_usage_others").empty()) {
+                    node.node("ping_usage_others").set("&cUsage: /ping [player]");
+                }
+                if (node.node("ping_usage").empty()) {
+                    node.node("ping_usage").set("&cUsage: /ping");
+                }
+                if (node.node("ping_others").empty()) {
+                    node.node("ping_others").set("&e{player} &7has a ping of &e{ping}ms");
+                }
+                if (node.node("ping_self").empty()) {
+                    node.node("ping_self").set("&7Your ping is &e{ping}ms");
+                }
+                if (node.node("ping_offline").empty()) {
+                    node.node("ping_offline").set("&c{player} is currently offline.");
+                }
+
                 if (node.node("day_simbol").empty()) {
                     node.node("day_simbol").set("d");
                 }

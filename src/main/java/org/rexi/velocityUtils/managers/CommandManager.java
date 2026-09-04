@@ -234,6 +234,12 @@ public class CommandManager {
                         new VSpyCommand(configManager, server, plugin));
             }
         }
+
+        if (enabled("ping")) {
+            commandManager.register(
+                    commandManager.metaBuilder("ping").build(),
+                    new PingCommand(configManager, server));
+        }
     }
 
     public void registerMoveCommands() {

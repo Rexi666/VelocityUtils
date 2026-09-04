@@ -79,7 +79,7 @@ public class StaffChatCommand implements SimpleCommand {
                             .build());
 
             server.getAllPlayers().forEach(target -> {
-                if (target.hasPermission("velocityutils.staffchat") && !plugin.disabledSC.contains(target.getUniqueId()) && plugin.isPlayerInDisabledServer(target)) {
+                if (target.hasPermission("velocityutils.staffchat") && !plugin.disabledSC.contains(target.getUniqueId()) && !plugin.isPlayerInDisabledServer(target)) {
                     target.sendMessage(staffMessage);
                 }
             });
